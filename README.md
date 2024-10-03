@@ -51,6 +51,7 @@ YAY
 
 **genre_1** : le genre principal du livre
 
+
 **genre_2** : la cible marketing du livre
 
 **num_ratings** : *(à confirmé)* le nombre de note du livre

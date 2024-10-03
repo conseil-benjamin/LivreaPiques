@@ -14,3 +14,19 @@ YAY
 |       |pages|
 |       |publish_date|
 
+### Table bigboss_book
+|Variable Qualitatative|Variable quantitative|Aucune donnée(index, ou jointure|
+|---    |:-:    |:-:    |
+|series|rating_count|id
+|publisher|review_count|title
+|genre_and_votes|average_rating|author
+|settings|five_star_ratings|original_title
+|characters|four_star_ratings|isbn
+|awards|three_star_ratings|isbn13
+|books_in_series|two_star_ratings|description
+||one_star_ratings|
+||number_of_pages|
+||date_published|
+|||
+
+

@@ -61,4 +61,47 @@ YAY
 
 **publish_date** : la date de pulication
 
+### Table livres
+
+**title** : oui oui baguette
+
+**series** : la serie du livre
+
+**author** : l'auteur du livre
+
+**rating_count** : nombre de note du livre
+
+**review_count** : nb review livre
+
+**average_rating** : note moyenne du livre
+
+**five_star_ratings** : nombre de 5*
+
+**number_of_pages** : le nombre de page du livre (*à modifier en int*)
+
+**date_published** : la date e publi du livre (ou l'année)
+
+**publisher** : éditeur du livre
+
+**original_title** : titre original si il y a(sinon false)
+
+**genre_and_votes** : les genres du livre avec le nombre de personne qui ont voté pour se genre
+
+**isbn**, **isbn13** : l'isbn du livre
+
+**settings** : où se passe le livre
+
+**characters** : les perso
+
+**awards** : le nom de la recompense
+
+**books_in_series** : id(ou isbn à verif), des livres dans la series
+
+**description** : description du livre
+
+
+
+
+
+
 

@@ -1,7 +1,3 @@
-SUPER SAÉ
-
-YAY
-
 ### Table Big_boss_authors
 |Variable Qualitatative|Variable quantitative|Aucune donnée(index, ou jointure|
 |---    |:-:    |:-:    |

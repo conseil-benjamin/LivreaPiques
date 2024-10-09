@@ -1,3 +1,5 @@
+## Si vous avez l'image du docker, utilisé le kernel python 3.12.6 pour que toute les blibiothèque soit installé
+
 ### Big_boss_authors Table
 |QualitatativeVariable|Quantitative Variable|No data(index, or joined data)|
 |---    |:-:    |:-:    |

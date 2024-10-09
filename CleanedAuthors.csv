@@ -1,4 +1,4 @@
-id,author_average_rating,author_gender,author_genres,author_id,author_name,author_rating_count,author_review_count,birthplace,book_average_rating,book_id,book_title,genre_1,genre_2,num_ratings,num_reviews,pages,publish_date
+,author_average_rating,author_gender,author_genres,author_id,author_name,author_rating_count,author_review_count,birthplace,book_average_rating,book_id,book_title,genre_1,genre_2,num_ratings,num_reviews,pages,publish_date
 0,4.01,female,"historical-fiction,",74489,Victoria Thompson,74399,6268, United States,4.02,686717,Murder on St. Mark's Place,Mystery,Historical,5260,375,277,2000
 1,4.15,male,"literature-fiction,mystery-thrillers,",706255,Stieg Larsson,3726435,142704,Sweden,4.13,2429135,The Girl with the Dragon Tattoo,Fiction,Mystery,2229163,65227,465,August 2005
 2,4.0,female,"romance,",5618190,Mimi Jean Pamfiloff,76496,7975, United States,3.99,27833684,Tailored for Trouble,Romance,Contemporary,2151,391,354,2016

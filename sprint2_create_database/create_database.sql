@@ -9,9 +9,9 @@ CREATE TABLE Book(
     title VARCHAR(100),
     nb_pages smallint,
     description VARCHAR(100),
-    -- settings?
-    isbn INT,
-    isbn13 INT,
+    settings VARCHAR(50),
+    isbn VARCHAR(30),
+    isbn13 VARCHAR(30),
     original_title VARCHAR(50),
 );
 

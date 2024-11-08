@@ -13,6 +13,13 @@ CREATE TABLE Book(
     isbn VARCHAR(30),
     isbn13 VARCHAR(30),
     original_title VARCHAR(50),
+    rating_count INT,
+    review_count INT,
+    one_star_rating INT,
+    two_star_rating INT,
+    three_star_rating INT,
+    four_star_rating INT,
+    five_star_rating INT
 );
 
 CREATE TABLE Author(

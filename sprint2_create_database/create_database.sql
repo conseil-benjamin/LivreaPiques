@@ -29,3 +29,19 @@ CREATE TABLE Book_Author(
     FOREIGN KEY(id_book) REFERENCES Book(id_book),
     FOREIGN KEY(id_author) REFERENCES Author(id_author)
 );
+
+CREATE TABLE Publisher(
+    id_publisher INT PRIMARY KEY AUTO_INCREMENT,
+    name_publisher VARCHAR(50),
+    origin_publisher VARCHAR(50)
+);
+
+CREATE TABLE Book_Publisher(
+    id_book INT,
+    id_publisher INT,
+    date_published DATE,
+    title_published VARCHAR(50),
+    PRIMARY KEY(id_book, id_publisher),
+    FOREIGN KEY(id_book) REFERENCES Book(id_book),
+    FOREIGN KEY(id_publisher) REFERENCES Publisher(id_publisher)
+);

@@ -1,11 +1,9 @@
 --create data base
 CREATE DATABASE db_livreapique;
---use data base
-USE db_livreapique;
 
 --create table
 CREATE TABLE Book(
-    id_book INT PRIMARY KEY AUTO_INCREMENT,
+    id_book SERIAL PRIMARY KEY,
     title VARCHAR(100),
     nb_pages smallint,
     description VARCHAR(100),
@@ -23,7 +21,7 @@ CREATE TABLE Book(
 );
 
 CREATE TABLE Author(
-    id_author INT PRIMARY KEY AUTO_INCREMENT,
+    id_author SERIAL PRIMARY KEY,
     name_author VARCHAR(50),
     author_gender VARCHAR(10),
     birthplace VARCHAR(50)
@@ -37,8 +35,10 @@ CREATE TABLE Book_Author(
     FOREIGN KEY(id_author) REFERENCES Author(id_author)
 );
 
-CREATE TABLE Publisher(
-    id_publisher smallint PRIMARY KEY AUTO_INCREMENT,
+CREATE SEQUENCE smallint_sequence START 1 INCREMENT 1 MINVALUE 1 MAXVALUE 32767;
+
+CREATE TABLE Publisher (
+    id_publisher SMALLINT PRIMARY KEY DEFAULT nextval('smallint_sequence'),
     name_publisher VARCHAR(50),
     origin_publisher VARCHAR(50)
 );
@@ -54,7 +54,7 @@ CREATE TABLE Book_Publisher(
 );
 
 create table Genre(
-    id_genre smallint PRIMARY KEY AUTO_INCREMENT,
+    id_genre smallint PRIMARY KEY DEFAULT nextval('smallint_sequence'),
     name_genre VARCHAR(50)
 );
 
@@ -70,7 +70,7 @@ CREATE TABLE Book_Genre(
 CREATE TYPE Status AS ENUM ('completed', 'in progress', 'abandoned');
 
 CREATE TABLE Series(
-    id_series smallint PRIMARY KEY AUTO_INCREMENT,
+    id_series smallint PRIMARY KEY DEFAULT nextval('smallint_sequence'),
     name_series VARCHAR(50),
     status_series Status
 );
@@ -84,8 +84,8 @@ CREATE TABLE Book_Series(
 );
 
 CREATE TABLE Awards(
-    id_award smallint PRIMARY KEY AUTO_INCREMENT,
-    name_award VARCHAR(100),
+    id_award smallint PRIMARY KEY DEFAULT nextval('smallint_sequence'),
+    name_award VARCHAR(100)
 );
 
 CREATE TABLE Book_Awards(
@@ -95,6 +95,3 @@ CREATE TABLE Book_Awards(
     FOREIGN KEY(id_book) REFERENCES Book(id_book),
     FOREIGN KEY(id_award) REFERENCES Awards(id_award)
 );
-
-
-

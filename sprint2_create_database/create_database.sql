@@ -20,10 +20,12 @@ CREATE TABLE Book(
     five_star_rating INT
 );
 
+CREATE TYPE Gender AS ENUM('M', 'F');
+
 CREATE TABLE Author(
     id_author SERIAL PRIMARY KEY,
     name_author VARCHAR(50),
-    author_gender VARCHAR(10),
+    author_gender Gender,
     birthplace VARCHAR(50)
 );
 

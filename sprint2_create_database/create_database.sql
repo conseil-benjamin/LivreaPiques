@@ -20,7 +20,7 @@ CREATE TABLE Book(
     five_star_rating INT
 );
 
-CREATE TYPE Gender AS ENUM('M', 'F');
+CREATE TYPE Gender AS ENUM('M', 'F', 'A');
 
 CREATE TABLE Author(
     id_author SERIAL PRIMARY KEY,
@@ -49,7 +49,7 @@ CREATE TABLE Book_Publisher(
     id_book INT,
     id_publisher smallint,
     date_published DATE,
-    title_published VARCHAR(50),
+    title_published VARCHAR(280),
     PRIMARY KEY(id_book, id_publisher),
     FOREIGN KEY(id_book) REFERENCES Book(id_book),
     FOREIGN KEY(id_publisher) REFERENCES Publisher(id_publisher)
@@ -73,7 +73,7 @@ CREATE TYPE Status AS ENUM ('completed', 'in progress', 'abandoned');
 
 CREATE TABLE Series(
     id_series smallint PRIMARY KEY DEFAULT nextval('smallint_sequence'),
-    name_series VARCHAR(50),
+    name_series VARCHAR(105),
     status_series Status
 );
 

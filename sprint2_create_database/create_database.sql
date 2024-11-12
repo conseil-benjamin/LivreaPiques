@@ -4,13 +4,13 @@ CREATE DATABASE db_livreapique;
 --create table
 CREATE TABLE Book(
     id_book SERIAL PRIMARY KEY,
-    title VARCHAR(100),
+    title VARCHAR(280),
     nb_pages smallint,
-    description VARCHAR(100),
+    description VARCHAR(26770),
     settings VARCHAR(50),
     isbn VARCHAR(30),
     isbn13 VARCHAR(30),
-    original_title VARCHAR(50),
+    original_title VARCHAR(280),
     rating_count INT,
     review_count INT,
     one_star_rating INT,

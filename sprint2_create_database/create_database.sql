@@ -11,13 +11,15 @@ CREATE TABLE Book(
     isbn VARCHAR(30),
     isbn13 VARCHAR(30),
     original_title VARCHAR(280),
-    rating_count INT,
     review_count INT,
     one_star_rating INT,
     two_star_rating INT,
     three_star_rating INT,
     four_star_rating INT,
-    five_star_rating INT
+    five_star_rating INT,
+    rating_count INT CHECK(rating_count = one_star_rating + two_star_rating + three_star_rating + four_star_rating + five_star_rating),
+    average_rating FLOAT CHECK(average_rating = one_star_rating*1 + two_star_rating*2 + three_star_rating*3 + four_star_rating*4 + five_star_rating*5 / rating_count)
+
 );
 
 CREATE TYPE Gender AS ENUM('M', 'F', 'A');

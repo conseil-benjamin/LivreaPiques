@@ -89,7 +89,7 @@ CREATE TABLE Book_Series(
 
 CREATE TABLE Awards(
     id_award smallint PRIMARY KEY DEFAULT nextval('smallint_sequence'),
-    name_award VARCHAR(100)
+    name_award VARCHAR(2240)
 );
 
 CREATE TABLE Book_Awards(

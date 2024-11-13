@@ -95,6 +95,7 @@ CREATE TABLE Awards(
 CREATE TABLE Book_Awards(
     id_book INT,
     id_award smallint,
+    date_award DATE,
     PRIMARY KEY(id_book, id_award),
     FOREIGN KEY(id_book) REFERENCES Book(id_book),
     FOREIGN KEY(id_award) REFERENCES Awards(id_award)

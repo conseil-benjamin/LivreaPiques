@@ -46,10 +46,10 @@ for index, row in data.iterrows():
 
 # Sauvegarder les associations dans un fichier CSV
 df_associations = pd.DataFrame(associations)
-df_associations.to_csv('associations.csv', index=False)
+df_associations.to_csv('associations_character.csv', index=False)
 
 # Charger les associations depuis le fichier CSV
-associations = pd.read_csv('associations.csv')
+associations = pd.read_csv('associations_character.csv')
 
 # Enlever les doublons
 associations = associations.drop_duplicates()

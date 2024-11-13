@@ -3,10 +3,10 @@ CREATE DATABASE db_livreapique;
 
 --create table
 CREATE TABLE Book(
-    id_book SERIAL PRIMARY KEY,
-    title VARCHAR(280),
-    nb_pages smallint,
-    description VARCHAR(26770),
+    book_id SERIAL PRIMARY KEY,
+    book_title VARCHAR(280),
+    nb_of_pages smallint,
+    book_description VARCHAR(26770),
     settings VARCHAR(50),
     isbn VARCHAR(30),
     isbn13 VARCHAR(30),
@@ -25,78 +25,78 @@ CREATE TABLE Book(
 CREATE TYPE Gender AS ENUM('M', 'F', 'A');
 
 CREATE TABLE Author(
-    id_author SERIAL PRIMARY KEY,
-    name_author VARCHAR(50),
+    author_id SERIAL PRIMARY KEY,
+    author_name VARCHAR(50),
     author_gender Gender,
     birthplace VARCHAR(50)
 );
 
 CREATE TABLE Book_Author(
-    id_book INT,
-    id_author INT,
-    PRIMARY KEY(id_book, id_author),
-    FOREIGN KEY(id_book) REFERENCES Book(id_book),
-    FOREIGN KEY(id_author) REFERENCES Author(id_author)
+    book_id INT,
+    author_id INT,
+    PRIMARY KEY(book_id, author_id),
+    FOREIGN KEY(book_id) REFERENCES Book(book_id),
+    FOREIGN KEY(author_id) REFERENCES Author(author_id)
 );
 
 CREATE SEQUENCE smallint_sequence START 1 INCREMENT 1 MINVALUE 1 MAXVALUE 32767;
 
 CREATE TABLE Publisher (
-    id_publisher SMALLINT PRIMARY KEY DEFAULT nextval('smallint_sequence'),
-    name_publisher VARCHAR(50),
-    origin_publisher VARCHAR(50)
+    publisher_id SMALLINT PRIMARY KEY DEFAULT nextval('smallint_sequence'),
+    publisher_name VARCHAR(50),
+    publisher_origin VARCHAR(50)
 );
 
 CREATE TABLE Book_Publisher(
-    id_book INT,
-    id_publisher smallint,
-    date_published DATE,
-    title_published VARCHAR(280),
-    PRIMARY KEY(id_book, id_publisher),
-    FOREIGN KEY(id_book) REFERENCES Book(id_book),
-    FOREIGN KEY(id_publisher) REFERENCES Publisher(id_publisher)
+    book_id INT,
+    publisher_id smallint,
+    published_date DATE,
+    published_title VARCHAR(280),
+    PRIMARY KEY(book_id, publisher_id),
+    FOREIGN KEY(book_id) REFERENCES Book(book_id),
+    FOREIGN KEY(publisher_id) REFERENCES Publisher(publisher_id)
 );
 
 create table Genre(
-    id_genre smallint PRIMARY KEY DEFAULT nextval('smallint_sequence'),
-    name_genre VARCHAR(50)
+    genre_id smallint PRIMARY KEY DEFAULT nextval('smallint_sequence'),
+    genre_name VARCHAR(50)
 );
 
 CREATE TABLE Book_Genre(
-    id_book INT,
-    id_genre smallint,
-    nb_vote smallint,
-    PRIMARY KEY(id_book, id_genre),
-    FOREIGN KEY(id_book) REFERENCES Book(id_book),
-    FOREIGN KEY(id_genre) REFERENCES Genre(id_genre)
+    book_id INT,
+    genre_id smallint,
+    nb_of_vote smallint,
+    PRIMARY KEY(book_id, genre_id),
+    FOREIGN KEY(book_id) REFERENCES Book(book_id),
+    FOREIGN KEY(genre_id) REFERENCES Genre(genre_id)
 );
 
 CREATE TYPE Status AS ENUM ('completed', 'in progress', 'abandoned');
 
 CREATE TABLE Series(
-    id_series smallint PRIMARY KEY DEFAULT nextval('smallint_sequence'),
-    name_series VARCHAR(105),
-    status_series Status
+    series_id smallint PRIMARY KEY DEFAULT nextval('smallint_sequence'),
+    series_name VARCHAR(105),
+    series_status Status
 );
 
 CREATE TABLE Book_Series(
-    id_book INT,
-    id_series smallint,
-    PRIMARY KEY(id_book, id_series),
-    FOREIGN KEY(id_book) REFERENCES Book(id_book),
-    FOREIGN KEY(id_series) REFERENCES Series(id_series)
+    book_id INT,
+    series_id smallint,
+    PRIMARY KEY(book_id, series_id),
+    FOREIGN KEY(book_id) REFERENCES Book(book_id),
+    FOREIGN KEY(series_id) REFERENCES Series(series_id)
 );
 
 CREATE TABLE Awards(
-    id_award smallint PRIMARY KEY DEFAULT nextval('smallint_sequence'),
-    name_award VARCHAR(2240)
+    award_id smallint PRIMARY KEY DEFAULT nextval('smallint_sequence'),
+    award_name VARCHAR(2240)
 );
 
 CREATE TABLE Book_Awards(
-    id_book INT,
-    id_award smallint,
+    book_id INT,
+    award_id smallint,
     date_award DATE,
-    PRIMARY KEY(id_book, id_award),
-    FOREIGN KEY(id_book) REFERENCES Book(id_book),
-    FOREIGN KEY(id_award) REFERENCES Awards(id_award)
+    PRIMARY KEY(book_id, award_id),
+    FOREIGN KEY(book_id) REFERENCES Book(book_id),
+    FOREIGN KEY(award_id) REFERENCES Awards(award_id)
 );

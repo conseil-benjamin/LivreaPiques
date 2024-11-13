@@ -43,8 +43,8 @@ CREATE SEQUENCE smallint_sequence START 1 INCREMENT 1 MINVALUE 1 MAXVALUE 32767;
 
 CREATE TABLE Publisher (
     id_publisher SMALLINT PRIMARY KEY DEFAULT nextval('smallint_sequence'),
-    name_publisher VARCHAR(50),
-    origin_publisher VARCHAR(50)
+    name_publisher VARCHAR(100),
+    origin_publisher VARCHAR(60)
 );
 
 CREATE TABLE Book_Publisher(

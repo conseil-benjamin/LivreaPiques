@@ -7,9 +7,9 @@ CREATE TABLE Book(
     book_title VARCHAR(280),
     nb_of_pages smallint,
     book_description VARCHAR(26770),
-    settings VARCHAR(50),
+    settings VARCHAR(2540),
     isbn VARCHAR(30),
-    isbn13 VARCHAR(30),
+    isbn13 VARCHAR(200),
     original_title VARCHAR(280),
     review_count INT,
     one_star_rating INT,
@@ -17,10 +17,8 @@ CREATE TABLE Book(
     three_star_rating INT,
     four_star_rating INT,
     five_star_rating INT,
-   CONSTRAINT book_title_not_null CHECK(book_title IS NOT NULL),
-   CONSTRAINT book_title_unique UNIQUE(book_title)
-
-
+    CONSTRAINT book_isbn_unique UNIQUE(isbn),
+    CONSTRAINT book_isbn13_unique UNIQUE(isbn13)
 );
 
 CREATE TYPE Gender AS ENUM('M', 'F', 'A');
@@ -45,7 +43,7 @@ CREATE TABLE Book_Author(
 CREATE SEQUENCE smallint_sequence START 1 INCREMENT 1 MINVALUE 1 MAXVALUE 32767;
 
 CREATE TABLE Publisher (
-    id_publisher SMALLINT PRIMARY KEY DEFAULT nextval('smallint_sequence'),
+    publisher_id SMALLINT PRIMARY KEY DEFAULT nextval('smallint_sequence'),
     name_publisher VARCHAR(300),
     origin_publisher VARCHAR(60),
     CONSTRAINT name_publisher_unique UNIQUE(name_publisher),

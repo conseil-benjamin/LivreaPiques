@@ -24,6 +24,11 @@ distinct_values = s_cleaned.unique()
 #convert numpy array to dataframe
 distinct_values_df = pd.DataFrame(distinct_values)
 
+# rename the column to "series_name"
+distinct_values_df.columns = ['name_series']
+
+display(distinct_values_df)
+
 #save the dataframe to a csv file
 distinct_values_df.to_csv('new_data/SeriesList.csv', index=False)
 

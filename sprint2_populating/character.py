@@ -61,6 +61,23 @@ print("Insertion des données terminée.")
 # close the connection
 engine.dispose()
 
+
+
+#########################################
+#renommer la colonne 'title' en 'book_title'
+data = data.rename(columns={'title': 'book_title'})
+
+print(data.head())
+df = pd.DataFrame(data)
+
+# Séparer les personnages et garder l'info du titre pour chaque personnage
+df_exploded = df.assign(characters=df['characters'].str.split(', ')).explode('characters').reset_index(drop=True)
+
+print(df_exploded)
+
+# stoper le programme pour vérifier les données
+input("Appuyez sur Entrée pour continuer...")
+#########################################
 from tqdm import tqdm
 
 # Connexion à la base de données
@@ -87,7 +104,7 @@ character_dict = {name: character_id for character_id, name in character_records
 # Parcourir `data` et créer les associations en utilisant les dictionnaires, avec une barre de progression
 associations = []
 for index, row in tqdm(data.iterrows(), total=len(data), desc="Création des associations"):
-    book_id = book_dict.get(row['title'])
+    book_id = book_dict.get(row['book_title'])
     character_id = character_dict.get(row['characters'])
     
     # Vérifie que les deux IDs existent avant de les ajouter

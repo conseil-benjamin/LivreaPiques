@@ -110,11 +110,17 @@ CREATE TABLE Book_Awards(
     FOREIGN KEY(award_id) REFERENCES Awards(award_id)
 );
 
-CREATE TABLE Character(
+CREATE TABLE Characters(
     character_id SERIAL PRIMARY KEY,
-    character_name VARCHAR(200),
+    character_name VARCHAR(110)
+);
+
+CREATE TABLE Book_Characters(
     book_id INT,
-    FOREIGN KEY(book_id) REFERENCES Book(book_id)
+    character_id INT,
+    PRIMARY KEY(book_id, character_id),
+    FOREIGN KEY(book_id) REFERENCES Book(book_id),
+    FOREIGN KEY(character_id) REFERENCES Characters(character_id)
 );
 
 CREATE VIEW Book_rating AS

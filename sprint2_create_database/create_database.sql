@@ -7,9 +7,9 @@ CREATE TABLE Book(
     book_title VARCHAR(280),
     nb_of_pages smallint,
     book_description VARCHAR(26770),
-    settings VARCHAR(50),
+    settings VARCHAR(2540),
     isbn VARCHAR(30),
-    isbn13 VARCHAR(30),
+    isbn13 VARCHAR(200),
     original_title VARCHAR(280),
     review_count INT,
     one_star_rating INT,
@@ -17,18 +17,18 @@ CREATE TABLE Book(
     three_star_rating INT,
     four_star_rating INT,
     five_star_rating INT,
-    rating_count INT CHECK(rating_count = one_star_rating + two_star_rating + three_star_rating + four_star_rating + five_star_rating),
-    average_rating FLOAT CHECK(average_rating = one_star_rating*1 + two_star_rating*2 + three_star_rating*3 + four_star_rating*4 + five_star_rating*5 / rating_count)
-
+    CONSTRAINT book_isbn_unique UNIQUE(isbn),
+    CONSTRAINT book_isbn13_unique UNIQUE(isbn13)
 );
 
 CREATE TYPE Gender AS ENUM('M', 'F', 'A');
 
 CREATE TABLE Author(
     author_id SERIAL PRIMARY KEY,
-    author_name VARCHAR(50),
+    author_name VARCHAR(200),
     author_gender Gender,
-    birthplace VARCHAR(50)
+    birthplace VARCHAR(60)
+    CONSTRAINT author_name_not_null CHECK(author_name IS NOT NULL)
 );
 
 CREATE TABLE Book_Author(
@@ -42,9 +42,12 @@ CREATE TABLE Book_Author(
 CREATE SEQUENCE smallint_sequence START 1 INCREMENT 1 MINVALUE 1 MAXVALUE 32767;
 
 CREATE TABLE Publisher (
-    id_publisher SMALLINT PRIMARY KEY DEFAULT nextval('smallint_sequence'),
-    name_publisher VARCHAR(100),
-    origin_publisher VARCHAR(60)
+    publisher_id SMALLINT PRIMARY KEY DEFAULT nextval('smallint_sequence'),
+    name_publisher VARCHAR(300),
+    origin_publisher VARCHAR(60),
+    CONSTRAINT name_publisher_unique UNIQUE(name_publisher),
+    CONSTRAINT name_publisher_not_null CHECK(name_publisher IS NOT NULL)
+
 );
 
 CREATE TABLE Book_Publisher(
@@ -59,7 +62,9 @@ CREATE TABLE Book_Publisher(
 
 create table Genre(
     genre_id smallint PRIMARY KEY DEFAULT nextval('smallint_sequence'),
-    genre_name VARCHAR(50)
+    genre_name VARCHAR(300)
+    CONSTRAINT genre_name_not_null CHECK(genre_name IS NOT NULL),
+    CONSTRAINT genre_name_unique UNIQUE(genre_name)
 );
 
 CREATE TABLE Book_Genre(
@@ -77,6 +82,8 @@ CREATE TABLE Series(
     series_id smallint PRIMARY KEY DEFAULT nextval('smallint_sequence'),
     series_name VARCHAR(105),
     series_status Status
+    CONSTRAINT series_name_not_null CHECK(series_name IS NOT NULL),
+    CONSTRAINT series_name_unique UNIQUE(series_name)
 );
 
 CREATE TABLE Book_Series(
@@ -90,6 +97,8 @@ CREATE TABLE Book_Series(
 CREATE TABLE Awards(
     award_id smallint PRIMARY KEY DEFAULT nextval('smallint_sequence'),
     award_name VARCHAR(2240)
+    CONSTRAINT award_name_not_null CHECK(award_name IS NOT NULL),
+    CONSTRAINT award_name_unique UNIQUE(award_name)
 );
 
 CREATE TABLE Book_Awards(
@@ -100,3 +109,45 @@ CREATE TABLE Book_Awards(
     FOREIGN KEY(book_id) REFERENCES Book(book_id),
     FOREIGN KEY(award_id) REFERENCES Awards(award_id)
 );
+
+CREATE TABLE Characters(
+    character_id SERIAL PRIMARY KEY,
+    character_name VARCHAR(110)
+);
+
+CREATE TABLE Book_Characters(
+    book_id INT,
+    character_id INT,
+    PRIMARY KEY(book_id, character_id),
+    FOREIGN KEY(book_id) REFERENCES Book(book_id),
+    FOREIGN KEY(character_id) REFERENCES Characters(character_id)
+);
+
+CREATE VIEW Book_rating AS
+SELECT 
+    book_id, 
+    book_title, 
+    one_star_rating + two_star_rating + three_star_rating + four_star_rating + five_star_rating AS rating_count, 
+    CASE 
+        WHEN (one_star_rating + two_star_rating + three_star_rating + four_star_rating + five_star_rating) = 0 
+        THEN NULL 
+        ELSE ROUND(
+            (one_star_rating*1 + two_star_rating*2 + three_star_rating*3 + four_star_rating*4 + five_star_rating*5) / 
+            (one_star_rating + two_star_rating + three_star_rating + four_star_rating + five_star_rating * 1.0), 1
+        )  -- Arrondir à une décimale
+    END AS book_avg_rating
+FROM Book
+GROUP BY book_id, book_title;
+
+
+CREATE OR REPLACE VIEW Author_avg_rating AS
+SELECT 
+    Author.author_id, 
+    author_name, 
+    LEAST(GREATEST(AVG(book_avg_rating), 0), 5) AS avg_rating
+FROM 
+    Book_Author
+    JOIN Book_rating ON Book_Author.book_id = Book_rating.book_id
+    JOIN Author ON Book_Author.author_id = Author.author_id
+GROUP BY 
+    Author.author_id, author_name;

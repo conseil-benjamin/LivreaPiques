@@ -11,16 +11,16 @@ database_url = 'postgresql://postgres.pczyoeavtwijgtkzgcaz:D0jVgaoGmDAFuaMS@aws-
 engine = create_engine(database_url)
 
 # Charger le CSV dans un DataFrame
-csv_file_path = '../new_data/CleanedAuthors.csv'
+csv_file_path = 'new_data/CleanedAuthors.csv'
 df = pd.read_csv(csv_file_path)
 
 # Sélectionner uniquement les colonnes nécessaires
 df = df[["author_name", "author_gender", "birthplace"]]
 
-# Renommer les colonnes pour correspondre aux noms de la base de données
-df = df.rename(columns={
-    "author_name": "name_author"
-})
+# Supprimer les ligne avec le même nom d'auteur
+df = df.drop_duplicates(subset=['author_name'])
+
+
 
 # Remplacer "female" par "F", "male" par "M" et autres par "A" dans la colonne `author_gender`
 df['author_gender'] = df['author_gender'].replace({
@@ -46,11 +46,9 @@ except Exception as e:
     print("Une erreur inattendue est survenue :")
     print(e)
 
-
-# Création de la table association `book_author` dans la base de données
-
 from sqlalchemy import create_engine, select, Table, MetaData
 from sqlalchemy.orm import sessionmaker
+from tqdm import tqdm
 
 # Connexion à la base de données
 engine = create_engine(database_url)
@@ -61,38 +59,36 @@ session = Session()
 metadata = MetaData()
 
 # Charger le CSV des livres
-csv_book = '../new_data/books_corrected.csv'
+csv_book = 'new_data/books_corrected.csv'
 df_books = pd.read_csv(csv_book)
 df_books = df_books[["title", "author"]]
-df_books = df_books.rename(columns={
-    "author": "name_author"
-})
+df_books = df_books.rename(columns={"author": "author_name"})
 
 # Charger les tables book et author en utilisant `autoload_with=engine`
 book_table = Table('book', metadata, autoload_with=engine)
 author_table = Table('author', metadata, autoload_with=engine)
 
-# Fonction pour obtenir les IDs selon le titre ou le nom
-def get_id_by_name(table, name_column, name_value, search_column='id'):
-    result = session.execute(select(table.c[search_column]).where(table.c[name_column] == name_value)).first()
-    return result[0] if result else None
+# Récupérer tous les IDs de livres et d'auteurs en une seule requête pour chaque table
+book_records = session.execute(select(book_table.c.book_id, book_table.c.book_title)).all()
+author_records = session.execute(select(author_table.c.author_id, author_table.c.author_name)).all()
 
-# Parcourir le DataFrame pour créer les associations
+# Créer des dictionnaires pour une recherche rapide des IDs
+book_dict = {book_title: book_id for book_id, book_title in book_records}
+author_dict = {author_name: author_id for author_id, author_name in author_records}
+
+# Créer les associations en utilisant les dictionnaires, avec une barre de progression
 associations = []
-for index, row in df_books.iterrows():
-    book_id = get_id_by_name(book_table, 'title', row['title'], search_column='id_book')
-    author_id = get_id_by_name(author_table, 'name_author', row['name_author'], search_column='id_author')
+for index, row in tqdm(df_books.iterrows(), total=len(df_books), desc="Création des associations"):
+    book_id = book_dict.get(row['title'])
+    author_id = author_dict.get(row['author_name'])
     
-    # Vérifie que les deux IDs existent avant de les ajouter à `associations`
+    # Vérifie que les deux IDs existent avant de les ajouter
     if book_id and author_id:
-        associations.append({'id_book': book_id, 'id_author': author_id})
+        associations.append({'book_id': book_id, 'author_id': author_id})
         print(f"Association ajoutée : livre ID {book_id}, auteur ID {author_id}")
 
-# Convertir la liste `associations` en DataFrame
-df_associations = pd.DataFrame(associations)
-
-# Supprimer les doublons de paires (id_book, id_author)
-df_associations = df_associations.drop_duplicates()
+# Convertir la liste `associations` en DataFrame et supprimer les doublons
+df_associations = pd.DataFrame(associations).drop_duplicates()
 
 # Enregistrer les associations dans un fichier CSV
 df_associations.to_csv('book_author.csv', index=False)
@@ -105,5 +101,5 @@ except Exception as e:
     print("Erreur lors de l'insertion des associations :")
     print(e)
 
-# Ferme la session après insertion
+# Fermer la session après insertion
 session.close()

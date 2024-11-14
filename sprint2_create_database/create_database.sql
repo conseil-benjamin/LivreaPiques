@@ -28,8 +28,7 @@ CREATE TABLE Author(
     author_name VARCHAR(200),
     author_gender Gender,
     birthplace VARCHAR(60)
-    CONSTRAINT author_name_not_null CHECK(author_name IS NOT NULL),
-    CONSTRAINT author_name_unique UNIQUE(author_name)
+    CONSTRAINT author_name_not_null CHECK(author_name IS NOT NULL)
 );
 
 CREATE TABLE Book_Author(
@@ -110,3 +109,32 @@ CREATE TABLE Book_Awards(
     FOREIGN KEY(book_id) REFERENCES Book(book_id),
     FOREIGN KEY(award_id) REFERENCES Awards(award_id)
 );
+
+CREATE VIEW Book_rating AS
+SELECT 
+    book_id, 
+    book_title, 
+    one_star_rating + two_star_rating + three_star_rating + four_star_rating + five_star_rating AS rating_count, 
+    CASE 
+        WHEN (one_star_rating + two_star_rating + three_star_rating + four_star_rating + five_star_rating) = 0 
+        THEN NULL 
+        ELSE ROUND(
+            (one_star_rating*1 + two_star_rating*2 + three_star_rating*3 + four_star_rating*4 + five_star_rating*5) / 
+            (one_star_rating + two_star_rating + three_star_rating + four_star_rating + five_star_rating * 1.0), 1
+        )  -- Arrondir à une décimale
+    END AS book_avg_rating
+FROM Book
+GROUP BY book_id, book_title;
+
+
+CREATE OR REPLACE VIEW Author_avg_rating AS
+SELECT 
+    Author.author_id, 
+    author_name, 
+    LEAST(GREATEST(AVG(book_avg_rating), 0), 5) AS avg_rating
+FROM 
+    Book_Author
+    JOIN Book_rating ON Book_Author.book_id = Book_rating.book_id
+    JOIN Author ON Book_Author.author_id = Author.author_id
+GROUP BY 
+    Author.author_id, author_name;

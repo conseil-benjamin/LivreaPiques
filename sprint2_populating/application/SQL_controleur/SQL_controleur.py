@@ -68,8 +68,6 @@ def insert_table_assocation(dataframe, table1, table2, table1_key, table2_key, t
         exec1 = select(table1.c[table1_id], table1.c[table1_key])
         exec2 = select(table2.c[table2_id], table2.c[table2_key])
 
-        print(exec1)
-        print(exec2)
         table1_record = session.execute(select(table1.c[table1_id], table1.c[table1_key])).fetchall()
         table2_record = session.execute(select(table2.c[table2_id], table2.c[table2_key])).fetchall()
     except Exception as e:
@@ -87,14 +85,10 @@ def insert_table_assocation(dataframe, table1, table2, table1_key, table2_key, t
         # Create the associations using the dictionaries, with a progress bar
         associations = []
         for index, row in tqdm(dataframe.iterrows(), total=len(dataframe), desc='Creating associations'):
-            print(f"row: {row}")
             table1_id_base = table1_dict.get(row[f'{table1_key}'])
-            print(f"table1_id: {table1_id}")
             table2_id_base = table2_dict.get(row[f'{table2_key}'])
-            print(f"table2_id: {table2_id}")
             # Check that both IDs exist before inserting
             if table1_id_base is not None and table2_id_base is not None:
-                print("coucou")
                 associations.append({table1_id: table1_id_base, table2_id: table2_id_base})
                 print(f"Association created between {table1_id_base} and {table1_id_base}")
             else:

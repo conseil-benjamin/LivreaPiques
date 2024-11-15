@@ -116,6 +116,7 @@ def populate_genre():
         return False
 
 def __main__():
+    print("Traitement des données des genres")
     try:
         unique_genres_df, book_genre_df = traitement_data()
         insert(unique_genres_df, 'genre')

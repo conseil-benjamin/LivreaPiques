@@ -46,6 +46,7 @@ def traitement_data():
     return data_reordered
 
 def __main__():
+    print("Traitement des données des livres")
     data = traitement_data()
     insert(data, 'book')
     

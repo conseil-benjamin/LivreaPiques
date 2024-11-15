@@ -23,6 +23,7 @@ def traitement_data():
     return data2, data
 
 def __main__():
+    print("Traitement des données des éditeurs")
     data_association, data_table = traitement_data()
-    #insert(data_table, 'publisher')
-    #insert_table_assocation(data_association, 'book', 'publisher', 'book_title', 'name_publisher', 'book_id', 'publisher_id')
+    insert(data_table, 'publisher')
+    insert_table_assocation(data_association, 'book', 'publisher', 'book_title', 'name_publisher', 'book_id', 'publisher_id')

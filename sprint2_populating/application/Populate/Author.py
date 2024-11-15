@@ -36,6 +36,7 @@ def traitement_data():
     return df_books, df
 
 def __main__():
+    print("Traitement des données des auteurs")
     data_association, data_table = traitement_data()
     insert(data_table, 'author')
     insert_table_assocation(data_association, 'book', 'author', 'book_title', 'author_name', 'book_id', 'author_id')

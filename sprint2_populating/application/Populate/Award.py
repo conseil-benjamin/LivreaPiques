@@ -30,6 +30,7 @@ def traitement_data():
     return data, data_awards
 
 def __main__():
+    print("Traitement des données des awards")
     data_association, data_table = traitement_data()
-    #insert(data_table, 'awards')
-    #insert_table_assocation(data_association, 'book', 'awards', 'book_title', 'award_name', 'book_id', 'award_id')
+    insert(data_table, 'awards')
+    insert_table_assocation(data_association, 'book', 'awards', 'book_title', 'award_name', 'book_id', 'award_id')

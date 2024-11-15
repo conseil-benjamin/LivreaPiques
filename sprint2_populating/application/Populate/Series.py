@@ -53,6 +53,7 @@ def traitement_data():
     return distinct_values_df, data3
 
 def __main__():
+    print("Traitement des données des series")
     data_table, data_association = traitement_data()
-    #insert(data_table, 'series')
-    #insert_table_assocation(data_association, 'book', 'series', 'book_title', 'series_name', 'book_id', 'series_id')
+    insert(data_table, 'series')
+    insert_table_assocation(data_association, 'book', 'series', 'book_title', 'series_name', 'book_id', 'series_id')

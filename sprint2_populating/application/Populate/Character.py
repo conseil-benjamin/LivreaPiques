@@ -55,6 +55,7 @@ def traitement_data():
     return df_exploded, data2
 
 def __main__():
+    print("Traitement des données des personnages")
     data_association, data_table = traitement_data()
-    # insert(data_table, 'characters')
-    #insert_table_assocation(data_association, 'book', 'characters', 'book_title', 'character_name', 'book_id', 'character_id')
+    insert(data_table, 'characters')
+    insert_table_assocation(data_association, 'book', 'characters', 'book_title', 'character_name', 'book_id', 'character_id')

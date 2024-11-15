@@ -5,10 +5,8 @@ import yaml
 import time
 from tqdm import tqdm
 
-
-
 # Import la donnée du fichier yml
-with open('config.yml', 'r') as file:
+with open('sprint2_populating/application/config.yml', 'r') as file:
     config = yaml.safe_load(file)
 
 
@@ -18,6 +16,7 @@ def conexion_db():
         database_url = config['adress_sql']
         engine = create_engine(database_url)
         session = sessionmaker(bind=engine)
+        print("Connection to the database successful")
         return engine, session
     except:
         raise Exception("Error in the connection to the database")
@@ -36,6 +35,7 @@ def insert(dataframe, table_name):
                 raise Exception("Failed to connect to the database after multiple attempts") from e
     try:
         dataframe.to_sql(table_name, con=engine, if_exists='append', index=False)
+        print("Data inserted into the database")
         return True
     except:
         return False

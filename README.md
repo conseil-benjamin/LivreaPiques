@@ -1,5 +1,21 @@
 ## Si vous avez l'image du docker, utilisé le kernel python 3.12.6 pour que toute les blibiothèque soit installé
 
+## Sprint 2
+# Creation de la base de données
+le scripte de création de base de donnée est dans le dossier "sprint2_create_database" et il se nomme "create_database.sql" il suffi de l'executé dans votre base de données postgre et la base sera créé (normalement)
+
+# Peuplement de la base de données
+Pour le peuplement nous avons regroupé tout les scripte en fonction pour que en lancant un seul scripte toute les tables soit rempli.
+
+Se scripte se trouve dans le dossier "sprint2_populating/application/main.py"
+
+avant de le lancé assuré vous d'avoir dans le même dossier un fichier config.yml avec le lien pour accéder à votre base de donnée dedans
+adress_sql: 'votre-adresse-de-base'
+
+Aprés avoir ajouter votre adresse de base dans le fichier config, lancais le fichier main et regardais votre base se remplir
+
+
+
 ### Big_boss_authors Table
 |QualitatativeVariable|Quantitative Variable|No data(index, or joined data)|
 |---    |:-:    |:-:    |

@@ -31,5 +31,5 @@ def traitement_data():
 
 def __main__():
     data_association, data_table = traitement_data()
-    insert(data_table, 'awards')
-    insert_table_assocation(data_association, 'book', 'awards', 'book_title', 'award_name', 'book_id', 'award_id')
+    #insert(data_table, 'awards')
+    #insert_table_assocation(data_association, 'book', 'awards', 'book_title', 'award_name', 'book_id', 'award_id')

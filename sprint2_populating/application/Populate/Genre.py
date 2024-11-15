@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import re
+import yaml
+
 
 
 from SQL_controleur.SQL_controleur import insert, insert_table_assocation
@@ -102,8 +104,13 @@ def populate_genre():
 
         book_genre_df = traitement_data()[1]
 
+        # Import la donnée du fichier yml
+        with open('sprint2_populating/application/config.yml', 'r') as file:
+            config = yaml.safe_load(file)
+
+
         # Paramètres de connexion à la base de données
-        database_url = 'postgresql://postgres.pczyoeavtwijgtkzgcaz:D0jVgaoGmDAFuaMS@aws-0-eu-west-3.pooler.supabase.com:6543/postgres'
+        database_url = config['adress_sql']
         engine = create_engine(database_url)
 
         # Lire les genres de la table Genre pour obtenir les IDs des genres

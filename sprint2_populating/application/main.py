@@ -7,13 +7,13 @@ from Populate.Author import __main__ as populate_author
 from Populate.Genre import __main__ as populate_genre
 
 def __main__():
-    '''
+    
     try:
         populate_book()
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
-    '''
+    
     try:
         populate_character()
     except Exception as e:

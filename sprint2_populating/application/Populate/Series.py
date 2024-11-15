@@ -4,6 +4,13 @@ import numpy as np
 from SQL_controleur.SQL_controleur import insert, insert_table_assocation
 
 def traitement_data():
+    """
+    This function is used to read the data from the csv file and to clean it.
+
+    Returns:
+    distinct_values_df: DataFrame with the column 'series_name' to insert in the table 'series'
+    data3: DataFrame with the columns 'book_title' and 'series_name' to insert in the table 'book_series'
+    """
     data = pd.read_csv('new_data/books_corrected.csv')
 
     #get the "series" column of the dataframe
@@ -53,6 +60,9 @@ def traitement_data():
     return distinct_values_df, data3
 
 def __main__():
+    """
+    This function is used to insert the data in the table 'series' and 'book_series'
+    """
     print("Traitement des données des series")
     data_table, data_association = traitement_data()
     insert(data_table, 'series')

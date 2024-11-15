@@ -4,6 +4,13 @@ import numpy as np
 from SQL_controleur.SQL_controleur import insert, insert_table_assocation
 
 def traitement_data():
+    """
+    This function reads the CSV file containing the authors data, cleans it and returns a DataFrame with the cleaned data.
+    
+    Returns:
+    - df: DataFrame with the cleaned data
+    - df_books: DataFrame with the cleaned data of the books
+    """
 
     # Charger le CSV dans un DataFrame
     csv_file_path = 'new_data/CleanedAuthors.csv'
@@ -36,6 +43,9 @@ def traitement_data():
     return df_books, df
 
 def __main__():
+    """
+    This function processes the authors data and inserts it into the database.
+    """
     print("Traitement des données des auteurs")
     data_association, data_table = traitement_data()
     insert(data_table, 'author')

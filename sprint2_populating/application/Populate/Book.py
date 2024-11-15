@@ -3,6 +3,12 @@ import numpy as np
 from SQL_controleur.SQL_controleur import insert
 
 def traitement_data():
+    """
+    This function is used to read the data from the csv file and to clean it.
+    
+    Returns:
+    data_reordered: DataFrame with the columns of the table 'book' to insert in the table 'book'
+    """
     data = pd.read_csv('new_data/books_corrected.csv')
     # Remove all unnamed columns
     data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
@@ -46,6 +52,9 @@ def traitement_data():
     return data_reordered
 
 def __main__():
+    """
+    This function is used to insert the data in the table 'book'
+"""
     print("Traitement des données des livres")
     data = traitement_data()
     insert(data, 'book')

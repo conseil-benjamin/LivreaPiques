@@ -7,6 +7,16 @@ from Populate.Author import __main__ as populate_author
 from Populate.Genre import __main__ as populate_genre
 
 def __main__():
+    """
+    This function is the main function of the application. It calls the main functions of all the modules to populate the database.
+
+    Returns:
+        bool: True if the database is populated successfully, False otherwise.
+
+    Raises:
+        Exception: If an error occurs while populating the database.
+    """
+
     
     try:
         populate_book()
@@ -48,6 +58,8 @@ def __main__():
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
+    
+    return True
 
 
 if __name__ == '__main__':

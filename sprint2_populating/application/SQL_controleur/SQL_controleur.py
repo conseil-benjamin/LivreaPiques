@@ -11,6 +11,17 @@ with open('sprint2_populating/application/config.yml', 'r') as file:
 
 
 def conexion_db():
+    """
+    Establishes a connection to the SQL database.
+    
+    Returns:
+        tuple: (engine, session) where:
+            - engine: The SQLAlchemy Engine object connected to the database.
+            - session: A SQLAlchemy session for executing queries.
+    
+    Raises:
+        Exception: If the connection to the database fails.
+    """
     try:
         ## URL of the database
         database_url = config['adress_sql']
@@ -23,6 +34,19 @@ def conexion_db():
         raise Exception("Error in the connection to the database")
 
 def insert(dataframe, table_name):
+    """
+    Inserts data from a pandas DataFrame into a SQL table.
+    
+    Args:
+        dataframe (pd.DataFrame): The DataFrame containing data to insert.
+        table_name (str): The name of the target table in the database.
+    
+    Returns:
+        bool: True if the data is inserted successfully, False otherwise.
+    
+    Raises:
+        Exception: If connection fails after multiple attempts.
+    """
     attempts = 3
     interval = 3
     for attempt in range(attempts):
@@ -43,6 +67,24 @@ def insert(dataframe, table_name):
         return False
     
 def insert_table_assocation(dataframe, table1, table2, table1_key, table2_key, table1_id, table2_id):
+    """
+    Creates and inserts associations between two SQL tables.
+    
+    Args:
+        dataframe (pd.DataFrame): The DataFrame containing data to create associations.
+        table1 (str): Name of the first table in the database.
+        table2 (str): Name of the second table in the database.
+        table1_key (str): Name of the secondary key used to identify records in `table1`.
+        table2_key (str): Name of the secondary key used to identify records in `table2`.
+        table1_id (str): Name of the column containing the ID in `table1`.
+        table2_id (str): Name of the column containing the ID in `table2`.
+    
+    Returns:
+        bool: True if the associations are successfully inserted.
+    
+    Raises:
+        Exception: If any step in the process fails (connection, data retrieval, etc.).
+    """
     attempts = 3
     interval = 3
     for attempt in range(attempts):

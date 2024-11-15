@@ -6,6 +6,13 @@ import re
 from SQL_controleur.SQL_controleur import insert, insert_table_assocation
 
 def traitement_data():
+    """
+    This function is used to read the data from the csv file and to clean it.
+    
+    Returns:
+    unique_genres_df: DataFrame with the column 'genre_name' to insert in the table 'genre'
+    book_genre_df: DataFrame with the columns 'book_id', 'genre_id' and 'nb_of_vote' to insert in the table 'book_genre'
+    """
 
     data = 'new_data/books_corrected.csv'
 
@@ -80,6 +87,15 @@ def traitement_data():
     return unique_genres_df, book_genre_df
 
 def populate_genre():
+    """
+    This function is used to populate the table 'book_genre' with the data from the CSV file 'book_genre.csv'.
+
+    Returns:
+    bool: True if the data has been successfully inserted, False otherwise.
+
+    Raises:
+    Exception: An error occurred while populating the database.
+    """
     try:
         import pandas as pd
         from sqlalchemy import create_engine, text
@@ -116,6 +132,12 @@ def populate_genre():
         return False
 
 def __main__():
+    """
+    This function is used to insert the data in the table 'genre' and 'book_genre'
+
+    Raises:
+    Exception: An error occurred while populating the database.
+    """
     print("Traitement des données des genres")
     try:
         unique_genres_df, book_genre_df = traitement_data()

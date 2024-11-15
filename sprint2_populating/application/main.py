@@ -1,7 +1,27 @@
 from Populate.Book import __main__ as populate_book
+from Populate.Character import __main__ as populate_character
+from Populate.Series import __main__ as populate_series
 
 def __main__():
-    populate_book()
+    '''
+    try:
+        populate_book()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
+    '''
+    try:
+        populate_character()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
+
+    try:
+        populate_series()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
+
 
 if __name__ == '__main__':
     __main__()

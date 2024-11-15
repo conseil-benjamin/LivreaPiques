@@ -16,6 +16,7 @@ def conexion_db():
         database_url = config['adress_sql']
         engine = create_engine(database_url)
         session = sessionmaker(bind=engine)
+        session = session()
         print("Connection to the database successful")
         return engine, session
     except:
@@ -37,7 +38,8 @@ def insert(dataframe, table_name):
         dataframe.to_sql(table_name, con=engine, if_exists='append', index=False)
         print("Data inserted into the database")
         return True
-    except:
+    except Exception as e:
+        print(f"Error inserting data into the database : {e}")
         return False
     
 def insert_table_assocation(dataframe, table1, table2, table1_key, table2_key, table1_id, table2_id):
@@ -63,9 +65,15 @@ def insert_table_assocation(dataframe, table1, table2, table1_key, table2_key, t
 
     try:
         # Get all the values of the table
+        exec1 = select(table1.c[table1_id], table1.c[table1_key])
+        exec2 = select(table2.c[table2_id], table2.c[table2_key])
+
+        print(exec1)
+        print(exec2)
         table1_record = session.execute(select(table1.c[table1_id], table1.c[table1_key])).fetchall()
         table2_record = session.execute(select(table2.c[table2_id], table2.c[table2_key])).fetchall()
     except Exception as e:
+        print(e)
         raise Exception("Error fetching records from tables") from e
 
     try:
@@ -79,15 +87,21 @@ def insert_table_assocation(dataframe, table1, table2, table1_key, table2_key, t
         # Create the associations using the dictionaries, with a progress bar
         associations = []
         for index, row in tqdm(dataframe.iterrows(), total=len(dataframe), desc='Creating associations'):
-            table1_id = table1_dict.get(row['table1_key'])
-            table2_id = table2_dict.get(row['table2_key'])
+            print(f"row: {row}")
+            table1_id_base = table1_dict.get(row[f'{table1_key}'])
+            print(f"table1_id: {table1_id}")
+            table2_id_base = table2_dict.get(row[f'{table2_key}'])
+            print(f"table2_id: {table2_id}")
             # Check that both IDs exist before inserting
-            if table1_id is not None and table2_id is not None:
-                associations.append({table1_key: table1_id, table2_key: table2_id})
-                print(f"Association created between {table1_id} and {table2_id}")
+            if table1_id_base is not None and table2_id_base is not None:
+                print("coucou")
+                associations.append({table1_id: table1_id_base, table2_id: table2_id_base})
+                print(f"Association created between {table1_id_base} and {table1_id_base}")
             else:
-                print(f"Association NOT created between {table1_id} and {table2_id}")
+                print(f"Association NOT created between {table1_id_base} and {table2_id_base}")
     except Exception as e:
+        print(e)
+        print(f"coucou{e}")
         raise Exception("Error creating associations") from e
 
     try:
@@ -99,7 +113,7 @@ def insert_table_assocation(dataframe, table1, table2, table1_key, table2_key, t
 
     try:
         associations_df = associations_df.drop_duplicates()
-        associations_df.to_sql('{table1}_{table2}', con=engine, if_exists='append', index=False)
+        associations_df.to_sql(f"{table1}_{table2}", con=engine, if_exists='append', index=False)
         return True
     except Exception as e:
         raise Exception("Error inserting associations into the database") from e

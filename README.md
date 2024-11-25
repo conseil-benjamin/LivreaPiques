@@ -1,4 +1,4 @@
-## Si vous avez l'image du docker, utilisez le kernel python 3.12.6 pour que toute les blibiothèques soit installées
+## Si vous avez l'image du docker, utilisez le kernel python 3.12.6 pour que toutes les blibiothèques soit installées
 
 ## Sprint 2
 # Création de la base de données

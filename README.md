@@ -11,11 +11,12 @@ Pour le peuplement, nous avons regroupé tous les scripts en fonctions afin qu'e
 Ce script se trouve dans le dossier **"sprint2_populating/application/main.py"**
 
 Avant de le lancer, assurez-vous d'avoir dans le même dossier un fichier **config.yml** avec le lien pour accéder à votre base de données contenant ceci :
-```yml
-adress_sql: 'votre-adresse-de-base'
-```
+
 
 Après avoir ajouté votre adresse de base dans le fichier config, lancez le fichier main et regardez votre base se remplir.
+
+
+
 
 
 ### Big_boss_authors Table
@@ -49,15 +50,15 @@ Après avoir ajouté votre adresse de base dans le fichier config, lancez le fic
 ### Authors table
 **author_gender** : Man or Woman
 
-**author_average_rating** : Average rating of each books the author wrote
+**author_average_rating** : Average rating of each book the author wrote
 
-**author_genres** : Main genres of an Author
+**author_genres** : Main genres of an author
 
 **author_name** : The name of the author
 
 **author_rating_count** : The number of rating the author received (One issue that we encountered is the fact that some of the values of said variable can be different for the same author and we can suppose that it is due to the data being older so he/she received more votes after the the first appearence)
 
-**author_review_count** :  The number of review received by the author (Same issue as the before mentioned variable)
+**author_review_count** :  The number of reviews received by the author (Same issue as the before mentioned variable)
 
 **birthplace** : The *country* where the author is born
 

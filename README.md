@@ -1,18 +1,21 @@
-## Si vous avez l'image du docker, utilisé le kernel python 3.12.6 pour que toute les blibiothèque soit installé
+## Si vous avez l'image du docker, utilisez le kernel python 3.12.6 pour que toutes les bibliothèques soient installées.
 
 ## Sprint 2
-# Creation de la base de données
-le scripte de création de base de donnée est dans le dossier "sprint2_create_database" et il se nomme "create_database.sql" il suffi de l'executé dans votre base de données postgre et la base sera créé (normalement)
+# Création de la base de données
+Le script de création de base de données est dans le dossier **"sprint2_create_database"** et il se nomme **"create_database.sql"**.  
+Il suffit de l'exécuter dans votre base de données postgre et la base sera créée (normalement).
 
 # Peuplement de la base de données
-Pour le peuplement nous avons regroupé tout les scripte en fonction pour que en lancant un seul scripte toute les tables soit rempli.
+Pour le peuplement, nous avons regroupé tous les scripts en fonctions afin qu'en lançant un seul script toutes les tables soient remplies.
 
-Se scripte se trouve dans le dossier "sprint2_populating/application/main.py"
+Ce script se trouve dans le dossier **"sprint2_populating/application/main.py"**
 
-avant de le lancé assuré vous d'avoir dans le même dossier un fichier config.yml avec le lien pour accéder à votre base de donnée dedans
-adress_sql: 'votre-adresse-de-base'
+Avant de le lancer, assurez-vous d'avoir dans le même dossier un fichier **config.yml** avec le lien pour accéder à votre base de données contenant ceci :
 
-Aprés avoir ajouter votre adresse de base dans le fichier config, lancais le fichier main et regardais votre base se remplir
+
+Après avoir ajouté votre adresse de base dans le fichier config, lancez le fichier main et regardez votre base se remplir.
+
+
 
 
 
@@ -47,15 +50,15 @@ Aprés avoir ajouter votre adresse de base dans le fichier config, lancais le fi
 ### Authors table
 **author_gender** : Man or Woman
 
-**author_average_rating** : Average rating of each books the author wrote
+**author_average_rating** : Average rating of each book the author wrote
 
-**author_genres** : Main genres of an Author
+**author_genres** : Main genres of an author
 
 **author_name** : The name of the author
 
 **author_rating_count** : The number of rating the author received (One issue that we encountered is the fact that some of the values of said variable can be different for the same author and we can suppose that it is due to the data being older so he/she received more votes after the the first appearence)
 
-**author_review_count** :  The number of review received by the author (Same issue as the before mentioned variable)
+**author_review_count** :  The number of reviews received by the author (Same issue as the before mentioned variable)
 
 **birthplace** : The *country* where the author is born
 

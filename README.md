@@ -1,18 +1,21 @@
-## Si vous avez l'image du docker, utilisez le kernel python 3.12.6 pour que toutes les blibiothèques soit installées
+## Si vous avez l'image du docker, utilisez le kernel python 3.12.6 pour que toutes les bibliothèques soient installées.
 
 ## Sprint 2
 # Création de la base de données
-Le script de création de base de données est dans le dossier "sprint2_create_database" et il se nomme "create_database.sql" il suffit de l'executer dans votre base de données postgre et la base sera créée (normalement).
+Le script de création de base de données est dans le dossier **"sprint2_create_database"** et il se nomme **"create_database.sql"**.  
+Il suffit de l'exécuter dans votre base de données postgre et la base sera créée (normalement).
 
 # Peuplement de la base de données
-Pour le peuplement, nous avons regroupé tous les scripts en fonction pour que en lançant un seul script, toutes les tables soit remplies.
+Pour le peuplement, nous avons regroupé tous les scripts en fonctions afin qu'en lançant un seul script toutes les tables soient remplies.
 
-Ce script se trouve dans le dossier "sprint2_populating/application/main.py".
+Ce script se trouve dans le dossier **"sprint2_populating/application/main.py"**
 
-Avant de le lancer, assurez vous d'avoir dans le même dossier un fichier config.yml avec le lien pour accéder à votre base de données.
-adress_sql: 'votre-adresse-de-base'
+Avant de le lancer, assurez-vous d'avoir dans le même dossier un fichier **config.yml** avec le lien pour accéder à votre base de données contenant ceci :
 
-Aprés avoir ajouté votre adresse de base dans le fichier config, lancez le fichier main et regardez votre base se remplir.
+
+Après avoir ajouté votre adresse de base dans le fichier config, lancez le fichier main et regardez votre base se remplir.
+
+
 
 
 

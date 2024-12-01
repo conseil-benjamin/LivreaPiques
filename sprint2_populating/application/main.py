@@ -5,6 +5,7 @@ from Populate.Award import __main__ as populate_award
 from Populate.Publisher import __main__ as populate_publisher
 from Populate.Author import __main__ as populate_author
 from Populate.Genre import __main__ as populate_genre
+from time import sleep
 
 def __main__():
     """
@@ -20,41 +21,48 @@ def __main__():
     
     try:
         populate_book()
+        sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
     
     try:
         populate_character()
+        sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
 
     try:
         populate_series()
+        sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
     
     try:
         populate_award()
+        sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
     
     try:
         populate_publisher()
+        sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
     
     try:
         populate_author()
+        sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
     try:
         populate_genre()
+        sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False

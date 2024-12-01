@@ -1,4 +1,4 @@
-## Si vous avez l'image du docker, utilisez le kernel python 3.12.6 pour que toutes les bibliothèques soient installées.
+## Si vous avez l'image du docker, utilisez le kernel python 3.12.6( /usr/local/bin/python3.12 ) pour que toutes les bibliothèques soient installées.
 
 ## Sprint 2
 # Création de la base de données

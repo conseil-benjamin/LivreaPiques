@@ -19,19 +19,19 @@ def __main__():
 
     
     try:
-        populate_book()
+        # populate_book()
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
     
     try:
-        populate_character()
+        # populate_character()
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
 
     try:
-        populate_series()
+        # populate_series()
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
@@ -43,18 +43,18 @@ def __main__():
         return False
     
     try:
-        populate_publisher()
+        # populate_publisher()
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
     
     try:
-        populate_author()
+        # populate_author()
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
     try:
-        populate_genre()
+        # populate_genre()
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False

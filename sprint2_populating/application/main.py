@@ -27,7 +27,7 @@ def __main__():
         return False
     
     try:
-        # populate_character()
+        populate_character()
         sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")
@@ -55,7 +55,7 @@ def __main__():
         return False
     
     try:
-        populate_author()
+        # populate_author()
         sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")

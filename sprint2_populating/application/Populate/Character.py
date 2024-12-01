@@ -69,4 +69,4 @@ def __main__():
     data_association, data_table = traitement_data()
     print(data_association.head(20))
     insert(data_table, 'characters')
-    insert_table_assocation_book(data_association, 'book', 'book_id', 'book_id')
+    insert_table_assocation_book(data_association, 'characters', 'character_name', 'character_id')

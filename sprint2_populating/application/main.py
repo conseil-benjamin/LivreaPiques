@@ -20,7 +20,7 @@ def __main__():
 
     
     try:
-        # populate_book()
+        populate_book()
         sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")
@@ -34,34 +34,34 @@ def __main__():
         return False
 
     try:
-        # populate_series()
+        populate_series()
         sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
     
     try:
-        # populate_award()
+        populate_award()
         sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
     
     try:
-        # populate_publisher()
+        populate_publisher()
         sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
     
     try:
-        # populate_author()
+        populate_author()
         sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
     try:
-        # populate_genre()
+        populate_genre()
         sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")

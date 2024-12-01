@@ -231,7 +231,7 @@ def insert_table_assocation_book(dataframe, table1, table1_key, table1_id):
     
     try:
         associations_df = associations_df.drop_duplicates()
-        associations_df.to_sql(f"{table1}_book", con=engine, if_exists='append', index=False)
+        associations_df.to_sql(f"book_{table1}", con=engine, if_exists='append', index=False)
         return True
     except Exception as e:
         raise Exception("Error inserting associations into the database") from e

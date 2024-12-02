@@ -28,10 +28,9 @@ def conexion_db():
         engine = create_engine(database_url)
         session = sessionmaker(bind=engine)
         session = session()
-        print("Connection to the database successful")
         return engine, session
-    except:
-        raise Exception("Error in the connection to the database")
+    except Exception as e:
+        raise Exception("Error in the connection to the database", e)
 
 def insert(dataframe, table_name):
     """

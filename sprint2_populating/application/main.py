@@ -17,13 +17,12 @@ def __main__():
         Exception: If an error occurs while populating the database.
     """
 
-    
+    """
     try:
         populate_book()
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
-    
     try:
         populate_character()
     except Exception as e:
@@ -60,7 +59,12 @@ def __main__():
         return False
     
     return True
-
+    """
+    try:
+        populate_award()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
 
 if __name__ == '__main__':
     __main__()

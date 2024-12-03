@@ -107,4 +107,5 @@ CREATE TABLE Reads_With (
 alter table "User" ALTER COLUMN nb_book_per_year TYPE VARCHAR(25);
 alter table "User" ALTER COLUMN nb_book_pleasure TYPE VARCHAR(25);
 alter table "User" ALTER COLUMN nb_book_work TYPE VARCHAR(4);
-alter table "User" ALTER COLUMN initiated_by TYPE VARCHAR(45);
+alter table "User" ALTER COLUMN initiated_by TYPE VARCHAR(100);
+alter table "User" ALTER COLUMN choice_motivation TYPE VARCHAR(200);

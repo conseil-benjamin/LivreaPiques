@@ -1,0 +1,3 @@
+{
+  "python.analysis.extraPaths": ["./sprint2_populating/application"]
+}

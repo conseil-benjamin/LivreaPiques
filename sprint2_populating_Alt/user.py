@@ -11,10 +11,10 @@ data['password'] = 'mdp'
 
 # Sélectionner et réorganiser les colonnes souhaitées
 columns_to_keep = [
-    'id', 'username', 'password', 'age', 'ocupation',
+    'id', 'username', 'password', 'age',
     'gender', 'nb_book_year', 'nb_book_pleasure_year', 
-    'nb_book_professional_year', 'initiator', 'when_reading',
-    'when_reading', 'makes_you_want_read', 'reading_mode'
+    'nb_book_professional_year', 'initiator',
+    'when_reading', 'makes_you_want_read'
 ]
 
 # Vérifier si toutes les colonnes existent dans le fichier source

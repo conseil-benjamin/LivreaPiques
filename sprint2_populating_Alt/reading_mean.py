@@ -5,7 +5,7 @@ data = pd.read_csv('C:/Users/utilisateur/Documents/Perso/SAE/LivreaPiques/new_da
 
 # Sélectionner et réorganiser les colonnes souhaitées
 columns_to_keep = [
-    'favorite_media'
+    'reading_mean'
 ]
 
 # Vérifier si toutes les colonnes existent dans le fichier source
@@ -16,17 +16,17 @@ if missing_columns:
 # Filtrer les colonnes
 filtered_data = data[columns_to_keep]
 
-# Séparer les médias en plusieurs lignes
+# Séparer les valeurs en plusieurs lignes
 expanded_data = filtered_data.assign(
-    favorite_media=filtered_data['favorite_media'].str.split(', ')
-).explode('favorite_media')
+    reading_mean=filtered_data['reading_mean'].str.split(', ')
+).explode('reading_mean')
 
 # Supprimer les doublons et les valeurs manquantes
 expanded_data = expanded_data.drop_duplicates().dropna()
 
 # Générer un ID incrémental
-expanded_data['media_id'] = range(1, len(expanded_data) + 1)
+expanded_data['mean_id'] = range(1, len(expanded_data) + 1)
 
 # Enregistrer dans un nouveau fichier CSV
-output_file = 'C:/Users/utilisateur/Documents/Perso/SAE/LivreaPiques/new_data/media.csv'
+output_file = 'C:/Users/utilisateur/Documents/Perso/SAE/LivreaPiques/new_data/reading_mean.csv'
 expanded_data.to_csv(output_file, index=False)

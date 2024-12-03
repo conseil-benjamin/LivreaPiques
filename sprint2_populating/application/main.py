@@ -5,6 +5,11 @@ from Populate.Award import __main__ as populate_award
 from Populate.Publisher import __main__ as populate_publisher
 from Populate.Author import __main__ as populate_author
 from Populate.Genre import __main__ as populate_genre
+import sys
+sys.path.append("./sprint2_populating_Alt/Populate")
+
+from User import __main__ as populate_user
+
 
 def __main__():
     """
@@ -17,7 +22,7 @@ def __main__():
         Exception: If an error occurs while populating the database.
     """
 
-    
+    """
     try:
         populate_book()
     except Exception as e:
@@ -58,7 +63,12 @@ def __main__():
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
-    
+    """
+    try:
+        populate_user()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
     return True
 
 

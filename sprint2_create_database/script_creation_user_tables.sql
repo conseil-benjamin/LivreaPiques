@@ -1,6 +1,6 @@
 SET SCHEMA 'public';
 
-CREATE TABLE "User" (
+CREATE TABLE "user" (
   user_id           SERIAL       PRIMARY KEY,
   username          VARCHAR(30)  UNIQUE NOT NULL,
   password          VARCHAR(250),  -- Le mdp sera crypté

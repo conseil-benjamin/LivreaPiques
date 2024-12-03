@@ -19,7 +19,7 @@ def traitement_data():
                          'initiator': 'initiated_by',
                          'when_reading': 'reading_time',
                          'makes_you_want_read': 'choice_motivation'
-                         }, inplace=True)
+                        }, inplace=True)
     
     # Traitement gender
 
@@ -37,5 +37,5 @@ def __main__():
     """
     print("Traitement des données des utilisateurs")
     data = traitement_data()
-    insert(data, 'User')
+    insert(data, 'user')
     

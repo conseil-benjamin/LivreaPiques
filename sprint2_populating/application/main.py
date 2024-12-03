@@ -9,6 +9,7 @@ import sys
 sys.path.append("./sprint2_populating_Alt/Populate")
 
 from User import __main__ as populate_user
+from BookSource import __main__ as populate_book_source
 
 
 def __main__():
@@ -58,19 +59,26 @@ def __main__():
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
+
     try:
         populate_genre()
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
     """
+
     try:
         populate_user()
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
-    return True
+    try:
+        populate_book_source()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
 
+    return True
 
 if __name__ == '__main__':
     __main__()

@@ -4,6 +4,7 @@ CREATE TABLE "User" (
   user_id           SERIAL       PRIMARY KEY,
   username          VARCHAR(30)  UNIQUE NOT NULL,
   password          VARCHAR(250),  -- Le mdp sera crypté
+  age               INTEGER,
   gender            Gender       NOT NULL, 
   nb_book_per_year  INTEGER,
   nb_book_pleasure  INTEGER, 
@@ -90,3 +91,9 @@ CREATE TABLE Fav_Books (
   FOREIGN KEY (user_id) REFERENCES "User"(user_id),
   FOREIGN KEY (book_id) REFERENCES Book(book_id)
 );
+
+alter table "user" ALTER COLUMN nb_book_per_year TYPE VARCHAR(25);
+alter table "user" ALTER COLUMN nb_book_pleasure TYPE VARCHAR(25);
+alter table "user" ALTER COLUMN nb_book_work TYPE VARCHAR(10);
+alter table "user" ALTER COLUMN initiated_by TYPE VARCHAR(100);
+alter table "user" ALTER COLUMN choice_motivation TYPE VARCHAR(200);

@@ -103,3 +103,8 @@ CREATE TABLE Reads_With (
   FOREIGN KEY (user_id) REFERENCES "User"(user_id),
   FOREIGN KEY (mean_id) REFERENCES Reading_Mean(mean_id)
 );
+
+alter table "User" ALTER COLUMN nb_book_per_year TYPE VARCHAR(25);
+alter table "User" ALTER COLUMN nb_book_pleasure TYPE VARCHAR(25);
+alter table "User" ALTER COLUMN nb_book_work TYPE VARCHAR(4);
+alter table "User" ALTER COLUMN initiated_by TYPE VARCHAR(45);

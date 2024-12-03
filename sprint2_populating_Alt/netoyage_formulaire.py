@@ -19,7 +19,7 @@ data = data.rename(columns={
     "Combien de livres lisez-vous en un an ?": "nb_book_year",
     "Parmi ce nombre, combien de livres avez-vous lu pour le plaisir en an ?": "nb_book_pleasure_year",
     "Parmi ce nombre, combien de livres avez-vous lu dans une situation professionnelle/étude en an ?": "nb_book_professional_year",
-    "Parmi les modes de lecture suivants, lesquels utilisez-vous ?": "reading_mode",
+    "Parmi les modes de lecture suivants, lesquels utilisez-vous ?": "reading_mean",
     "Quelle est la provenance de vos livres papier ?": "origin_of_books",
     "Qui sont les personnes qui vous ont initié.e à la lecture ?": "initiator",
     "Quand préférez vous lire ?": "when_reading",

@@ -22,5 +22,3 @@ melted_data.dropna(subset=['book_title'], inplace=True)
 # Enregistrer dans un nouveau fichier CSV
 output_file = 'C:/Users/utilisateur/Documents/Perso/SAE/LivreaPiques/new_data/book_fav_flattened.csv'
 melted_data.to_csv(output_file, index=False)
-
-print(f"Fichier transformé et enregistré dans : {output_file}")

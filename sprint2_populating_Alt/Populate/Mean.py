@@ -7,7 +7,7 @@ def traitement_data():
     This function is used to read the data from the csv file and to clean it.
     
     Returns:
-    data_associations: DataFrame to insert in the table 'User_Reading_Mean'
+    data_associations: DataFrame to insert in the table 'Reads_With'
     data_table: DataFrame to insert in the table 'Reading_Mean'
     """
     user_df = pd.read_csv('new_data/user.csv')
@@ -39,10 +39,10 @@ def traitement_data():
 
 def __main__():
     """
-    This function is used to insert the data in the tables 'Reading_Mean' and 'User_Reading_Mean'
+    This function is used to insert the data in the tables 'Reading_Mean' and 'Reads_With'
+    insert(data_table, 'reading_mean')
     """
     print("Traitement des données des sources de livres")
     data_associations, data_table = traitement_data()
-    insert(data_table, 'reading_mean')
-    insert_table_assocation(data_associations, 'user', 'reading_mean', 'username', 'mean_name', 'user_id', 'mean_id')
+    insert_table_assocation(data_associations, 'user', 'reading_mean', 'username', 'mean_name', 'user_id', 'mean_id', table_name='reads_with')
     

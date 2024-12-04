@@ -84,13 +84,12 @@ def __main__():
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
-    """
-    
     try:
         populate_media()
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
+    """
 
     return True
 

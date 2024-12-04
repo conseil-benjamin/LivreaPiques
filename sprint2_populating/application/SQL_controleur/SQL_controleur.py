@@ -143,9 +143,12 @@ def insert_table_assocation(dataframe, table1, table2, table1_key, table2_key, t
     try:
         # Save the associations to the CSV file
         associations_df = pd.DataFrame(associations)
-        associations_df.to_csv('new_data/Associations{table1}_{table2}.csv'.format(table1=table1, table2=table2), index=False)
+        if (table_name is not None):
+            associations_df.to_csv(f'new_data/Associations_{table_name}.csv', index=False)
+        else:
+            associations_df.to_csv('new_data/Associations_{table1}_{table2}.csv'.format(table1=table1, table2=table2), index=False)
     except Exception as e:
-        raise Exception("Error saving associations to CSV file") from e
+        raise Exception("Error saving associations to CSV file", e) from e
 
     try:
         associations_df = associations_df.drop_duplicates()

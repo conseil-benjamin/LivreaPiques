@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from SQL_controleur.SQL_controleur import insert, insert_table_assocation
+from SQL_controleur.SQL_controleur import insert, insert_table_assocation_book
 
 def traitement_data():
     """
@@ -16,8 +16,8 @@ def traitement_data():
     # Remove all unnamed columns
     data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
 
-    #keep only award and title
-    data = data[['title', 'awards']]
+    #keep only award and id
+    data = data[['id', 'awards']]
 
     data_awards = data[['awards']]
     # Remove the NaN values
@@ -31,8 +31,8 @@ def traitement_data():
     # Remove the nan values
     data = data.dropna()
 
-    # rename the column 'title' to 'book_title' and 'awards' to 'award_name'
-    data = data.rename(columns={'title': 'book_title', 'awards': 'award_name'})
+    # rename the column 'id' to 'book_id' and 'awards' to 'award_name'
+    data = data.rename(columns={'id': 'book_id', 'awards': 'award_name'})
 
     return data, data_awards
 
@@ -43,4 +43,4 @@ def __main__():
     print("Traitement des données des awards")
     data_association, data_table = traitement_data()
     insert(data_table, 'awards')
-    insert_table_assocation(data_association, 'book', 'awards', 'book_title', 'award_name', 'book_id', 'award_id')
+    insert_table_assocation_book(data_association, 'awards', 'award_name', 'award_id')

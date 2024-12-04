@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from SQL_controleur.SQL_controleur import insert, insert_table_assocation
+from SQL_controleur.SQL_controleur import insert, insert_table_assocation_book
 
 def traitement_data():
     """
@@ -37,8 +37,8 @@ def traitement_data():
     # Charger le CSV des livres
     csv_book = 'new_data/books_corrected.csv'
     df_books = pd.read_csv(csv_book)
-    df_books = df_books[["title", "author"]]
-    df_books = df_books.rename(columns={"author": "author_name", "title": "book_title"})
+    df_books = df_books[["id", "author"]]
+    df_books = df_books.rename(columns={"author": "author_name", "id": "book_id"})
 
     return df_books, df
 
@@ -49,4 +49,4 @@ def __main__():
     print("Traitement des données des auteurs")
     data_association, data_table = traitement_data()
     insert(data_table, 'author')
-    insert_table_assocation(data_association, 'book', 'author', 'book_title', 'author_name', 'book_id', 'author_id')
+    insert_table_assocation_book(data_association, 'author', 'author_name', 'author_id')

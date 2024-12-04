@@ -92,6 +92,19 @@ CREATE TABLE Fav_Books (
   FOREIGN KEY (book_id) REFERENCES Book(book_id)
 );
 
+CREATE TABLE Reading_Mean (
+  mean_id    SERIAL      PRIMARY KEY,
+  mean_name  VARCHAR(50)
+);
+
+CREATE TABLE Reads_With (
+  mean_id    INTEGER,
+  user_id   INTEGER,
+  PRIMARY KEY (mean_id, user_id),
+  FOREIGN KEY (user_id) REFERENCES "User"(user_id),
+  FOREIGN KEY (mean_id) REFERENCES Reading_Mean(mean_id)
+);
+
 alter table "user" ALTER COLUMN nb_book_per_year TYPE VARCHAR(25);
 alter table "user" ALTER COLUMN nb_book_pleasure TYPE VARCHAR(25);
 alter table "user" ALTER COLUMN nb_book_work TYPE VARCHAR(10);

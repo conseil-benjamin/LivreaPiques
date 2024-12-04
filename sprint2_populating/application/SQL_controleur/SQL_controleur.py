@@ -66,7 +66,7 @@ def insert(dataframe, table_name):
         print(f"Error inserting data into the database : {e}")
         return False
     
-def insert_table_assocation(dataframe, table1, table2, table1_key, table2_key, table1_id, table2_id):
+def insert_table_assocation(dataframe, table1, table2, table1_key, table2_key, table1_id, table2_id, table_name=None):
     """
     Creates and inserts associations between two SQL tables.
     
@@ -78,6 +78,7 @@ def insert_table_assocation(dataframe, table1, table2, table1_key, table2_key, t
         table2_key (str): Name of the secondary key used to identify records in `table2`.
         table1_id (str): Name of the column containing the ID in `table1`.
         table2_id (str): Name of the column containing the ID in `table2`.
+        table_name (str) (optionnal): Name given to the created associations table.
     
     Returns:
         bool: True if the associations are successfully inserted.
@@ -137,7 +138,6 @@ def insert_table_assocation(dataframe, table1, table2, table1_key, table2_key, t
                 print(f"Association NOT created between {table1_id_base} and {table2_id_base}")
     except Exception as e:
         print(e)
-        print(f"coucou{e}")
         raise Exception("Error creating associations") from e
 
     try:
@@ -149,7 +149,10 @@ def insert_table_assocation(dataframe, table1, table2, table1_key, table2_key, t
 
     try:
         associations_df = associations_df.drop_duplicates()
-        associations_df.to_sql(f"{table1}_{table2}", con=engine, if_exists='append', index=False)
+        if (table_name is not None):
+            associations_df.to_sql(f"{table_name}", con=engine, if_exists='append', index=False)
+        else:
+            associations_df.to_sql(f"{table1}_{table2}", con=engine, if_exists='append', index=False)
         return True
     except Exception as e:
         raise Exception("Error inserting associations into the database") from e

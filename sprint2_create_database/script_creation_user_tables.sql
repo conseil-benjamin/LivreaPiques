@@ -110,3 +110,4 @@ alter table "user" ALTER COLUMN nb_book_pleasure TYPE VARCHAR(25);
 alter table "user" ALTER COLUMN nb_book_work TYPE VARCHAR(10);
 alter table "user" ALTER COLUMN initiated_by TYPE VARCHAR(100);
 alter table "user" ALTER COLUMN choice_motivation TYPE VARCHAR(200);
+alter table Media ALTER COLUMN media_name TYPE VARCHAR(40);

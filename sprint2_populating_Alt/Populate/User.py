@@ -7,7 +7,7 @@ def traitement_data():
     This function is used to read the data from the csv file and to clean it.
     
     Returns:
-    data: DataFrame with the columns of the table 'User' to insert in the table 'User'
+    data: DataFrame with the columns of the table 'user' to insert in the table 'user'
     """
     data = pd.read_csv('new_data/user.csv')
 

@@ -33,7 +33,7 @@ def traitement_data():
 
 def __main__():
     """
-    This function is used to insert the data in the table 'book'
+    This function is used to insert the data in the table 'user'
     """
     print("Traitement des données des utilisateurs")
     data = traitement_data()

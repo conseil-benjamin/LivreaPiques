@@ -91,6 +91,12 @@ def __main__():
         return False
     """
 
+    try:
+        populate_mean()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
+
     return True
 
 if __name__ == '__main__':

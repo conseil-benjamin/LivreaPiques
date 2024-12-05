@@ -40,9 +40,9 @@ def traitement_data():
 def __main__():
     """
     This function is used to insert the data in the tables 'Reading_Mean' and 'Reads_With'
-    insert(data_table, 'reading_mean')
     """
     print("Traitement des données des sources de livres")
     data_associations, data_table = traitement_data()
+    insert(data_table, 'reading_mean')
     insert_table_assocation(data_associations, 'user', 'reading_mean', 'username', 'mean_name', 'user_id', 'mean_id', table_name='reads_with')
     

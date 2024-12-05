@@ -7,8 +7,8 @@ def traitement_data():
     This function is used to read the data from the csv file and to clean it.
     
     Returns:
-    data_User_Book_Source: DataFrame to insert in the table 'User_Book_Source'
-    data_Book_Source: DataFrame to insert in the table 'Book_Source'
+    data_associations: DataFrame to insert in the table 'User_Book_Source'
+    data_table: DataFrame to insert in the table 'Book_Source'
     """
     user_df = pd.read_csv('new_data/user.csv')
     book_source_df = pd.read_csv('new_data/book_source.csv')
@@ -39,7 +39,7 @@ def traitement_data():
 
 def __main__():
     """
-    This function is used to insert the data in the table 'book'
+    This function is used to insert the data in the tables 'Book_Source' and 'User_Book_Source'
     """
     print("Traitement des données des sources de livres")
     data_associations, data_table = traitement_data()

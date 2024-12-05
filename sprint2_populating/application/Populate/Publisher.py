@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from SQL_controleur.SQL_controleur import insert, insert_table_assocation
+from SQL_controleur.SQL_controleur import insert, insert_table_assocation_book
 
 def traitement_data():
     """
@@ -23,8 +23,8 @@ def traitement_data():
     data = data.rename(columns={'publisher': 'name_publisher'})
 
     data2 = pd.read_csv('new_data/books_corrected.csv')
-    data2 = data2[['title', 'publisher']]
-    data2 = data2.rename(columns={'publisher': 'name_publisher', 'title': 'book_title'})
+    data2 = data2[['id', 'publisher']]
+    data2 = data2.rename(columns={'publisher': 'name_publisher', 'id': 'book_id'})
     data2 = data2.dropna()
 
     return data2, data
@@ -36,4 +36,4 @@ def __main__():
     print("Traitement des données des éditeurs")
     data_association, data_table = traitement_data()
     insert(data_table, 'publisher')
-    insert_table_assocation(data_association, 'book', 'publisher', 'book_title', 'name_publisher', 'book_id', 'publisher_id')
+    insert_table_assocation_book(data_association, 'publisher', 'name_publisher', 'publisher_id')

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from SQL_controleur.SQL_controleur import insert, insert_table_assocation
+from SQL_controleur.SQL_controleur import insert, insert_table_assocation_book
 
 def traitement_data():
     """
@@ -16,13 +16,13 @@ def traitement_data():
     data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
 
     # Garder uniquement les colonnes 'title' et 'characters'
-    data = data[['title', 'characters']]
+    data = data[['id', 'characters']]
 
     # Enlever les lignes avec des valeurs manquantes
     data = data.dropna()
 
-    #renommer la colonne 'title' en 'book_title'
-    data = data.rename(columns={'title': 'book_title'})
+    #renommer la colonne 'id' en 'book_id'
+    data = data.rename(columns={'id': 'book_id'})
 
     df = pd.DataFrame(data)
 
@@ -30,7 +30,7 @@ def traitement_data():
     df_exploded = df.assign(characters=df['characters'].str.split(', ')).explode('characters').reset_index(drop=True)
 
     # rename the column to "character_name"
-    df_exploded.columns = ['book_title', 'character_name']
+    df_exploded.columns = ['book_id', 'character_name']
 
     data2 = data[['characters']]
 
@@ -67,5 +67,6 @@ def __main__():
     """
     print("Traitement des données des personnages")
     data_association, data_table = traitement_data()
+    print(data_association.head(20))
     insert(data_table, 'characters')
-    insert_table_assocation(data_association, 'book', 'characters', 'book_title', 'character_name', 'book_id', 'character_id')
+    insert_table_assocation_book(data_association, 'characters', 'character_name', 'character_id')

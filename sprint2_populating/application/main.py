@@ -25,8 +25,6 @@ def __main__():
     Raises:
         Exception: If an error occurs while populating the database.
     """
-
-    """
     try:
         populate_book()
     except Exception as e:
@@ -86,13 +84,6 @@ def __main__():
         return False
     try:
         populate_media()
-    except Exception as e:
-        print(f"Error while populating the database: {e}")
-        return False
-    """
-
-    try:
-        populate_mean()
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False

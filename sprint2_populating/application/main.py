@@ -6,6 +6,14 @@ from Populate.Publisher import __main__ as populate_publisher
 from Populate.Author import __main__ as populate_author
 from Populate.Genre import __main__ as populate_genre
 from time import sleep
+import sys
+sys.path.append("./sprint2_populating_Alt/Populate")
+
+from User import __main__ as populate_user
+from BookSource import __main__ as populate_book_source
+from Mean import __main__ as populate_mean
+from Media import __main__ as populate_media
+
 
 def __main__():
     """
@@ -17,58 +25,70 @@ def __main__():
     Raises:
         Exception: If an error occurs while populating the database.
     """
-
-    
     try:
         populate_book()
-        sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
     
     try:
         populate_character()
-        sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
 
     try:
         populate_series()
-        sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
     
     try:
         populate_award()
-        sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
     
     try:
         populate_publisher()
-        sleep(1)
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
     
     try:
         populate_author()
-        sleep(1)
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
+
+    try:
+        populate_genre()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
+
+    try:
+        populate_user()
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
     try:
-        populate_genre()
-        sleep(1)
+        populate_book_source()
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
-    
-    return True
+    try:
+        populate_mean()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
+    try:
+        populate_media()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
 
+    return True
 
 if __name__ == '__main__':
     __main__()

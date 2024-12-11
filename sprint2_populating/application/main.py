@@ -25,8 +25,6 @@ def __main__():
     Raises:
         Exception: If an error occurs while populating the database.
     """
-
-    """
     try:
         populate_book()
     except Exception as e:
@@ -89,7 +87,6 @@ def __main__():
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False
-    """
 
     return True
 

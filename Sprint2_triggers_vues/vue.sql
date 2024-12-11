@@ -6,7 +6,7 @@ create view user_taste as (
     b.book_title AS title_liked,
     NULL AS fav,
     NULL AS title_fav
-FROM "User" u
+FROM "user" u
 LEFT JOIN liked_books lb ON u.user_id = lb.user_id
 LEFT JOIN book b ON lb.book_id = b.book_id
 
@@ -19,7 +19,7 @@ SELECT
     NULL AS title_liked,
     fb.book_id AS fav,
     b.book_title AS title_fav
-FROM "User" u
+FROM "user" u
 LEFT JOIN fav_books fb ON u.user_id = fb.user_id
 LEFT JOIN book b ON fb.book_id = b.book_id
 WHERE fb.book_id NOT IN (SELECT book_id FROM liked_books WHERE user_id = u.user_id)

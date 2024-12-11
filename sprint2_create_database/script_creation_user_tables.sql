@@ -101,7 +101,7 @@ CREATE TABLE Reads_With (
   mean_id    INTEGER,
   user_id   INTEGER,
   PRIMARY KEY (mean_id, user_id),
-  FOREIGN KEY (user_id) REFERENCES "User"(user_id),
+  FOREIGN KEY (user_id) REFERENCES "user"(user_id),
   FOREIGN KEY (mean_id) REFERENCES Reading_Mean(mean_id)
 );
 

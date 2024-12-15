@@ -9,7 +9,7 @@ def traitement_data():
     Returns:
     data_reordered: DataFrame with the columns of the table 'book' to insert in the table 'book'
     """
-    data = pd.read_csv('new_data/books_corrected.csv')
+    data = pd.read_csv('new_data/books_corrected_main.csv')
     # Remove all unnamed columns
     data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
     # Remove colomns that aren't useful

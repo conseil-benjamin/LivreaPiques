@@ -11,7 +11,7 @@ def traitement_data():
     distinct_values_df: DataFrame with the column 'series_name' to insert in the table 'series'
     data3: DataFrame with the columns 'book_title' and 'series_name' to insert in the table 'book_series'
     """
-    data = pd.read_csv('new_data/books_corrected.csv')
+    data = pd.read_csv('new_data/books_corrected_main.csv')
 
     #get the "series" column of the dataframe
 
@@ -39,7 +39,7 @@ def traitement_data():
     # add a column for the status of the series
     distinct_values_df['series_status'] = np.nan
 
-    data3 = pd.read_csv('new_data/books_corrected.csv')
+    data3 = pd.read_csv('new_data/books_corrected_main.csv')
 
     # keep only the columns that we need (title and series)
     data3 = data3[['id', 'series']]

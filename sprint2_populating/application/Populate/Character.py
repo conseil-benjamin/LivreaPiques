@@ -12,7 +12,7 @@ def traitement_data():
     data2: DataFrame with the column 'character_name' to insert in the table 'characters'
     """
     # Charger les données et enlever les colonnes 'Unnamed'
-    data = pd.read_csv('new_data/books_corrected.csv')
+    data = pd.read_csv('new_data/books_corrected_main.csv')
     data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
 
     # Garder uniquement les colonnes 'title' et 'characters'

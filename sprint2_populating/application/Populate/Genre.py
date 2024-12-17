@@ -16,12 +16,12 @@ def traitement_data():
     book_genre_df: DataFrame with the columns 'book_id', 'genre_id' and 'nb_of_vote' to insert in the table 'book_genre'
     """
 
-    data = 'new_data/books_corrected.csv'
+    data = 'new_data/books_corrected_main.csv'
 
     # Lire le fichier CSV par morceaux
     chunk_size = 1000  # Réduire la taille des morceaux pour éviter les problèmes de mémoire
     output_file = "book_genre.csv"
-    data = 'new_data/books_corrected.csv'
+    data = 'new_data/books_corrected_main.csv'
 
 
     # Créer le fichier CSV avec les en-têtes

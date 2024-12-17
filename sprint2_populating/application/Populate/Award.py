@@ -11,7 +11,7 @@ def traitement_data():
     data: DataFrame with the columns 'book_title' and 'award_name' to insert in the table 'book_awards'
     data_awards: DataFrame with the column 'award_name' to insert in the table 'awards'
     """
-    data = pd.read_csv('new_data/books_corrected.csv')
+    data = pd.read_csv('new_data/books_corrected_main.csv')
 
     # Remove all unnamed columns
     data = data.loc[:, ~data.columns.str.contains('^Unnamed')]

@@ -9,11 +9,14 @@ from time import sleep
 import sys
 sys.path.append("./sprint2_populating_Alt/Populate")
 
-from User import __main__ as populate_user
-from BookSource import __main__ as populate_book_source
-from Mean import __main__ as populate_mean
-from Media import __main__ as populate_media
+from sprint2_populating_Alt.Populate.User import __main__ as populate_user
+from sprint2_populating_Alt.Populate.BookSource import __main__ as populate_book_source
+from sprint2_populating_Alt.Populate.Mean import __main__ as populate_mean
+from sprint2_populating_Alt.Populate.Media import __main__ as populate_media
 
+from sprint2_populating_Alt.Populate.Book.Book import __main__ as new_populate_book
+from sprint2_populating_Alt.Populate.Book.Genre import __main__ as new_populate_genre
+from sprint2_populating_Alt.Populate.Book.Publisher import __main__ as new_populate_publisher
 
 def __main__():
     """
@@ -84,6 +87,21 @@ def __main__():
         return False
     try:
         populate_media()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
+    try:
+        new_populate_book()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
+    try:
+        new_populate_genre()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
+    try:
+        new_populate_publisher()
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False

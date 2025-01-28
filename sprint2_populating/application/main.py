@@ -17,6 +17,7 @@ from sprint2_populating_Alt.Populate.Media import __main__ as populate_media
 from sprint2_populating_Alt.Populate.Book.Book import __main__ as new_populate_book
 from sprint2_populating_Alt.Populate.Book.Genre import __main__ as new_populate_genre
 from sprint2_populating_Alt.Populate.Book.Publisher import __main__ as new_populate_publisher
+from sprint2_populating_Alt.likes_book import __main__ as populate_like_book
 
 def __main__():
     """
@@ -28,7 +29,7 @@ def __main__():
     Raises:
         Exception: If an error occurs while populating the database.
     """
-    try:
+    '''try:
         populate_book()
     except Exception as e:
         print(f"Error while populating the database: {e}")
@@ -102,6 +103,11 @@ def __main__():
         return False
     try:
         new_populate_publisher()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False'''
+    try:
+        populate_like_book()
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False

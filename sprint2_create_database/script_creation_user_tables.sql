@@ -1,9 +1,10 @@
 SET SCHEMA 'public';
 
-CREATE TABLE "User" (
+CREATE TABLE "user" (
   user_id           SERIAL       PRIMARY KEY,
   username          VARCHAR(30)  UNIQUE NOT NULL,
   password          VARCHAR(250),  -- Le mdp sera crypté
+  age               INTEGER,
   gender            Gender       NOT NULL, 
   nb_book_per_year  INTEGER,
   nb_book_pleasure  INTEGER, 
@@ -23,7 +24,7 @@ CREATE TABLE User_Book_Source (
   source_id   INTEGER,
   user_id     INTEGER,
   PRIMARY KEY (source_id, user_id),
-  FOREIGN KEY (user_id) REFERENCES "User"(user_id),
+  FOREIGN KEY (user_id) REFERENCES "user"(user_id),
   FOREIGN KEY (source_id) REFERENCES Book_Source(source_id)
 );
 
@@ -37,7 +38,7 @@ CREATE TABLE Fav_Medias (
   media_id INTEGER,
   user_id INTEGER,
   PRIMARY KEY (media_id, user_id),
-  FOREIGN KEY (user_id) REFERENCES "User"(user_id),
+  FOREIGN KEY (user_id) REFERENCES "user"(user_id),
   FOREIGN KEY (media_id) REFERENCES Media(media_id)
 );
 
@@ -45,7 +46,7 @@ CREATE TABLE Liked_Publisher (
   user_id       INTEGER, 
   publisher_id  INTEGER,
   PRIMARY KEY (publisher_id, user_id),
-  FOREIGN KEY (user_id) REFERENCES "User"(user_id),
+  FOREIGN KEY (user_id) REFERENCES "user"(user_id),
   FOREIGN KEY (publisher_id) REFERENCES Publisher(publisher_id)
 );
 
@@ -53,7 +54,7 @@ CREATE TABLE Liked_Genres (
   user_id  INTEGER,
   genre_id INTEGER,
   PRIMARY KEY (genre_id, user_id),
-  FOREIGN KEY (user_id) REFERENCES "User"(user_id),
+  FOREIGN KEY (user_id) REFERENCES "user"(user_id),
   FOREIGN KEY (genre_id) REFERENCES Genre(genre_id)
 );
 
@@ -61,7 +62,7 @@ CREATE TABLE Liked_Series (
   series_id     INTEGER,
   user_id       INTEGER,
   PRIMARY KEY (series_id, user_id),
-  FOREIGN KEY (user_id) REFERENCES "User"(user_id),
+  FOREIGN KEY (user_id) REFERENCES "user"(user_id),
   FOREIGN KEY (series_id) REFERENCES Series(series_id)
 );
 
@@ -69,7 +70,7 @@ CREATE TABLE Liked_Author (
   user_id   INTEGER,
   author_id INTEGER,
   PRIMARY KEY (author_id, user_id),
-  FOREIGN KEY (user_id) REFERENCES "User"(user_id),
+  FOREIGN KEY (user_id) REFERENCES "user"(user_id),
   FOREIGN KEY (author_id) REFERENCES Author(author_id)
 );
 
@@ -77,7 +78,7 @@ CREATE TABLE Liked_Books (
   user_id   INTEGER,
   book_id   INTEGER,
   PRIMARY KEY (book_id, user_id),
-  FOREIGN KEY (user_id) REFERENCES "User"(user_id),
+  FOREIGN KEY (user_id) REFERENCES "user"(user_id),
   FOREIGN KEY (book_id) REFERENCES Book(book_id)
 );
 
@@ -88,7 +89,27 @@ CREATE TABLE Fav_Books (
   book_id   INTEGER,
   rank      INTEGER,
   PRIMARY KEY (book_id, user_id, rank),
-  FOREIGN KEY (user_id) REFERENCES "User"(user_id),
+  FOREIGN KEY (user_id) REFERENCES "user"(user_id),
   FOREIGN KEY (book_id) REFERENCES Book(book_id)
 );
 **/
+
+CREATE TABLE Reading_Mean (
+  mean_id    SERIAL      PRIMARY KEY,
+  mean_name  VARCHAR(50)
+);
+
+CREATE TABLE Reads_With (
+  mean_id    INTEGER,
+  user_id   INTEGER,
+  PRIMARY KEY (mean_id, user_id),
+  FOREIGN KEY (user_id) REFERENCES "user"(user_id),
+  FOREIGN KEY (mean_id) REFERENCES Reading_Mean(mean_id)
+);
+
+alter table "user" ALTER COLUMN nb_book_per_year TYPE VARCHAR(25);
+alter table "user" ALTER COLUMN nb_book_pleasure TYPE VARCHAR(25);
+alter table "user" ALTER COLUMN nb_book_work TYPE VARCHAR(10);
+alter table "user" ALTER COLUMN initiated_by TYPE VARCHAR(100);
+alter table "user" ALTER COLUMN choice_motivation TYPE VARCHAR(200);
+alter table Media ALTER COLUMN media_name TYPE VARCHAR(40);

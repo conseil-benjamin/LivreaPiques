@@ -101,6 +101,7 @@ CREATE TABLE Awards(
     CONSTRAINT award_name_unique UNIQUE(award_name)
 );
 
+
 CREATE TABLE Book_Awards(
     book_id INT,
     award_id smallint,

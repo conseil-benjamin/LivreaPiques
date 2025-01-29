@@ -12,7 +12,7 @@ with open('sprint2_populating/application/config.yml', 'r') as file:
 
 def conexion_db():
     """
-    Establishes a connection to the SQL database.
+    Establishes a connection to t-10he SQL database.
     
     Returns:
         tuple: (engine, session) where:
@@ -244,3 +244,32 @@ def insert_table_assocation_book(dataframe, table1, table1_key, table1_id):
     except Exception as e:
         raise Exception("Error inserting associations into the database") from e
     
+def requete(requete):
+    """
+    Execute a query on the database., if the number of rows is greater than 1000, the function will make several requests
+
+    Args:
+        requete (str): The query to execute.
+
+    Returns:
+        pd.DataFrame: The result of the query.
+    """
+    try:
+        engine = conexion_db()[0]
+        session = conexion_db()[1]
+    except Exception as e:
+        raise Exception("Failed to connect to the database") from e
+    
+    try:
+        # Execute the query
+        chunk = 0
+        requete = requete + f" LIMIT 1000 OFFSET {chunk};"
+        result = pd.read_sql(requete, engine)
+        while len(result) == 1000:
+            chunk = chunk + 1000
+            requete = requete.replace(f"LIMIT 1000 OFFSET {chunk-1000};", f"LIMIT 1000 OFFSET {chunk};")
+            print(requete)
+            result = pd.concat([result, pd.read_sql(requete, engine)])
+    except Exception as e:
+        raise Exception("Error executing query") from e
+    return result

@@ -263,11 +263,11 @@ def requete(requete):
     try:
         # Execute the query
         chunk = 0
-        requete = requete + f" LIMIT 1000 OFFSET {chunk};"
+        requete = requete + f" LIMIT 2000 OFFSET {chunk};"
         result = pd.read_sql(requete, engine)
-        while len(result) == 1000:
-            chunk = chunk + 1000
-            requete = requete.replace(f"LIMIT 1000 OFFSET {chunk-1000};", f"LIMIT 1000 OFFSET {chunk};")
+        while len(result)- chunk >= 2000:
+            chunk = chunk + 2000
+            requete = requete.replace(f"LIMIT 2000 OFFSET {chunk-2000};", f"LIMIT 2000 OFFSET {chunk};")
             print(requete)
             result = pd.concat([result, pd.read_sql(requete, engine)])
     except Exception as e:

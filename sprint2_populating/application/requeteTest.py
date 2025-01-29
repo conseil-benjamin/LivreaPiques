@@ -1,5 +1,6 @@
 from SQL_controleur.SQL_controleur import requete
 
-requete = """
-SELECT * FROM `client`"""
-requete(requete)
+LArequete = '''
+SELECT * FROM "book"
+'''
+print(requete(LArequete))

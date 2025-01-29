@@ -133,7 +133,7 @@ def insert_table_assocation(dataframe, table1, table2, table1_key, table2_key, t
             # Check that both IDs exist before inserting
             if table1_id_base is not None and table2_id_base is not None:
                 associations.append({table1_id: table1_id_base, table2_id: table2_id_base})
-                print(f"Association created between {table1_id_base} and {table1_id_base}")
+                print(f"Association created between {table1_id_base} and {table2_id_base}")
             else:
                 print(f"Association NOT created between {table1_id_base} and {table2_id_base}")
     except Exception as e:

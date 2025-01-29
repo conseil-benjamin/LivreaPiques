@@ -104,6 +104,7 @@ def insert_table_assocation(dataframe, table1, table2, table1_key, table2_key, t
         table1 = Table(table1, MetaData(), autoload_with=engine)
         table2 = Table(table2, MetaData(), autoload_with=engine)
     except Exception as e:
+        print(e)
         raise Exception("Error loading tables with the engine") from e
 
     try:
@@ -194,6 +195,7 @@ def insert_table_assocation_book(dataframe, table1, table1_key, table1_id):
         table1 = Table(table1, MetaData(), autoload_with=engine)
         book = Table('book', MetaData(), autoload_with=engine)
     except Exception as e:
+        print(e)
         raise Exception("Error loading tables with the engine") from e
 
     # la table livre n'as pas de clé secondaire mais on a l'id du livre donc on a pas besoin de la recuperer

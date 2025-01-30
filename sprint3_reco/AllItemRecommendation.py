@@ -1,6 +1,7 @@
 import pandas as pd
 from math import sqrt
 from supabase import create_client, Client
+from sklearn.preprocessing import MinMaxScaler
 
 url = "https://pczyoeavtwijgtkzgcaz.supabase.co"
 key ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjenlvZWF2dHdpamd0a3pnY2F6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzEzOTc1NTUsImV4cCI6MjA0Njk3MzU1NX0._KJBbSHWivEF6VrPdyO3TUI729c0eXnj-zoVeQmFYQc"
@@ -26,7 +27,7 @@ def recommend_books(key, url, userid, n):
     # Transform the returned object to a list
     BookLiked = [item['book_id'] for item in response.data]
     # To delete
-    BookLiked = [10]
+    BookLiked = [10, 9462]
     # Get the average book liked by the user
     MeanOfLikedBooks = MeanOfBooksRead(BookLiked, BookDf)
     # List of euclidean distance
@@ -98,7 +99,7 @@ def Transform(url, key):
     # Convert booleans to float
     BookDf = BookDf.astype(float)    
     BookDf = BookDf.fillna(0)
-    BookDf = (BookDf-BookDf.mean())/BookDf.std()
+    #BookDf = (BookDf-BookDf.mean())/BookDf.std()
     #table book-genre and genre
     GenreDf.set_index("book_id", inplace=True)
     GenreDf = GenreDf.drop(columns="nb_of_vote")
@@ -125,6 +126,9 @@ def Transform(url, key):
     BookDf = BookDf.join(PublisherDf)
     BookDf = BookDf.join(RatingDf)
     BookDf = BookDf.fillna(0)
+    # apply normalization techniques on Column 1 
+    column = 'nb_of_pages'
+    BookDf[column] = BookDf[column] /BookDf[column].abs().max() 
     return BookDf
     
 def getData(url, key):

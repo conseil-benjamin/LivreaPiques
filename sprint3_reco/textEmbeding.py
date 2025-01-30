@@ -4,13 +4,14 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
 
-import sys
-sys.path.append('../sprint2_populating/application/')
+from SQL_controleur import requete
 
-from SQL_controleur.SQL_controleur import requete
 
 def entrainementModele(resumes):
-
+    print(f"le nombre de résumés pour l'entrainement est : {len(resumes)}")
+    # transformer resumes en liste de liste de mots
+    resumes = resumes['preprocessed_resumes'].apply(str.split).tolist()
+    print(f"le nombre de résumés pour l'entrainement est : {len(resumes)}")
     # Entraîner un modèle Word2Vec avec Gensim
     w2v_model = Word2Vec(
         sentences=resumes,  # Corpus de phrases
@@ -43,15 +44,26 @@ def preTraitementResume(resumes):
         return tokens
 
     # Appliquer le prétraitement
-    preprocessed_resumes = [preprocess_text(resume) for resume in resumes]
-    return preprocessed_resumes
+    print(f"le nombre de résumés à prétraiter est : {len(resumes)}")
+    
+    # resume est un df avec id, description
+    # parcourir le dataframe pour prétraiter les descriptions
+    new_df = pd.DataFrame()  # Initialiser une fois en dehors de la boucle
 
-    # Convertir les résumés prétraités en DataFrame
-    df = pd.DataFrame({'preprocessed_resumes': [' '.join(tokens) for tokens in preprocessed_resumes]})
+    for index, row in resumes.iterrows():
+        temp_df = pd.DataFrame({
+            'book_id': [row['book_id']],
+            'preprocessed_resumes': [preprocess_text(row['book_description'])]
+        })
+
+        new_df = pd.concat([new_df, temp_df], ignore_index=True)  # Ajouter sans écraser
+        print(f"le nombre de résumés prétraités est : {index+1}")
 
     # Sauvegarder les résumés prétraités dans un fichier CSV
     csv_path = 'preprocessed_resumes.csv'
-    df.to_csv(csv_path, index=False)
+    new_df.to_csv(csv_path, index=False)
+
+    return new_df
 
 
 def get_sentence_vector(tokens, model):
@@ -74,8 +86,13 @@ def __main__():
     else:
         # Charger les résumés
         resumes = requete("SELECT book_id, book_description FROM book")
+        #garder que 1000 résumés pour l'entrainement
+        resumes = resumes[:1000]
+        print(f"le nombre de résumés est : {len(resumes)}")
         # Prétraiter les résumés
         resumes = preTraitementResume(resumes)
+        
+        print(f"le nombre de résumés prétraités est : {len(resumes)}")
     
     # demander si on utilise le modèle déja entrainé ou non
     input_ = input("Voulez-vous utiliser le modèle entrainé ? (O/N) : ")
@@ -90,3 +107,6 @@ def __main__():
     # Calculer les vecteurs des résumés
     resume_vectors = np.array([get_sentence_vector(tokens, w2v_model) for tokens in resumes])
     print(resume_vectors)
+
+if __name__ == "__main__":
+    __main__()

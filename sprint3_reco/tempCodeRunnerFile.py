@@ -3,10 +3,6 @@ from gensim.models import Word2Vec
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
-
-import sys
-sys.path.append('../sprint2_populating/application/SQL_controleur/')
-
 import SQL_controleur
 
 # Charger le modèle SpaCy pour l'anglais

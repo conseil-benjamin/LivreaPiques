@@ -1,1 +1,1 @@
-adress_sql: 'postgresql://postgres.pczyoeavtwijgtkzgcaz:D0jVgaoGmDAFuaMS@aws-0-eu-west-3.pooler.supabase.com:6543/postgres'
+adress_sql = 

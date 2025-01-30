@@ -13,7 +13,12 @@ from User import __main__ as populate_user
 from BookSource import __main__ as populate_book_source
 from Mean import __main__ as populate_mean
 from Media import __main__ as populate_media
+from liked_genre import __main__ as populate_liked_genre
 
+from sprint2_populating_Alt.Populate.Book.Book import __main__ as new_populate_book
+from sprint2_populating_Alt.Populate.Book.Genre import __main__ as new_populate_genre
+from sprint2_populating_Alt.Populate.Book.Publisher import __main__ as new_populate_publisher
+from sprint2_populating_Alt.likes_book import __main__ as populate_like_book
 
 def __main__():
     """
@@ -25,6 +30,15 @@ def __main__():
     Raises:
         Exception: If an error occurs while populating the database.
     """
+    try:
+        print('populate_liked_genre')
+        populate_liked_genre()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
+    
+    return True
+
     try:
         populate_book()
     except Exception as e:
@@ -84,6 +98,26 @@ def __main__():
         return False
     try:
         populate_media()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
+    try:
+        new_populate_book()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
+    try:
+        new_populate_genre()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
+    try:
+        new_populate_publisher()
+    except Exception as e:
+        print(f"Error while populating the database: {e}")
+        return False
+    try:
+        populate_like_book()
     except Exception as e:
         print(f"Error while populating the database: {e}")
         return False

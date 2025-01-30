@@ -11,7 +11,7 @@ def traitement_data():
     data2: DataFrame with the columns 'book_title' and 'name_publisher' to insert in the table 'book_publisher'
     data: DataFrame with the column 'name_publisher' to insert in the table 'publisher'
     """
-    data = pd.read_csv('new_data/books_corrected_main.csv')
+    data = pd.read_csv('new_data/books_corrected.csv')
     # keep only the columns we need (publisher)
     data = data[['publisher']]
     data = data.drop_duplicates()
@@ -22,7 +22,7 @@ def traitement_data():
     # rename columns publisher to name_publisher
     data = data.rename(columns={'publisher': 'name_publisher'})
 
-    data2 = pd.read_csv('new_data/books_corrected_main.csv')
+    data2 = pd.read_csv('new_data/books_corrected.csv')
     data2 = data2[['id', 'publisher']]
     data2 = data2.rename(columns={'publisher': 'name_publisher', 'id': 'book_id'})
     data2 = data2.dropna()

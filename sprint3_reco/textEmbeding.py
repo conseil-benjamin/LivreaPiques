@@ -5,12 +5,12 @@ from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
 
 from SQL_controleur import requete
+from tqdm import tqdm
 
 
 def entrainementModele(resumes):
     print(f"le nombre de résumés pour l'entrainement est : {len(resumes)}")
-    # transformer resumes en liste de liste de mots
-    resumes = resumes['preprocessed_resumes'].apply(str.split).tolist()
+    
     print(f"le nombre de résumés pour l'entrainement est : {len(resumes)}")
     # Entraîner un modèle Word2Vec avec Gensim
     w2v_model = Word2Vec(
@@ -32,7 +32,10 @@ def preTraitementResume(resumes):
     # Prétraitement des textes
     def preprocess_text(text):
         # Charger le texte avec SpaCy
-        doc = nlp(text)
+        try:
+            doc = nlp(text)
+        except:
+            return []
         
         # Tokenisation, suppression des stopwords, lemmatisation
         tokens = [
@@ -50,14 +53,14 @@ def preTraitementResume(resumes):
     # parcourir le dataframe pour prétraiter les descriptions
     new_df = pd.DataFrame()  # Initialiser une fois en dehors de la boucle
 
-    for index, row in resumes.iterrows():
+    for index, row in tqdm(resumes.iterrows(), total=resumes.shape[0], desc="Prétraitement des résumés"):
         temp_df = pd.DataFrame({
             'book_id': [row['book_id']],
             'preprocessed_resumes': [preprocess_text(row['book_description'])]
         })
 
         new_df = pd.concat([new_df, temp_df], ignore_index=True)  # Ajouter sans écraser
-        print(f"le nombre de résumés prétraités est : {index+1}")
+        #print(f"le nombre de résumés prétraités est : {index+1}")
 
     # Sauvegarder les résumés prétraités dans un fichier CSV
     csv_path = 'preprocessed_resumes.csv'
@@ -81,13 +84,12 @@ def __main__():
     input_ = input("Voulez-vous utiliser les données prétraitées ? (O/N) : ")
     if input_ == 'O':
         # Charger les résumés prétraités
-        df = pd.read_csv('preprocessed_resumes.csv')
-        resumes = df['preprocessed_resumes'].apply(str.split).tolist()
+        resumes = pd.read_csv('preprocessed_resumes.csv')
+        
     else:
         # Charger les résumés
         resumes = requete("SELECT book_id, book_description FROM book")
         #garder que 1000 résumés pour l'entrainement
-        resumes = resumes[:1000]
         print(f"le nombre de résumés est : {len(resumes)}")
         # Prétraiter les résumés
         resumes = preTraitementResume(resumes)
@@ -105,8 +107,13 @@ def __main__():
         w2v_model = Word2Vec.load('word2vec.model')
 
     # Calculer les vecteurs des résumés
-    resume_vectors = np.array([get_sentence_vector(tokens, w2v_model) for tokens in resumes])
-    print(resume_vectors)
+    resume_vectors = []
+    for tokens in resumes['preprocessed_resumes']:
+        resume_vectors.append(get_sentence_vector(tokens, w2v_model))
+
+    #print la taille de la matrice des vecteurs
+    print(f"la taille de la matrice des vecteurs est : {len(resume_vectors)}")
+    print(f"la taille de la matrice des vecteurs est : {len(resume_vectors[0])}")
 
 if __name__ == "__main__":
     __main__()

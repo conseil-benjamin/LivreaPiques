@@ -77,6 +77,14 @@ def get_sentence_vector(tokens, model):
     # Calculer la moyenne des vecteurs des mots
     return np.mean([model.wv[token] for token in valid_tokens], axis=0)
 
+def get_most_similar_books(resume_vectors, book_id, top_n=5):
+    # Calculer la similarité cosinus entre le résumé donné et les autres résumés
+    similarities = cosine_similarity([resume_vectors[book_id]], resume_vectors)[0]
+
+    # Récupérer les indices des résumés les plus similaires
+    most_similar_books = np.argsort(similarities)[::-1][1:top_n + 1]
+
+    return most_similar_books
 
 def __main__():
 
@@ -115,5 +123,10 @@ def __main__():
     print(f"la taille de la matrice des vecteurs est : {len(resume_vectors)}")
     print(f"la taille de la matrice des vecteurs est : {len(resume_vectors[0])}")
 
+
+    # Récupérer les résumés les plus similaires
+    book_id = 1
+    most_similar_books = get_most_similar_books(resume_vectors, book_id)
+    print(f"Les résumés les plus similaires au livre {book_id} sont : {most_similar_books}")
 if __name__ == "__main__":
     __main__()

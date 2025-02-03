@@ -149,4 +149,4 @@ def getData(url, key):
     print(RatingDf.head())
     return BookDf, GenreDf, AuthorDf, PublisherDf, RatingDf
 
-print(recommend_books(key, url, 1, 5))
+print(recommend_books(key, url, 7, 5))

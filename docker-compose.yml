@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+
+  postgres:
+    image: postgres:latest
+    container_name: db_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data_docker/db_pgsql:/var/lib/postgresql/data
+    networks:
+      - livreAPique-network
+  
+  elasticSearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.16.3
+    container_name: db_elasticSearch
+    restart: always
+    ports:
+      - "9200:9200"
+    volumes:
+      - ./data_docker/db_elastic:/usr/share/elasticsearch/data
+    networks:
+      - livreAPique-network
+    
+networks:
+  livreAPique-network:

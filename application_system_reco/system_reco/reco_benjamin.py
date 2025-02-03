@@ -3,6 +3,7 @@ import numpy as np
 from supabase import create_client 
 from sklearn.preprocessing import MinMaxScaler
 from collections import Counter
+from SQL_controleur.SQL_controleur import *
 
 class FinalRecommender:
     def __init__(self):
@@ -18,9 +19,12 @@ class FinalRecommender:
         self.supabase = create_client(url, key)
 
         # Chargement des données 
-        self.liked_books = pd.DataFrame(self.supabase.table("liked_books").select("*").order("book_id", desc=False).execute().data)
-        self.books = pd.DataFrame(self.supabase.table("book").select("*").order("book_id", desc=False).execute().data)
-        self.users = pd.DataFrame(self.supabase.table("user").select("*").execute().data)
+        #self.liked_books = pd.DataFrame(self.supabase.table("liked_books").select("*").order("book_id", desc=False).execute().data)
+        self.liked_books = requete("SELECT * FROM liked_books ORDER BY book_id")
+        #self.books = pd.DataFrame(self.supabase.table("book").select("*").order("book_id", desc=False).execute().data)
+        self.books = requete("SELECT * FROM book ORDER BY book_id")
+        #self.users = pd.DataFrame(self.supabase.table("user").select("*").execute().data)
+        self.users = requete('''SELECT * FROM "user"''')
         
         # Historique des recommandations par utilisateur
         self.recommendation_history = {}

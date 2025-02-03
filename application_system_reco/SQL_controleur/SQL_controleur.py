@@ -6,9 +6,10 @@ import time
 from tqdm import tqdm
 
 # Import la donnée du fichier yml
-with open('sprint2_populating/application/config.yml', 'r') as file:
+"""
+with open('../../config.yml', 'r') as file:
     config = yaml.safe_load(file)
-
+"""
 
 def conexion_db():
     """
@@ -24,13 +25,14 @@ def conexion_db():
     """
     try:
         ## URL of the database
-        database_url = config['adress_sql']
+        database_url = 'postgresql://postgres.pczyoeavtwijgtkzgcaz:D0jVgaoGmDAFuaMS@aws-0-eu-west-3.pooler.supabase.com:6543/postgres'
         engine = create_engine(database_url)
         session = sessionmaker(bind=engine)
         session = session()
         print("Connection to the database successful")
         return engine, session
-    except:
+    except Exception as e:
+        print(e)
         raise Exception("Error in the connection to the database")
 
 def insert(dataframe, table_name):

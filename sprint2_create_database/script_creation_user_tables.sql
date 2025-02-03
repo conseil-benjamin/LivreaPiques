@@ -83,6 +83,7 @@ CREATE TABLE Liked_Books (
 );
 
 -- Trigger à mettre pour pas plus de trois, check si rank est au dessus de trois
+/**
 CREATE TABLE Fav_Books (
   user_id   INTEGER,
   book_id   INTEGER,
@@ -91,6 +92,7 @@ CREATE TABLE Fav_Books (
   FOREIGN KEY (user_id) REFERENCES "user"(user_id),
   FOREIGN KEY (book_id) REFERENCES Book(book_id)
 );
+**/
 
 CREATE TABLE Reading_Mean (
   mean_id    SERIAL      PRIMARY KEY,

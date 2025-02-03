@@ -79,11 +79,18 @@ def get_sentence_vector(tokens, model):
 
 def get_most_similar_books(resume_vectors, book_id, top_n=5):
     # Calculer la similarité cosinus entre le résumé donné et les autres résumés
-    similarities = cosine_similarity([resume_vectors[book_id]], resume_vectors)[0]
-
-    # Récupérer les indices des résumés les plus similaires
-    most_similar_books = np.argsort(similarities)[::-1][1:top_n + 1]
-
+    try:
+        resume_vectors_id = resume_vectors[resume_vectors["book_id"] == book_id][1]
+    except:
+        resume_vectors_id = book_id
+    list_similarity = {}
+    for book_id, vector in resume_vectors:
+        similarity = cosine_similarity([resume_vectors_id], [vector])[0][0]
+        list_similarity[book_id] = similarity
+    
+    # Récupérer les top_n résumés les plus similaires
+    most_similar_books = sorted(list_similarity.items(), key=lambda x: x[1], reverse=True)[:top_n]
+    most_similar_books = [book_id for book_id, _ in most_similar_books]
     return most_similar_books
 
 def __main__():
@@ -103,6 +110,7 @@ def __main__():
         resumes = preTraitementResume(resumes)
         
         print(f"le nombre de résumés prétraités est : {len(resumes)}")
+    print(resumes.head())
     
     # demander si on utilise le modèle déja entrainé ou non
     input_ = input("Voulez-vous utiliser le modèle entrainé ? (O/N) : ")
@@ -116,17 +124,23 @@ def __main__():
 
     # Calculer les vecteurs des résumés
     resume_vectors = []
-    for tokens in resumes['preprocessed_resumes']:
-        resume_vectors.append(get_sentence_vector(tokens, w2v_model))
+    for index, resume in resumes.iterrows():
+        tokens = resume['preprocessed_resumes']
+        resume_vectors.append([resume['book_id'], get_sentence_vector(tokens, w2v_model)])
 
     #print la taille de la matrice des vecteurs
     print(f"la taille de la matrice des vecteurs est : {len(resume_vectors)}")
-    print(f"la taille de la matrice des vecteurs est : {len(resume_vectors[0])}")
+    print(f"la taille de la matrice des vecteurs est : {len(resume_vectors[0][1])}")
 
 
-    # Récupérer les résumés les plus similaires
-    book_id = 1
-    most_similar_books = get_most_similar_books(resume_vectors, book_id)
-    print(f"Les résumés les plus similaires au livre {book_id} sont : {most_similar_books}")
+    # Récupérer les résumés les plus similaires de l'utilisateur 32
+    user_id = 32
+    list_book_id = requete(f"SELECT book_id FROM liked_books WHERE user_id = {user_id}")
+    print(f"les livres de l'utilisateur {user_id} sont : {list_book_id}")
+    mean_vector = np.mean([resume_vectors["book_id" == book_id][1] for book_id in list_book_id], axis=0)
+    print(mean_vector)
+    most_similar_books = get_most_similar_books(resume_vectors, mean_vector)
+    print(f"Les résumés les plus similaires à l'utilisateur {user_id} sont : {most_similar_books}")
+
 if __name__ == "__main__":
     __main__()

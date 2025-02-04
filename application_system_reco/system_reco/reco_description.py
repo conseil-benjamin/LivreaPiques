@@ -80,11 +80,13 @@ def get_sentence_vector(tokens, model):
 def get_most_similar_books(resume_vectors, book_id, top_n=5):
     # Calculer la similarité cosinus entre le résumé donné et les autres résumés
     try:
-        resume_vectors_id = resume_vectors[resume_vectors["book_id"] == book_id][1]
+        resume_vectors_id = resume_vectors[resume_vectors["book_id"] == book_id]["vector"].values[0]
     except:
         resume_vectors_id = book_id
     list_similarity = {}
-    for book_id, vector in resume_vectors:
+    for index, row in resume_vectors.iterrows():
+        book_id = row['book_id']
+        vector = row['vector']
         similarity = cosine_similarity([resume_vectors_id], [vector])[0][0]
         list_similarity[book_id] = similarity
     
@@ -93,11 +95,16 @@ def get_most_similar_books(resume_vectors, book_id, top_n=5):
     most_similar_books = [book_id for book_id, _ in most_similar_books]
     return most_similar_books
 
-def reco_description(user_id, preData=True, preModel=True, vecteur=False):
+def reco_description(user_id, k=5, preData=True, preModel=True, vecteur=False):
 
     if(vecteur):
         # Charger les vecteurs des résumés
         resume_vectors = pd.read_csv('resume_vectors.csv')
+        print(f"le nombre de résumés est : {len(resume_vectors)}")
+        print(f"les colonnes du dataframe sont : {resume_vectors.columns}")
+
+        # retransformer le df en liste de liste
+        resume_vectors = resume_vectors.values.tolist()
     else:
         if(preData):
             # Charger les résumés prétraités
@@ -123,15 +130,21 @@ def reco_description(user_id, preData=True, preModel=True, vecteur=False):
             tokens = resume['preprocessed_resumes']
             resume_vectors.append([resume['book_id'], get_sentence_vector(tokens, w2v_model)])
         
+        # tranformer en dataframe
+        resume_vectors = pd.DataFrame(resume_vectors, columns=["book_id", "vector"])
+        
         # Sauvegarder les vecteurs des résumés dans un fichier CSV
         csv_path = 'resume_vectors.csv'
-        pd.DataFrame(resume_vectors).to_csv(csv_path, index=False)
+        resume_vectors.to_csv(csv_path, index=False)
     
     # Récupérer les résumés les plus similaires de l'utilisateur
     list_book_id = requete(f"SELECT book_id FROM liked_books WHERE user_id = {user_id}")
-    mean_vector = np.mean([resume_vectors["book_id" == book_id][1] for book_id in list_book_id], axis=0)
+    print(f"les livres de l'utilisateur {user_id} sont : {list_book_id}")
+    # transformer en liste le dataframe
+    list_book_id = list_book_id.values.flatten().tolist()
+    mean_vector = np.mean([resume_vectors[resume_vectors["book_id"] == book_id]["vector"] for book_id in list_book_id], axis=0)[0]
     print(mean_vector)
-    most_similar_books = get_most_similar_books(resume_vectors, mean_vector)
+    most_similar_books = get_most_similar_books(resume_vectors, mean_vector, k)
     return most_similar_books
     
     

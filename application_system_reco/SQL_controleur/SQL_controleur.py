@@ -246,7 +246,7 @@ def insert_table_assocation_book(dataframe, table1, table1_key, table1_id):
     except Exception as e:
         raise Exception("Error inserting associations into the database") from e
     
-def requete(requete):
+def requete(requete, cache=True):
     """
     Execute a query on the database., if the number of rows is greater than 1000, the function will make several requests
 
@@ -256,6 +256,14 @@ def requete(requete):
     Returns:
         pd.DataFrame: The result of the query.
     """
+    saveRequete = requete
+    if (cache):
+        try:
+            result = pd.read_csv(f'{requete}.csv')
+            return result
+        except:
+            pass
+        
     try:
         engine = conexion_db()[0]
         session = conexion_db()[1]
@@ -272,6 +280,12 @@ def requete(requete):
             requete = requete.replace(f"LIMIT 2000 OFFSET {chunk-2000};", f"LIMIT 2000 OFFSET {chunk};")
             print(requete)
             result = pd.concat([result, pd.read_sql(requete, engine)])
+        
+        # Save the result to a CSV file
+        result.to_csv(f'{saveRequete}.csv', index=False)
+
+            
     except Exception as e:
         raise Exception("Error executing query") from e
+    
     return result

@@ -61,12 +61,12 @@ def recoUserBased(user, userDF, k=5):
     ret = list(dicoRecos.keys())[:k]
     return ret
 
-def reco_esteban(user_id):
+def reco_esteban(user_id, k=5):
     # Initialisation de la connexion à la base de données
     dataRecoUserBased = get_data()
     try:
         dataUserRecoUserBased = dataRecoUserBased[dataRecoUserBased['user_id'] == user_id].iloc[0]
     except:
         return []
-    return recoUserBased(dataUserRecoUserBased, dataRecoUserBased)
+    return recoUserBased(dataUserRecoUserBased, dataRecoUserBased, k)
 

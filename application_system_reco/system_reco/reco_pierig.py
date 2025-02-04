@@ -2,13 +2,15 @@ import pandas as pd
 from math import sqrt
 from supabase import create_client, Client
 from sklearn.preprocessing import MinMaxScaler
+from SQL_controleur.SQL_controleur import *
+
 
 url = "https://pczyoeavtwijgtkzgcaz.supabase.co"
 key ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjenlvZWF2dHdpamd0a3pnY2F6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzEzOTc1NTUsImV4cCI6MjA0Njk3MzU1NX0._KJBbSHWivEF6VrPdyO3TUI729c0eXnj-zoVeQmFYQc"
 
 
 
-def recommend_books(key, url, userid, n):
+def recommend_books(userid, key=key, url=url, n=5):
     '''
         key: API key of the database
         url: The URL of the Database
@@ -23,8 +25,12 @@ def recommend_books(key, url, userid, n):
     response = supabase.table('liked_books').select('book_id').eq("user_id", userid).execute()
     # Transform the returned object to a list
     BookLiked = [item['book_id'] for item in response.data]
+
+
     # To delete
     BookLiked = [10, 9462]
+
+
     # Get the average book liked by the user
     MeanOfLikedBooks = MeanOfBooksRead(BookLiked, BookDf)
     # List of euclidean distance
@@ -129,20 +135,29 @@ def Transform(url, key):
     return BookDf
     
 def getData(url, key):
-    supabase: Client = create_client(url, key)
-    response = supabase.table("book").select("*").order("book_id", desc=False).execute()
-    BookDf = pd.DataFrame(response.data)
-    response = supabase.table('book_genre').select('*, genre(genre_name)').order("book_id", desc=False).execute()
-    GenreDf = pd.DataFrame(response.data)
+    #supabase: Client = create_client(url, key)
+    #response = supabase.table("book").select("*").order("book_id", desc=False).execute()
+    #BookDf = pd.DataFrame(response.data)
+    BookDf = requete("SELECT * FROM book ORDER BY book_id")
+
+    #response = supabase.table('book_genre').select('*, genre(genre_name)').order("book_id", desc=False).execute()
+    #GenreDf = pd.DataFrame(response.data)
+    GenreDf = requete("SELECT book_genre.*, genre.genre_name as genre FROM book_genre natural join genre ORDER BY book_genre.book_id ASC")
     GenreDf['genre'] = GenreDf['genre'].apply(lambda x: x.get('genre_name') if isinstance(x, dict) else None)
-    response = supabase.table('book_author').select('*, author(author_name)').order("book_id", desc=False).execute()
-    AuthorDf = pd.DataFrame(response.data)
+    
+    #response = supabase.table('book_author').select('*, author(author_name)').order("book_id", desc=False).execute()
+    #AuthorDf = pd.DataFrame(response.data)
+    AuthorDf = requete("SELECT book_author.*, author.author_name as author FROM book_author natural join author ORDER BY book_author.book_id ASC")
     AuthorDf['author'] = AuthorDf['author'].apply(lambda x: x.get('author_name') if isinstance(x, dict) else None)
-    response = supabase.table('book_publisher').select('*, publisher(name_publisher)').order("book_id", desc=False).execute()
-    PublisherDf = pd.DataFrame(response.data)
+
+    #response = supabase.table('book_publisher').select('*, publisher(name_publisher)').order("book_id", desc=False).execute()
+    #PublisherDf = pd.DataFrame(response.data)
+    PublisherDf = requete("SELECT book_publisher.*, publisher.name_publisher FROM book_publisher natural join publisher ORDER BY book_publisher.book_id ASC")
     PublisherDf['publisher'] = PublisherDf['publisher'].apply(lambda x: x.get('name_publisher') if isinstance(x, dict) else None)
-    response = supabase.table('book_rating').select('book_id, book_avg_rating').order("book_id", desc=False).execute()
-    RatingDf = pd.DataFrame(response.data)
+    
+    #response = supabase.table('book_rating').select('book_id, book_avg_rating').order("book_id", desc=False).execute()
+    #RatingDf = pd.DataFrame(response.data)
+    RatingDf = requete("SELECT book_id, book_avg_rating FROM book_rating ORDER BY book_id")
     print(RatingDf.head())
     return BookDf, GenreDf, AuthorDf, PublisherDf, RatingDf
 

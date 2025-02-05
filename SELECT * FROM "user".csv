@@ -1,0 +1,72 @@
+user_id,username,password,age,gender,nb_book_per_year,nb_book_pleasure,nb_book_work,initiated_by,reading_time,choice_motivation
+1,diespurmann,mdp,20,M,1 à 5,1 à 5,0,Personne,Avant de dormir,Quatrième de couverture
+2,juliamaricaoudin29,mdp,19,F,1 à 5,1 à 5,1 à 5,Un professeur,Après-midi,"Recommandations de proches, Réseaux sociau/influenceurs spécialisés"
+3,diane.moneger2,mdp,20,F,Plus de 20,Plus de 20,1 à 5,Un membre de votre famille,Nuit,Quatrième de couverture
+4,beaulieu.stefan.2004,mdp,20,M,1 à 5,1 à 5,0,Un membre de votre famille,Après-midi,"Recommandations de proches, Réseaux sociau/influenceurs spécialisés, Quatrième de couverture, Couverture"
+5,raxiou80,mdp,20,M,Plus de 20,Plus de 20,1 à 5,moi,Avant de dormir,"Recommandations de proches, Couverture"
+6,sumglours,mdp,30,M,Plus de 20,Plus de 20,Plus de 20,Un membre de votre famille,Avant de dormir,"Recommandations de proches, Critiques sur des sites spécialisés, Couverture"
+7,meloukiki.cocombre,mdp,20,M,Je ne lis plus,0,1 à 5,Un amie,Avant de dormir,"Critiques sur des sites spécialisés, Couverture"
+8,hubertbdlb.media,mdp,19,M,11 à 20,11 à 20,1 à 5,Dieu,Nuit,"Recommandations de proches, Quatrième de couverture, Couverture, L'auteur"
+9,alm.leveel,mdp,20,M,11 à 20,11 à 20,1 à 5,"Un membre de votre famille, Un amie",Avant de dormir,"Recommandations de proches, Réseaux sociau/influenceurs spécialisés, Première de couverture "
+10,trilobiteimberbe,mdp,20,M,11 à 20,11 à 20,0,Un membre de votre famille,Après-midi,Réseaux sociau/influenceurs spécialisés
+11,galaxieval,mdp,21,M,Plus de 20,Plus de 20,1 à 5,"Un membre de votre famille, Un amie",Après-midi,"Recommandations de proches, Intérêts personnels, thèmes abordées "
+12,jouennemathis,mdp,19,M,1 à 5,1 à 5,0,Personne,Avant de dormir,"Quatrième de couverture, Couverture"
+13,galaxieroisoleil,mdp,15,M,Je ne lis plus,1 à 5,1 à 5,Un professeur,Soir,Recommandations de proches
+14,erwanbrillet467,mdp,20,M,11 à 20,11 à 20,0,Personne,Soir,"Mise en avant dans les librairies, Critiques sur des sites spécialisés, Quatrième de couverture, Couverture"
+15,armel.cubizolles,mdp,19,M,11 à 20,11 à 20,0,Personne,Avant de dormir,"Recommandations de proches, Réseaux sociau/influenceurs spécialisés"
+16,mbisquay,mdp,20,F,Plus de 20,Plus de 20,0,Un membre de votre famille,Soir,"Recommandations de proches, Réseaux sociau/influenceurs spécialisés, Critiques sur des sites spécialisés, Quatrième de couverture, Couverture, Auteur apprécié"
+17,chretienne.a,mdp,20,M,Je ne lis plus,0,0,Un membre de votre famille,Avant de dormir,Quatrième de couverture
+18,tbisquay10,mdp,24,M,1 à 5,1 à 5,0,"Un membre de votre famille, Un professeur",Soir,"Recommandations de proches, Critiques sur des sites spécialisés, Couverture"
+19,lucastankiste007,mdp,17,M,6 à 10,1 à 5,6 à 10,Personne,Avant de dormir,"Recommandations de proches, Réseaux sociau/influenceurs spécialisés, Quatrième de couverture, Couverture"
+20,biox5438,mdp,17,M,1 à 5,1 à 5,1 à 5,Personne,Avant de dormir,"Recommandations de proches, Quatrième de couverture, Couverture"
+21,juninho58,mdp,34,M,1 à 5,1 à 5,0,Personne,Soir,"Promotion faites, sur le livre, à la radio"
+22,lebeauyounes,mdp,27,M,Plus de 20,Plus de 20,0,Un membre de votre famille,Après-midi,Couverture
+23,hbisquay,mdp,60,M,6 à 10,6 à 10,0,Personne,Avant de dormir,"Recommandations de proches, Mise en avant dans les librairies, Radio (France inter)"
+24,damienlepennec42,mdp,20,M,1 à 5,1 à 5,1 à 5,Un membre de votre famille,Avant de dormir,Recommandations de proches
+25,anaellelorier22,mdp,19,F,Plus de 20,Plus de 20,1 à 5,Un amie,Soir,"Recommandations de proches, Réseaux sociau/influenceurs spécialisés, Couverture"
+26,annesomatribu,mdp,51,F,1 à 5,1 à 5,1 à 5,Personne,Avant de dormir,Resume du livre
+27,clarisseomnes29,mdp,19,F,Je ne lis jamais,0,0,Personne,Après-midi,Couverture
+28,maxandre.brial,mdp,20,M,11 à 20,6 à 10,1 à 5,Personne,Soir,"Quatrième de couverture, Couverture, "
+29,samuel6001,mdp,32,M,1 à 5,1 à 5,1 à 5,"Un membre de votre famille, Un amie",Soir,Recommandations de proches
+30,mxim.ch,mdp,34,M,11 à 20,11 à 20,0,Un membre de votre famille,Soir,Critiques sur des sites spécialisés
+31,laurencehenrio7,mdp,55,F,Plus de 20,11 à 20,6 à 10,Personne,Soir,Quatrième de couverture
+32,evactrh,mdp,20,F,6 à 10,6 à 10,6 à 10,Un amie,Nuit,"Recommandations de proches, Critiques sur des sites spécialisés, Quatrième de couverture, Couverture"
+33,ethan.mancelon,mdp,20,M,1 à 5,1 à 5,1 à 5,Personne,Soir,"Réseaux sociau/influenceurs spécialisés, Critiques sur des sites spécialisés"
+34,cadoret.du,mdp,20,M,Je ne lis plus,0,0,Un membre de votre famille,Nuit,"Recommandations de proches, Couverture, Réputation de l’auteur"
+35,mdm4aurelien,mdp,19,M,1 à 5,0,1 à 5,"Un membre de votre famille, Un professeur",Après-midi,Recommandations de proches
+36,guenole.rosti.bo,mdp,19,M,11 à 20,11 à 20,0,Un amie,Soir,"Recommandations de proches, Réseaux sociau/influenceurs spécialisés, Couverture"
+37,misterjytb,mdp,20,M,1 à 5,1 à 5,0,Un membre de votre famille,Avant de dormir,"Recommandations de proches, Mise en avant dans les librairies, Réseaux sociau/influenceurs spécialisés, Quatrième de couverture, Couverture, Thème abordé"
+38,constance.moneger,mdp,16,F,11 à 20,11 à 20,11 à 20,Un amie,Nuit,"Recommandations de proches, Quatrième de couverture"
+39,conseil.benjamin55,mdp,20,M,Je ne lis jamais,0,0,Personne,Nuit,"Recommandations de proches, Couverture"
+40,jouffe.samuel,mdp,21,M,Plus de 20,Plus de 20,1 à 5,Personne,Soir,"Recommandations de proches, Quatrième de couverture, Couverture"
+41,asaiah.cosson314,mdp,20,F,6 à 10,6 à 10,0,Je sais pas,Matin,"Recommandations de proches, Quatrième de couverture, Couverture"
+42,baron.guillaume44,mdp,19,M,1 à 5,1 à 5,0,Un membre de votre famille,Avant de dormir,Recommandations de proches
+43,yohann.colussi,mdp,23,M,Plus de 20,Plus de 20,1 à 5,Un professeur,Avant de dormir,"Recommandations de proches, Mise en avant dans les librairies, Quatrième de couverture, Couverture"
+44,anouketh,mdp,20,F,Plus de 20,Plus de 20,11 à 20,Un membre de votre famille,Soir,"Recommandations de proches, Mise en avant dans les librairies, Quatrième de couverture, Couverture"
+45,benjamin.dumontgirard,mdp,19,M,Je ne lis plus,1 à 5,0,Un membre de votre famille,Soir,"Recommandations de proches, Mise en avant dans les librairies, Quatrième de couverture, Couverture"
+46,samendodu29,mdp,20,M,11 à 20,11 à 20,1 à 5,Personne,Avant de dormir,"Quatrième de couverture, Couverture"
+47,sylvestre.youn,mdp,20,M,1 à 5,1 à 5,0,Personne,Avant de dormir,"Recommandations de proches, Mise en avant dans les librairies, Critiques sur des sites spécialisés, Quatrième de couverture, Couverture"
+48,piel.mallet,mdp,20,M,6 à 10,6 à 10,0,Personne,Avant de dormir,"Recommandations de proches, Couverture"
+49,petruscornelius,mdp,49,M,11 à 20,11 à 20,0,Personne,Avant de dormir,"Recommandations de proches, Connaissance de l'auteur"
+50,jeremie4albaret,mdp,39,M,6 à 10,6 à 10,0,Un membre de votre famille,Soir,Critiques sur des sites spécialisés
+51,valent1.conchis,mdp,19,M,1 à 5,1 à 5,1 à 5,Un membre de votre famille,Avant de dormir,"Recommandations de proches, Réseaux sociau/influenceurs spécialisés, Couverture"
+52,kyrilldumerchat,mdp,20,M,1 à 5,1 à 5,0,Personne,Avant de dormir,"Quatrième de couverture, Couverture"
+53,bruneltamara63,mdp,16,F,1 à 5,1 à 5,1 à 5,"Un membre de votre famille, Un amie",Soir,"Recommandations de proches, Couverture"
+54,salome.pichevin,mdp,16,F,11 à 20,11 à 20,1 à 5,Un membre de votre famille,Soir,"Recommandations de proches, Mise en avant dans les librairies, Quatrième de couverture, Couverture"
+55,lfugier1981,mdp,16,F,6 à 10,1 à 5,1 à 5,Le regain de popularité de la lecture sur les réseaux sociaux,Soir,"Mise en avant dans les librairies, Quatrième de couverture"
+56,tafechyara,mdp,17,F,1 à 5,1 à 5,1 à 5,Personne,Avant de dormir,Réseaux sociau/influenceurs spécialisés
+57,dualealec,mdp,16,M,11 à 20,6 à 10,1 à 5,Un membre de votre famille,Avant de dormir,"Recommandations de proches, Critiques sur des sites spécialisés, Quatrième de couverture"
+58,daineslouise,mdp,16,F,Plus de 20,Plus de 20,6 à 10,Un membre de votre famille,Avant de dormir,"Recommandations de proches, Mise en avant dans les librairies, Critiques sur des sites spécialisés"
+59,mpriolet1965,mdp,16,F,11 à 20,6 à 10,1 à 5,Un membre de votre famille,Matin,"Recommandations de proches, Réseaux sociau/influenceurs spécialisés, Couverture"
+60,herremanmatilde,mdp,16,M,Plus de 20,11 à 20,1 à 5,Un membre de votre famille,Soir,"Recommandations de proches, Mise en avant dans les librairies, Réseaux sociau/influenceurs spécialisés, Critiques sur des sites spécialisés, Quatrième de couverture, Couverture"
+61,margaux.kerivin,mdp,16,F,6 à 10,1 à 5,1 à 5,Un membre de votre famille,Soir,"Recommandations de proches, Quatrième de couverture, Couverture"
+62,paolobeguin,mdp,21,M,Je ne lis jamais,0,0,Personne,Soir,"Recommandations de proches, Couverture"
+63,severinelecorre2,mdp,47,F,1 à 5,1 à 5,0,Un membre de votre famille,Avant de dormir,"Recommandations de proches, Quatrième de couverture"
+64,elneieilsh,mdp,22,M,1 à 5,1 à 5,0,Personne,Avant de dormir,"Recommandations de proches, Mise en avant dans les librairies, Quatrième de couverture, Couverture"
+65,zacharie.dupuis001,mdp,24,M,Plus de 20,Plus de 20,0,Un membre de votre famille,Avant de dormir,"Recommandations de proches, Mise en avant dans les librairies, Quatrième de couverture"
+66,enzo.lai27,mdp,19,M,Plus de 20,Plus de 20,1 à 5,Un membre de votre famille,Avant de dormir,"Mise en avant dans les librairies, Couverture"
+67,xadidou,mdp,23,M,Plus de 20,11 à 20,11 à 20,Personne,Nuit,"Recommandations de proches, Quatrième de couverture, Couverture"
+68,libellule1103,mdp,43,F,Plus de 20,Plus de 20,6 à 10,Personne,Avant de dormir,"Recommandations de proches, Quatrième de couverture, Couverture, Prix"
+69,edelinedebroise2006,mdp,18,F,Plus de 20,Plus de 20,1 à 5,"Un membre de votre famille, Un amie",Nuit,"Réseaux sociau/influenceurs spécialisés, Quatrième de couverture, Couverture"
+70,mathismarsacq6,mdp,19,M,Plus de 20,Plus de 20,0,Personne,Après-midi,"Quatrième de couverture, Couverture"
+71,nicolas.sureaud,mdp,50,M,1 à 5,1 à 5,0,"Un membre de votre famille, Un amie, Un collègue",Avant de dormir,"Recommandations de proches, Mise en avant dans les librairies"

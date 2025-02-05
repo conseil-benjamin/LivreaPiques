@@ -20,16 +20,13 @@ def recommend_books(userid, key=key, url=url, n=5):
     # Call to function to transform the values to usable ones
     BookDf = Transform(url, key)
     # Create a client to connect to the database
-    supabase: Client = create_client(url, key)
+    #supabase: Client = create_client(url, key)
     # Fetch the data to get the liked books of the user 
-    response = supabase.table('liked_books').select('book_id').eq("user_id", userid).execute()
+    #response = supabase.table('liked_books').select('book_id').eq("user_id", userid).execute()
+    response = requete("SELECT book_id FROM liked_books WHERE user_id = " + str(userid))
+
     # Transform the returned object to a list
-    BookLiked = [item['book_id'] for item in response.data]
-
-
-    # To delete
-    BookLiked = [10, 9462]
-
+    BookLiked = response.values.flatten().tolist()
 
     # Get the average book liked by the user
     MeanOfLikedBooks = MeanOfBooksRead(BookLiked, BookDf)
@@ -84,50 +81,44 @@ def MeanOfBooksRead(ListOfBooksIds, BookDf):
 
 
 def Transform(url, key):
-    BookDf, GenreDf, AuthorDf, PublisherDf, RatingDf = getData(url, key)
-    #Book table
-    BookDf.set_index("book_id", inplace=True)
-    BookDf = BookDf.drop("isbn", axis=1)
-    BookDf = BookDf.drop("isbn13", axis=1)
-    BookDf = BookDf.drop("book_title", axis=1)
-    BookDf = BookDf.drop("book_description", axis=1)
-    BookDf = BookDf.drop("original_title", axis=1)
-    BookDf = BookDf.drop("one_star_rating", axis=1)
-    BookDf = BookDf.drop("two_star_rating", axis=1)
-    BookDf = BookDf.drop("three_star_rating", axis=1)
-    BookDf = BookDf.drop("four_star_rating", axis=1)
-    BookDf = BookDf.drop("five_star_rating", axis=1)
-    # One hot encoding (With true and false values)
-    BookDf = pd.get_dummies(BookDf)
-    # Convert booleans to float
-    BookDf = BookDf.astype(float)    
-    BookDf = BookDf.fillna(0)
-    #BookDf = (BookDf-BookDf.mean())/BookDf.std()
-    #table book-genre and genre
-    GenreDf.set_index("book_id", inplace=True)
-    GenreDf = GenreDf.drop(columns="nb_of_vote")
-    GenreDf = GenreDf.drop(columns="genre_id")
-    GenreDf = pd.get_dummies(GenreDf)
-    GenreDf = GenreDf.groupby("book_id").any()
-    #table book_author author
-    AuthorDf.set_index("book_id", inplace=True)
-    AuthorDf = AuthorDf.drop(columns="author_id")
-    AuthorDf = pd.get_dummies(AuthorDf)
-    AuthorDf = AuthorDf.groupby("book_id").any()
-    #table book_publisher 
-    PublisherDf.set_index("book_id", inplace=True)
-    PublisherDf = PublisherDf.drop(columns="published_date")
-    PublisherDf = PublisherDf.drop(columns="published_title")
-    PublisherDf = PublisherDf.drop(columns="publisher_id")
-    PublisherDf = pd.get_dummies(PublisherDf)
-    PublisherDf = PublisherDf.groupby("book_id").any()
-    # Table Book Rating
-    RatingDf.set_index("book_id", inplace=True)
-    #Treatment to form the final table and values
-    BookDf = BookDf.join(GenreDf)
-    BookDf = BookDf.join(AuthorDf)
-    BookDf = BookDf.join(PublisherDf)
-    BookDf = BookDf.join(RatingDf)
+    requeteAll = """
+        SELECT 
+            book.book_id,
+            book.settings,
+            book.nb_of_pages,
+            book.review_count,
+            book_rating.book_avg_rating,
+            NULLIF(authors.listAuthor, '') AS listAuthor, 
+            NULLIF(publishers.listePublisher, '') AS listePublisher, 
+            NULLIF(genres.listeGenre, '') AS listeGenre
+        FROM book
+        LEFT JOIN (
+            SELECT book_author.book_id, STRING_AGG(author.author_name, ', ') AS listAuthor
+            FROM book_author
+            JOIN author ON author.author_id = book_author.author_id
+            GROUP BY book_author.book_id
+        ) AS authors ON book.book_id = authors.book_id
+        LEFT JOIN (
+            SELECT book_publisher.book_id, STRING_AGG(publisher.name_publisher, ', ') AS listePublisher
+            FROM book_publisher
+            JOIN publisher ON publisher.publisher_id = book_publisher.publisher_id
+            GROUP BY book_publisher.book_id
+        ) AS publishers ON book.book_id = publishers.book_id
+        LEFT JOIN (
+            SELECT book_genre.book_id, STRING_AGG(genre.genre_name, ', ') AS listeGenre
+            FROM book_genre
+            JOIN genre ON genre.genre_id = book_genre.genre_id
+            GROUP BY book_genre.book_id
+        ) AS genres ON book.book_id = genres.book_id
+        LEFT JOIN book_rating ON book.book_id = book_rating.book_id
+        """
+    BookDf = requete(requeteAll)
+    print(BookDf.head)
+    # transformer listegenre qui contient [genre1, genre2, genre3] en genre1, genre2, genre3
+    BookDf['listegenre'] = BookDf['listegenre'].apply(lambda x: x.split(', ') if x != None else [])
+    BookDf['listeauthor'] = BookDf['listeauthor'].apply(lambda x: x.split(', ') if x != None else [])
+    BookDf['listepublisher'] = BookDf['listepublisher'].apply(lambda x: x.split(', ') if x != None else [])
+    print(BookDf.head)
     BookDf = BookDf.fillna(0)
     # apply normalization techniques on Column 1 
     column = 'nb_of_pages'
@@ -143,17 +134,14 @@ def getData(url, key):
     #response = supabase.table('book_genre').select('*, genre(genre_name)').order("book_id", desc=False).execute()
     #GenreDf = pd.DataFrame(response.data)
     GenreDf = requete("SELECT book_genre.*, genre.genre_name as genre FROM book_genre natural join genre ORDER BY book_genre.book_id ASC")
-    GenreDf['genre'] = GenreDf['genre'].apply(lambda x: x.get('genre_name') if isinstance(x, dict) else None)
     
     #response = supabase.table('book_author').select('*, author(author_name)').order("book_id", desc=False).execute()
     #AuthorDf = pd.DataFrame(response.data)
     AuthorDf = requete("SELECT book_author.*, author.author_name as author FROM book_author natural join author ORDER BY book_author.book_id ASC")
-    AuthorDf['author'] = AuthorDf['author'].apply(lambda x: x.get('author_name') if isinstance(x, dict) else None)
 
     #response = supabase.table('book_publisher').select('*, publisher(name_publisher)').order("book_id", desc=False).execute()
     #PublisherDf = pd.DataFrame(response.data)
     PublisherDf = requete("SELECT book_publisher.*, publisher.name_publisher FROM book_publisher natural join publisher ORDER BY book_publisher.book_id ASC")
-    PublisherDf['publisher'] = PublisherDf['publisher'].apply(lambda x: x.get('name_publisher') if isinstance(x, dict) else None)
     
     #response = supabase.table('book_rating').select('book_id, book_avg_rating').order("book_id", desc=False).execute()
     #RatingDf = pd.DataFrame(response.data)

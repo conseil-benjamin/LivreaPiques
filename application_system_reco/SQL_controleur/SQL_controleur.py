@@ -259,6 +259,8 @@ def requete(requete, cache=True):
     saveRequete = requete
     if (cache):
         try:
+            # reduire saveRequete pour pas avoir de probleme de nom de fichier
+            saveRequete = saveRequete[:100]
             result = pd.read_csv(f'{requete}.csv')
             return result
         except:
@@ -282,6 +284,8 @@ def requete(requete, cache=True):
             result = pd.concat([result, pd.read_sql(requete, engine)])
         
         # Save the result to a CSV file
+        #reduire saveRequete pour pas avoir de probleme de nom de fichier
+        saveRequete = saveRequete[:100]
         result.to_csv(f'{saveRequete}.csv', index=False)
 
             

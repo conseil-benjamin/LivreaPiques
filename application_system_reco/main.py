@@ -20,10 +20,6 @@ def main():
     
     if input("Voulez-vous la quatrième recommandation ? (Y/N)") == "Y":
         print(reco_description(user_id))
-    
-    
-    
-    
 
 if __name__ == '__main__':
     main()

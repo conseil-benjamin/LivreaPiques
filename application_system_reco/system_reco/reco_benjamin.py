@@ -246,11 +246,10 @@ class FinalRecommender:
         
         return max(0, final_score)
 
-    def get_recommendations(self, user_id, n_recommendations=3):
+    def get_recommendations(self, user_id, n_recommendations=5):
         """
-        Génère des recommandations diverses avec historique
+        Génère des recommandations uniques avec une approche plus flexible
         """
-        # Initialiser l'historique si nécessaire
         if user_id not in self.recommendation_history:
             self.recommendation_history[user_id] = set()
         
@@ -258,22 +257,21 @@ class FinalRecommender:
         if target_profile is None:
             return []
         
-        # Obtenir l'historique des recommandations
         user_history = self.recommendation_history[user_id]
         
+        # Si l'utilisateur n'a pas de livres likés, utiliser une approche de découverte
         if not target_profile['preferences']['liked_books']:
-            # Recommandations pour nouveaux utilisateurs
-            popular_books = self.book_popularity.nlargest(n_recommendations * 6)
-            diverse_recommendations = []
-            
-            for book_id, pop_score in popular_books.items():
+            # Utiliser tous les livres disponibles, triés par un score combiné
+            all_book_candidates = []
+            for book_id in self.books['book_id']:
                 if book_id not in user_history:
+                    pop_score = self.book_popularity.get(book_id, 0)
                     diversity_score = self.book_diversity_score.get(book_id, 0.5)
                     combined_score = 0.6 * pop_score + 0.4 * diversity_score
-                    book_info = self.books[self.books['book_id'] == book_id]
                     
+                    book_info = self.books[self.books['book_id'] == book_id]
                     if not book_info.empty:
-                        diverse_recommendations.append({
+                        all_book_candidates.append({
                             'book_id': book_id,
                             'title': book_info.iloc[0]['book_title'],
                             'score': combined_score,
@@ -281,16 +279,30 @@ class FinalRecommender:
                             'genre': book_info.iloc[0].get('genre', 'unknown')
                         })
             
-            diverse_recommendations.sort(key=lambda x: x['score'], reverse=True)
-            final_recommendations = self._ensure_diversity(diverse_recommendations, n_recommendations)
+            # Trier et sélectionner les meilleures recommandations
+            all_book_candidates.sort(key=lambda x: x['score'], reverse=True)
             
-            # Mettre à jour l'historique
-            for rec in final_recommendations:
-                user_history.add(rec['book_id'])
+            # Sélectionner des livres uniques avec diversité de genres
+            final_recommendations = []
+            genres_seen = set()
+            
+            for candidate in all_book_candidates:
+                if len(final_recommendations) >= n_recommendations:
+                    break
                 
-            return final_recommendations
+                if candidate['genre'] not in genres_seen:
+                    final_recommendations.append(candidate)
+                    genres_seen.add(candidate['genre'])
+            
+            # Si pas assez de recommandations, compléter avec les meilleures restantes
+            while len(final_recommendations) < n_recommendations and all_book_candidates:
+                next_best = all_book_candidates.pop(0)
+                if next_best['book_id'] not in {rec['book_id'] for rec in final_recommendations}:
+                    final_recommendations.append(next_best)
+            
+            return final_recommendations[:n_recommendations]
         
-        # Calcul des similarités utilisateurs
+        # Pour les utilisateurs avec des livres likés, approche collaborative
         user_similarities = []
         for other_user_id in self.users['user_id'].unique():
             if other_user_id != user_id:
@@ -302,89 +314,107 @@ class FinalRecommender:
         
         user_similarities.sort(key=lambda x: x[1], reverse=True)
         
-        # Générer les recommandations
-        # Générer les recommandations
-        recommendations = []
-        seen_books = set()
-        genres_counter = Counter()  # Utiliser un Counter au lieu d'un set
+        # Collecte de recommandations candidates
+        all_recommendations = []
+        seen_book_ids = set(user_history)
         
         for similar_user_id, similarity in user_similarities:
-            if len(recommendations) >= n_recommendations * 4:
-                break
-                
             similar_user_books = set(self.liked_books[self.liked_books['user_id'] == similar_user_id]['book_id'])
-            new_books = similar_user_books - target_profile['preferences']['liked_books'] - seen_books - user_history
+            new_books = similar_user_books - target_profile['preferences']['liked_books'] - seen_book_ids
             
             for book_id in new_books:
                 book_info = self.books[self.books['book_id'] == book_id]
                 if not book_info.empty:
-                    book_genre = book_info.iloc[0].get('genre', 'unknown')
-                    
-                    # Limiter le nombre de livres par genre
-                    if genres_counter[book_genre] >= 2:  # Utiliser le Counter
-                        continue
-                    
                     score = self._calculate_recommendation_score(
                         similarity, 
                         book_id, 
-                        recommendations,
+                        all_recommendations,
                         target_profile
                     )
                     
-                    # Bonus pour la nouveauté
-                    novelty_bonus = 0.1 if len(recommendations) < n_recommendations else 0
-                    score += novelty_bonus
-                    
-                    recommendations.append({
+                    all_recommendations.append({
                         'book_id': book_id,
                         'title': book_info.iloc[0]['book_title'],
                         'score': score,
                         'from_user': similar_user_id,
                         'type': 'personnalisée',
-                        'genre': book_genre
+                        'genre': book_info.iloc[0].get('genre', 'unknown')
                     })
-                    seen_books.add(book_id)
-                    genres_counter[book_genre] += 1  # Incrémenter le compteur
+                    seen_book_ids.add(book_id)
         
-        # Trier par score
-        recommendations.sort(key=lambda x: x['score'], reverse=True)
+        # Trier et sélectionner les recommandations
+        all_recommendations.sort(key=lambda x: x['score'], reverse=True)
         
-        # Sélectionner les recommandations finales avec diversité assurée
-        final_recommendations = self._ensure_diversity(recommendations, n_recommendations)
+        # Sélection avec diversité de genres
+        final_recommendations = []
+        genres_seen = set()
+        
+        for rec in all_recommendations:
+            if len(final_recommendations) >= n_recommendations:
+                break
+            
+            if rec['genre'] not in genres_seen:
+                final_recommendations.append(rec)
+                genres_seen.add(rec['genre'])
+        
+        # Compléter si nécessaire
+        while len(final_recommendations) < n_recommendations and all_recommendations:
+            next_best = all_recommendations.pop(0)
+            if next_best['book_id'] not in {rec['book_id'] for rec in final_recommendations}:
+                final_recommendations.append(next_best)
         
         # Mettre à jour l'historique
         for rec in final_recommendations:
             user_history.add(rec['book_id'])
         
-        # Limiter la taille de l'historique (garder les 20 dernières recommandations)
-        if len(user_history) > 20:
-            user_history = set(list(user_history)[-20:])
+        # Limiter l'historique
+        if len(user_history) > 50:
+            user_history = set(list(user_history)[-50:])
         
-        return final_recommendations
+        return final_recommendations[:n_recommendations]
 
-    def _ensure_diversity(self, recommendations, n_recommendations):
-        """
-        Assure la diversité des recommandations finales
-        """
+    def ensure_diversity(self, recommendations, n_recommendations=5):
+        if len(recommendations) == 0:
+            return []
+        
         final_recommendations = []
+        used_book_ids = set()
         genres_count = Counter()
         
-        for rec in recommendations:
+        # Trier les recommandations par score pour prioriser les meilleures
+        recommendations_sorted = sorted(recommendations, key=lambda x: x['score'], reverse=True)
+        
+        # Premier passage - sélection avec critères stricts
+        for rec in recommendations_sorted:
             if len(final_recommendations) >= n_recommendations:
                 break
-                
+            
+            # Vérifier que le livre n'a pas déjà été recommandé
+            if rec['book_id'] in used_book_ids:
+                continue
+            
             genre = rec.get('genre', 'unknown')
-            
-            # Vérifier les conditions de diversité
-            similar_scores = sum(1 for f_rec in final_recommendations 
-                               if abs(f_rec['score'] - rec['score']) < 0.05)  # Seuil strict
-            
             max_genre_count = max(1, n_recommendations // 2)
             
-            if (genres_count[genre] < max_genre_count and  # Limite par genre
-                similar_scores < 1):  # Évite les scores trop similaires
-                
+            # Vérifier la diversité des genres
+            if genres_count[genre] < max_genre_count:
                 final_recommendations.append(rec)
+                used_book_ids.add(rec['book_id'])
                 genres_count[genre] += 1
         
-        return final_recommendations
+        # Deuxième passage - compléter jusqu'à n_recommendations
+        if len(final_recommendations) < n_recommendations:
+            for rec in recommendations_sorted:
+                if len(final_recommendations) >= n_recommendations:
+                    break
+                
+                # Ajouter uniquement les livres pas encore recommandés
+                if rec['book_id'] not in used_book_ids:
+                    final_recommendations.append(rec)
+                    used_book_ids.add(rec['book_id'])
+        
+        # Si toujours pas assez de recommandations, lever une exception
+        if len(final_recommendations) < n_recommendations:
+            raise ValueError(f"Impossible de générer {n_recommendations} recommandations uniques")
+        
+        return final_recommendations[:n_recommendations]

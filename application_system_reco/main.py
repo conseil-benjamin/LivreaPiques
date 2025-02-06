@@ -1,7 +1,7 @@
 from SQL_controleur.SQL_controleur import *
 from system_reco.reco_esteban import *
 from system_reco.reco_benjamin import *
-from system_reco.reco_pierig import *
+from system_reco.reco_pierig_remake import main as recommend_books
 from system_reco.reco_description import *
 
 

@@ -145,6 +145,9 @@ def reco_description(user_id, k=5, preData=True, preModel=True, vecteur=False):
     mean_vector = np.mean([resume_vectors[resume_vectors["book_id"] == book_id]["vector"] for book_id in list_book_id], axis=0)[0]
     print(mean_vector)
     most_similar_books = get_most_similar_books(resume_vectors, mean_vector, k)
+
+    most_similar_books = requete(f"SELECT book_title FROM book WHERE book_id IN {tuple(most_similar_books)}")
+
     return most_similar_books
     
     

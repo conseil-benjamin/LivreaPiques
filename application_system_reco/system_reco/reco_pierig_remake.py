@@ -4,13 +4,42 @@ from scipy.spatial.distance import pdist, squareform
 from SQL_controleur.SQL_controleur import *
 from gensim.models import Word2Vec
 import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+
+
 
 def getData():
     # Récupérer les données des livres
-    df = requete(""" SELECT book_genre.book_id, STRING_AGG(genre.genre_name, ', ') AS listegenre
-            FROM book_genre
-            JOIN genre ON genre.genre_id = book_genre.genre_id
-            GROUP BY book_genre.book_id""")
+    df = requete(""" SELECT
+                b.book_id,
+                b.nb_of_pages,
+                b.review_count,
+                genre_list.listegenre,
+                CASE
+                    WHEN award_count.award_count > 0 THEN 1
+                    ELSE 0
+                END AS award
+            FROM
+                book b
+            JOIN
+                (SELECT
+                    bg.book_id,
+                    COALESCE(STRING_AGG(g.genre_name, ', ')) AS listegenre
+                FROM
+                    book_genre bg
+                JOIN
+                    genre g ON g.genre_id = bg.genre_id
+                GROUP BY
+                    bg.book_id) AS genre_list ON b.book_id = genre_list.book_id
+            LEFT JOIN
+                (SELECT
+                    ba.book_id,
+                    COUNT(ba.award_id) AS award_count
+                FROM
+                    book_awards ba
+                GROUP BY
+                    ba.book_id) AS award_count ON b.book_id = award_count.book_id
+        """)
     # transformer lisgenre en liste
     df["listegenre"] = df["listegenre"].apply(lambda x: x.split(", "))
     print("Données des livres :")
@@ -58,36 +87,80 @@ def getFalseData():
     return df
 '''
 
-def transformeData(df):
-    # Transformer la liste des genres en vecteur binaire
-    mlb = MultiLabelBinarizer()
-    genre_encoded = mlb.fit_transform(df["listegenre"])
+def calculeDistance(df_encoded, book_id, top_n=5):
+    # Calculer la similarité cosinus entre le résumé donné et les autres résumés
+    try:
+        df_encoded_id = df_encoded[df_encoded["book_id"] == book_id]["vector"].values[0]
+    except:
+        df_encoded_id = book_id
+    list_similarity = {}
+    erreur = 0
+    for index, row in df_encoded.iterrows():
+        book_id = row['book_id']
+        vector = row['vector']
+        try:
+            similarity = cosine_similarity([df_encoded_id], [vector])[0][0]
+        except:
+            erreur += 1
+            similarity = 1000000
+        list_similarity[book_id] = similarity
+    print(f"il y a eu {erreur} erreurs")
+    
+    # Récupérer les top_n résumés les plus similaires
+    most_similar_books = sorted(list_similarity.items(), key=lambda x: x[1], reverse=True)[:top_n]
+    most_similar_books = [book_id for book_id, _ in most_similar_books]
+    return most_similar_books
 
-    # Créer un DataFrame avec l'index des livres
-    df_encoded = pd.DataFrame(genre_encoded, columns=mlb.classes_, index=df["book_id"])
+def main(user_id):
+    df = getData()
+    model = train_word2vec(df, vector_size=50)
+    df = embed_genres(df, model)
     
-    print("Matrice des genres (one-hot encoding) :")
-    print(df_encoded)
+    # Convertir la liste d'embeddings en colonnes séparées
+    embeddings_df = pd.DataFrame(df["genre_embedding"].to_list(), index=df["book_id"])
     
-    return df_encoded  # Retourne df_encoded correctement
+    # Conserver toutes les colonnes originales sauf 'listegenre' (inutile après encodage)
+    df_encoded = df.drop(columns=["listegenre", "genre_embedding"]).set_index("book_id").join(embeddings_df)
+    print(df_encoded.shape)
+    print(df_encoded.head())
+    # normaliser les données
+    df_encoded = (df_encoded - df_encoded.mean()) / df_encoded.std()
 
-def calculeDistance(df_encoded, book_id):
-    # Calcul de la distance euclidienne entre les livres et le livre donné
-    vecteur_book = df_encoded.loc[book_id]
-    for book_id, vecteur in df_encoded.iterrows():
-        distance = pdist([vecteur_book, vecteur], metric="euclidean")
-        print(f"Distance entre le livre {book_id} et le livre {book_id} : {distance[0]}")
+    df_encoded = df_encoded.reset_index()
+    # Créer la colonne 'vector' avec les 53 autres colonnes sous forme de liste
+    df_encoded['vector'] = df_encoded.drop(columns=['book_id']).values.tolist()
 
-def main(book_id):
-    df = getData()  # Récupérer les données
-    model = train_word2vec(df, vector_size=50)  # Entraîner Word2Vec
-    df = embed_genres(df, model)  # Créer les embeddings
+    # Maintenant, tu peux ne garder que les colonnes 'book_id' et 'vector'
+    df_encoded = df_encoded[['book_id', 'vector']]
+
     
-    # Transformer la liste d'embeddings en DataFrame (pour la distance)
-    df_encoded = pd.DataFrame(df["genre_embedding"].to_list(), index=df["book_id"])
+    print(df_encoded.columns)
+    print(df_encoded.shape)
+    print(df_encoded.head())
     
-    print(df_encoded.shape)    
-    #calculeDistance(df_encoded, book_id)  # On passe df_encoded ici
+
+    # Récupérer les résumés les plus similaires de l'utilisateur
+    list_book_id = requete(f"SELECT book_id FROM liked_books WHERE user_id = {user_id}")
+    print(f"les livres de l'utilisateur {user_id} sont : {list_book_id}")
+    # transformer en liste le dataframe
+    list_book_id = list_book_id.values.flatten().tolist()
+    vectors = [np.array(df_encoded[df_encoded["book_id"] == book_id]["vector"].values[0])
+               for book_id in list_book_id if not df_encoded[df_encoded["book_id"] == book_id]["vector"].empty]
+    if(len(vectors) == 0):
+        print("Aucun livre avec des genre n'a été trouvé")
+        return []
+    mean_vector = np.mean(vectors, axis=0)
+    print(mean_vector)
+
+    # Récupérer les résumés les plus similaires
+    most_similar_books = calculeDistance(df_encoded, mean_vector)
+    print(f"les livres les plus similaires sont : {most_similar_books}")
+
+    # requete pour avoir les titres des livres
+    most_similar_books = requete(f"SELECT book_title FROM book WHERE book_id IN {tuple(most_similar_books)}")
+
+    return most_similar_books
 
 if __name__ == "__main__":
-    main()
+    main(1)
+

@@ -1,0 +1,12 @@
+.banner{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 10vh;
+    color: black;
+    position: relative;
+    top: 0;
+    width: 100%;
+    z-index: 2;
+}

@@ -5,12 +5,6 @@ import yaml
 import time
 from tqdm import tqdm
 
-# Import la donnée du fichier yml
-try:
-    with open('config.yml', 'r') as file:
-        config = yaml.safe_load(file)
-except Exception as e:
-    raise Exception(f"Error loading the configuration file : {e}") from e
 
 
 def conexion_db():
@@ -27,7 +21,7 @@ def conexion_db():
     """
     try:
         ## URL of the database
-        database_url = config['adress_sql']
+        database_url = "postgresql://postgres.pczyoeavtwijgtkzgcaz:D0jVgaoGmDAFuaMS@aws-0-eu-west-3.pooler.supabase.com:6543/postgres"
         engine = create_engine(database_url)
         session = sessionmaker(bind=engine)
         session = session()
@@ -36,7 +30,7 @@ def conexion_db():
     except Exception as e:
         raise Exception(f"Error in the connection to the database : {e}") from e
 
-def requete(requete, no_limit=False):
+def requete(requete, no_limit=False, cache=True):
     """
     Execute a query on the database., if the number of rows is greater than 1000, the function will make several requests
 
@@ -46,6 +40,17 @@ def requete(requete, no_limit=False):
     Returns:
         pd.DataFrame: The result of the query.
     """
+
+    saveRequete = requete
+    if (cache):
+        try:
+            # reduire saveRequete pour pas avoir de probleme de nom de fichier
+            saveRequete = saveRequete[:100]
+            result = pd.read_csv(f'{requete}.csv')
+            return result
+        except:
+            pass
+
     try:
         connexion_db = conexion_db()
         engine = connexion_db[0]
@@ -67,6 +72,11 @@ def requete(requete, no_limit=False):
                 requete = requete.replace(f"LIMIT 2000 OFFSET {chunk-2000};", f"LIMIT 2000 OFFSET {chunk};")
                 print(requete)
                 result = pd.concat([result, pd.read_sql(requete, engine)])
+                
+        # Save the result to a CSV file
+        #reduire saveRequete pour pas avoir de probleme de nom de fichier
+        saveRequete = saveRequete[:100]
+        result.to_csv(f'{saveRequete}.csv', index=False)
     except Exception as e:
         raise Exception(f"Error executing query : {e}") from e
     return result

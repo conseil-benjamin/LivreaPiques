@@ -1,14 +1,14 @@
 from SQL_controleur.SQL_controleur import *
 from system_reco.reco_esteban import *
 from system_reco.reco_benjamin import *
-from system_reco.reco_pierig import *
+from system_reco.reco_pierig_remake import main as recommend_books
 from system_reco.reco_description import *
 
 def main():
     '''Ce programme à pour but de comparer les 4 systèmes de recommandation de livre en fonction du temps de calcul
     pour cela on fait n fois chaque recommandation et on calcule le temps moyen'''
     n = 10
-    user_id = 69
+    user_id = 1
     time_esteban = 0
     time_benjamin = 0
     time_pierig = 0
@@ -28,9 +28,9 @@ def main():
         print(reco_benj.get_recommendations(1, 5))
         time_benjamin += time.time() - start
 
-        #start = time.time()
-        #print(recommend_books(user_id))
-        #time_pierig += time.time() - start
+        start = time.time()
+        print(recommend_books(user_id))
+        time_pierig += time.time() - start
 
         print('-'*100)
         print('reco description')

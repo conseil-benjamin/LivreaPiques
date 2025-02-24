@@ -46,7 +46,7 @@ def requete(requete, no_limit=False, cache=True):
         try:
             # reduire saveRequete pour pas avoir de probleme de nom de fichier
             saveRequete = saveRequete[:100]
-            result = pd.read_csv(f'{requete}.csv')
+            result = pd.read_csv(f'caches/{requete}.csv')
             return result
         except:
             pass
@@ -76,7 +76,7 @@ def requete(requete, no_limit=False, cache=True):
         # Save the result to a CSV file
         #reduire saveRequete pour pas avoir de probleme de nom de fichier
         saveRequete = saveRequete[:100]
-        result.to_csv(f'{saveRequete}.csv', index=False)
+        result.to_csv(f'caches/{saveRequete}.csv', index=False)
     except Exception as e:
         raise Exception(f"Error executing query : {e}") from e
     return result

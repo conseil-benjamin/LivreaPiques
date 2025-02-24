@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 import yaml
 import time
 from tqdm import tqdm
+import hashlib
 
 
 
@@ -41,10 +42,11 @@ def requete(requete, no_limit=False, cache=True):
         pd.DataFrame: The result of the query.
     """
 
-    saveRequete = requete
+    hashed_filename = hashlib.sha256(requete.encode()).hexdigest()[:16]  # On limite à 16 caractères
     if (cache):
         try:
-            result = pd.read_csv(f'caches/{requete}.csv')
+            # Création d'un nom de fichier basé sur un hash de la requête
+            result = pd.read_csv(f'caches/{hashed_filename}.csv')
             return result
         except:
             pass
@@ -72,8 +74,7 @@ def requete(requete, no_limit=False, cache=True):
                 result = pd.concat([result, pd.read_sql(requete, engine)])
                 
         # Save the result to a CSV file
-        #reduire saveRequete pour pas avoir de probleme de nom de fichier
-        result.to_csv(f'caches/{saveRequete}.csv', index=False)
+        result.to_csv(f'caches/{hashed_filename}.csv', index=False)
     except Exception as e:
         raise Exception(f"Error executing query : {e}") from e
     return result

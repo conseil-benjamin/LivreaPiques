@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-
   postgres:
     image: postgres:latest
     container_name: db_postgres
@@ -9,24 +8,45 @@ services:
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydb
+      POSTGRES_DB: db_livreapiques
     ports:
       - "5432:5432"
     volumes:
       - ./data_docker/db_pgsql:/var/lib/postgresql/data
+      - ./sprint2_create_database/database.sql:/docker-entrypoint-initdb.d/create_tables.sql
     networks:
-      - livreAPique-network
-  
-  elasticSearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.16.3
-    container_name: db_elasticSearch
+      - livreapiques-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d db_livreapiques"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  app:
+    build:
+      dockerfile: Dockerfile
+    container_name: app_container
     restart: always
     ports:
-      - "9200:9200"
-    volumes:
-      - ./data_docker/db_elastic:/usr/share/elasticsearch/data
+      - "8000:8000"
     networks:
-      - livreAPique-network
+      - livreapiques-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
+  
+#  elasticSearch:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:8.16.3
+#    container_name: db_elasticSearch
+#    restart: always
+#    ports:
+#      - "9200:9200"
+#    volumes:
+#      - ./data_docker/db_elastic:/usr/share/elasticsearch/data
+#    networks:
+#      - livreapiques-network
     
 networks:
-  livreAPique-network:
+  livreapiques-network:

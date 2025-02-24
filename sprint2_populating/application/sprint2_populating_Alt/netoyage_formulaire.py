@@ -3,7 +3,7 @@ import numpy as np
 from datetime import datetime
 
 # Charger le fichier CSV
-data = pd.read_csv('C:/Users/utilisateur/Documents/Perso/SAE/LivreaPiques/default_data/formulair.csv')
+data = pd.read_csv('default_data/formulair.csv')
 
 # Exclure certaines colonnes
 excluded_columns = ['Horodateur', 'Quels sont vos trois genres préférés ?', 'Numéro 1', 'Numéro 2', 'Consentez vous a ce que vos données soient utilisées à des fins analytiques ?']
@@ -62,7 +62,7 @@ def map_gender(value):
 data['gender'] = data['gender'].apply(map_gender)
 
 # Sauvegarder le DataFrame corrigé dans un fichier CSV
-output_file = 'C:/Users/utilisateur/Documents/Perso/SAE/LivreaPiques/new_data/formulair_corrected.csv'
+output_file = 'new_data/formulair_corrected.csv'
 data.to_csv(output_file, index=False)  # `index=False` pour éviter de sauvegarder l'index en colonne
 
 # Afficher les colonnes restantes

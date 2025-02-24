@@ -4,7 +4,11 @@ from sqlalchemy.orm import sessionmaker
 import yaml
 import time
 from tqdm import tqdm
+import hashlib
+import os
 
+
+CACHE_EXPIRATION = 24 * 3600  # 24 hours
 
 
 def conexion_db():
@@ -41,15 +45,15 @@ def requete(requete, no_limit=False, cache=True):
         pd.DataFrame: The result of the query.
     """
 
-    saveRequete = requete
-    if (cache):
-        try:
-            # reduire saveRequete pour pas avoir de probleme de nom de fichier
-            saveRequete = saveRequete[:100]
-            result = pd.read_csv(f'{requete}.csv')
-            return result
-        except:
-            pass
+    hashed_filename = hashlib.sha256(requete.encode()).hexdigest()[:16]  # On limite à 16 caractères
+    # Création d'un nom de fichier basé sur un hash de la requête
+    cache_file = f'caches/{hashed_filename}.csv'
+    # Vérification du cache
+    if cache and os.path.exists(cache_file):
+        file_age = time.time() - os.path.getmtime(cache_file)
+        if file_age < CACHE_EXPIRATION:  # Cache valide
+            print(f"Chargement des résultats depuis le cache : {cache_file}")
+            return pd.read_csv(cache_file)
 
     try:
         connexion_db = conexion_db()
@@ -74,9 +78,7 @@ def requete(requete, no_limit=False, cache=True):
                 result = pd.concat([result, pd.read_sql(requete, engine)])
                 
         # Save the result to a CSV file
-        #reduire saveRequete pour pas avoir de probleme de nom de fichier
-        saveRequete = saveRequete[:100]
-        result.to_csv(f'{saveRequete}.csv', index=False)
+        result.to_csv(f'caches/{hashed_filename}.csv', index=False)
     except Exception as e:
         raise Exception(f"Error executing query : {e}") from e
     return result

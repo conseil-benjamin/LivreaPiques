@@ -1,6 +1,8 @@
 import fastapi as fa
 from SQL_controleur.SQL_controleur import *
 
+# Pour lancer le serveur : uvicorn api:app --reload (dans le dossier de l'api)
+
 app = fa.FastAPI()
 
 @app.exception_handler(fa.HTTPException)

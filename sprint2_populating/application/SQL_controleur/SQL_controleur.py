@@ -1,18 +1,21 @@
 import pandas as pd
-from sqlalchemy import create_engine, select, Table, MetaData
+from sqlalchemy import create_engine, select, Table, MetaData, text
 from sqlalchemy.orm import sessionmaker
 import yaml
 import time
 from tqdm import tqdm
 
 # Import la donnée du fichier yml
-with open('sprint2_populating/application/config.yml', 'r') as file:
-    config = yaml.safe_load(file)
+try:
+    with open('sprint2_populating/application/config.yml', 'r') as file:
+        config = yaml.safe_load(file)
+except Exception as e:
+    raise Exception(f"Error loading the configuration file : {e}") from e
 
 
 def conexion_db():
     """
-    Establishes a connection to the SQL database.
+    Establishes a connection to t-10he SQL database.
     
     Returns:
         tuple: (engine, session) where:
@@ -30,8 +33,8 @@ def conexion_db():
         session = session()
         print("Connection to the database successful")
         return engine, session
-    except:
-        raise Exception("Error in the connection to the database")
+    except Exception as e:
+        raise Exception(f"Error in the connection to the database : {e}") from e
 
 def insert(dataframe, table_name):
     """
@@ -242,3 +245,32 @@ def insert_table_assocation_book(dataframe, table1, table1_key, table1_id):
     except Exception as e:
         raise Exception("Error inserting associations into the database") from e
     
+def update(table, values, conditions):
+    attempts = 3
+    interval = 3
+
+    for attempt in range(attempts):
+        try:
+            engine, session = conexion_db()
+            break
+        except Exception as e:
+            if attempt < attempts - 1:
+                time.sleep(interval)
+            else:
+                raise Exception("Échec de connexion à la base de données après plusieurs tentatives") from e
+
+    try:
+        set_clause = ", ".join([f"{col} = :{col}" for col in values.keys()])
+        where_clause = " AND ".join([f"{col} = :{col}" for col in conditions.keys()])
+
+        sql = text(f"UPDATE {table} SET {set_clause} WHERE {where_clause}")  # Utilisation explicite de text()
+        params = {**values, **conditions}
+
+        session.execute(sql, params)
+        session.commit()
+        print(f"Mise à jour réussie dans la table {table}")
+        return True
+    except Exception as e:
+        print(f"Erreur lors de la mise à jour de la table {table} : {e}")
+        return False
+

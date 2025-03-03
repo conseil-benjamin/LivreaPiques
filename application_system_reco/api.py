@@ -1,7 +1,10 @@
 import fastapi as fa
+from fastapi import HTTPException
+import hashlib
 from SQL_controleur.SQL_controleur import *
 import pandas as pd
 from sqlalchemy import create_engine, text
+from sqlalchemy import text  # Ajoute cette ligne
 
 # Pour lancer le serveur : uvicorn api:app --reload (dans le dossier de l'api)
 
@@ -70,3 +73,67 @@ async def read_api(book_id: int):
         return fa.Response(status_code=204)
     df = df.fillna(value=False)
     return df.to_dict(orient="records")
+
+
+# Modèle pour la requête utilisateur
+class UserCreate(BaseModel):
+    name: str
+    password: str
+    age: int
+    gender: str
+
+# Modèle pour la connexion d'utilisateur
+class UserLogin(BaseModel):
+    name: str
+    password: str
+
+def insert(requete: str):
+    """
+    Fonction simulant l'insertion dans une base de données.
+    Dans une vraie application, elle exécuterait une requête SQL.
+    """
+    print(f"Exécution de la requête : {requete}")
+
+def hash_password(password: str):
+    """
+    Fonction de hashage du mot de passe.
+    utilise sha-256 pour le hashage
+    """
+    # Génération du sel
+    # Hashage du mot de passe
+    hashed_password = hashlib.sha256((password ).encode()).hexdigest()
+    return hashed_password
+
+@app.post("/create_user/")
+async def create_user(user: UserCreate):
+    user.password = hash_password(user.password)
+    
+    query = text('INSERT INTO "user" (username, password, age, gender) VALUES (:username, :password, :age, :gender)')
+    
+    try:
+        engine, session = conexion_db()
+        session.execute(query, {"username": user.name, "password": user.password, "age": user.age, "gender": user.gender})
+        session.commit()
+        return {"message": "Utilisateur créé avec succès"}
+    except Exception as e:
+        print(f"Erreur lors de la création de l'utilisateur: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la création de l'utilisateur: {str(e)}")
+    
+    
+@app.post("/login/")
+async def connection(user: UserLogin):
+    hashed_password = hash_password(user.password)
+    query = text('SELECT * FROM "user" WHERE username = :username AND password = :password')
+    
+    try:
+        engine, session = conexion_db()
+        result = session.execute(query, {"username": user.name, "password": hashed_password}).fetchone()
+        
+        if result:
+            return {"message": "Connexion réussie"}
+        else:
+            raise HTTPException(status_code=401, detail="Nom d'utilisateur ou mot de passe incorrect")
+    except Exception as e:
+        print(f"Erreur lors de la connexion: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la connexion: {str(e)}")
+

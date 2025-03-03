@@ -8,16 +8,16 @@ def traitement_data():
     Returns:
     pd.DataFrame: DataFrame containing book_id and book_cover columns.
     """
-    data = pd.read_csv('new_data/books_with_cover.csv')
+    data = pd.read_csv('new_data/books_id_with_cover.csv')
 
     # Sélection des colonnes nécessaires
-    colonnes_dans_ordre = ['id', 'cover+AF8-link']
+    colonnes_dans_ordre = ['id', 'cover_link']
     data_reordered = data[colonnes_dans_ordre].copy()
 
     # Renommage des colonnes pour correspondre à la table SQL
     data_reordered = data_reordered.rename(columns={
         'id': 'book_id',
-        'cover+AF8-link': 'book_cover'
+        'cover_link': 'book_cover'
     })
     
     return data_reordered

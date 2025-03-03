@@ -30,7 +30,8 @@ def traitement_data():
         'two_star_ratings',
         'three_star_ratings',
         'four_star_ratings',
-        'five_star_ratings'
+        'five_star_ratings',
+        'cover_link'
     ]
 
     # Reoraganize the columns of the DataFrame
@@ -46,7 +47,8 @@ def traitement_data():
         'two_star_ratings': 'two_star_rating',
         'three_star_ratings': 'three_star_rating',
         'four_star_ratings': 'four_star_rating',
-        'five_star_ratings': 'five_star_rating'
+        'five_star_ratings': 'five_star_rating',
+        'cover_link' : 'book_cover'
     })
     
     return data_reordered

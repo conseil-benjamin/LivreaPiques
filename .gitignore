@@ -1,3 +1,5 @@
 *.pyc
 *.csv#
 configure.ini
+/caches
+/application_system_reco/caches

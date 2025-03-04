@@ -25,7 +25,7 @@ async def read_root():
 async def read_api(book_title: str):
     print(book_title)
     book_title = book_title.replace("'", "''")
-    df = requete("""    SELECT * FROM allbookdata""")  
+    df = requete("SELECT * FROM allbookdata")  
     df = df[df['book_title'].str.contains(book_title, case=False, na=False)]
     if df.empty:
         return fa.Response(status_code=204)
@@ -34,8 +34,7 @@ async def read_api(book_title: str):
 
 @app.get("/api/books")
 async def read_api():
-    df = requete("""    SELECT * 
-                        FROM allbookdata""")
+    df = requete("SELECT * FROM allbookdata")
     if df.empty:
         return fa.Response(status_code=204)
     df = df.fillna(value=False)
@@ -45,7 +44,7 @@ async def read_api():
 async def read_api(author_name: str):
     print(author_name)
     author_name = author_name.replace("'", "''")
-    df = requete("""    SELECT * FROM allbookdata""".format(author_name=author_name))
+    df = requete("SELECT * FROM allbookdata".format(author_name=author_name))
     df = df[df['authors'].str.contains(author_name, case=False, na=False)]
     if df.empty:
         return fa.Response(status_code=204)  

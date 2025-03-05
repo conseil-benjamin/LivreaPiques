@@ -20,47 +20,52 @@ async def http_exception_handler(request: fa.Request, exc: fa.HTTPException):
 
 @app.get("/")
 async def read_root():
+    df = requete("SELECT * FROM allbookdata")
     return {"message": "Welcome to the Big Book Society API"}
 
-@app.get("/api/books/title={book_title}")
-async def read_api(book_title: str):
-    print(book_title)
-    book_title = book_title.replace("'", "''")
-    df = requete("SELECT * FROM allbookdata")  
-    df = df[df['book_title'].str.contains(book_title, case=False, na=False)]
+@app.get("/api/books/")
+async def read_api(book_title: str = None, author_name: str = None, genre: str = None, series: str = None):
+    # Fetch all data from the database
+    df = requete("SELECT * FROM allbookdata")
+
+    # Apply filters based on the provided query parameters
+    if book_title:
+        df = df[df['book_title'].str.contains(book_title, case=False, na=False)]
+    if author_name:
+        df = df[df['authors'].str.contains(author_name, case=False, na=False)]
+    if genre:
+        df = df[df['genres'].str.contains(genre, case=False, na=False)]
+    if series:
+        df = df[df['series'].str.contains(series, case=False, na=False)]
+
     if df.empty:
         return fa.Response(status_code=204)
+
     df = df.fillna(value=False)
     return df.to_dict(orient="records")
 
-@app.get("/api/books")
-async def read_api():
+@app.get("/api/books/search")
+async def search_books(query: str):
+    # Fetch all data from the database
     df = requete("SELECT * FROM allbookdata")
-    if df.empty:
-        return fa.Response(status_code=204)
-    df = df.fillna(value=False)
-    return df.to_dict(orient="records")
+    df = df.fillna('')
+    # Search for the query string in multiple attributes
+    filtered_df = df[
+        df.apply(
+            lambda row: query.lower() in row['book_title'].lower() or
+                        query.lower() in row['authors'].lower() or
+                        query.lower() in row['genres'].lower() or
+                        query.lower() in row['series'].lower(),
+            axis=1
+        )
+    ]
 
-@app.get("/api/books/name={author_name}")
-async def read_api(author_name: str):
-    print(author_name)
-    author_name = author_name.replace("'", "''")
-    df = requete("SELECT * FROM allbookdata".format(author_name=author_name))
-    df = df[df['authors'].str.contains(author_name, case=False, na=False)]
-    if df.empty:
-        return fa.Response(status_code=204)  
-    df = df.fillna(value=False)
-    return df.to_dict(orient="records")
+    # Limit the results to 10
+    filtered_df = filtered_df.head(10)
 
-@app.get("/api/books/genre={genre}")
-async def read_api(genre: str):
-    print(f"Received genre: {genre}")
-    genre = genre.replace("'", "''")
-    df = requete("SELECT * FROM allbookdata")
-    print(df)
-    filtered_df = df[df['genres'].str.contains(genre, case=False, na=False)]
     if filtered_df.empty:
         return fa.Response(status_code=204)
+
     filtered_df = filtered_df.fillna(value=False)
     return filtered_df.to_dict(orient="records")
 

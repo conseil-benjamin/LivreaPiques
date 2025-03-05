@@ -81,6 +81,12 @@ class UserCreate(BaseModel):
     password: str
     age: int
     gender: str
+    nb_book_per_year: str
+    nb_book_pleasure: str
+    nb_book_work: str
+    initiated_by: str
+    reading_time: str
+    choice_motivation: str
 
 # Modèle pour la connexion d'utilisateur
 class UserLogin(BaseModel):
@@ -108,11 +114,12 @@ def hash_password(password: str):
 async def create_user(user: UserCreate):
     user.password = hash_password(user.password)
     
-    query = text('INSERT INTO "user" (username, password, age, gender) VALUES (:username, :password, :age, :gender)')
+    query = text("""INSERT INTO "user" (username, password, age, gender, nb_book_per_year, nb_book_pleasure, nb_book_work, initiated_by, reading_time, choice_motivation) 
+                 VALUES (:username, :password, :age, :gender, :nb_book_per_year, :nb_book_pleasure, :nb_book_work, :initiated_by, :reading_time, :choice_motivation)""")
     
     try:
         engine, session = conexion_db()
-        session.execute(query, {"username": user.name, "password": user.password, "age": user.age, "gender": user.gender})
+        session.execute(query, {"username": user.name, "password": user.password, "age": user.age, "gender": user.gender, "nb_book_per_year" : user.nb_book_per_year, "nb_book_pleasure" : user.nb_book_pleasure, "nb_book_work" : user.nb_book_work, "initiated_by" : user.initiated_by, "reading_time" : user.initiated_by, "reading_time" : user.reading_time, "choice_motivation" : user.choice_motivation})
         session.commit()
         return {"message": "Utilisateur créé avec succès"}
     except Exception as e:

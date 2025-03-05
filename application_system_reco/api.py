@@ -1,5 +1,6 @@
 import fastapi as fa
 from fastapi import HTTPException
+from pydantic import BaseModel
 import hashlib
 from SQL_controleur.SQL_controleur import *
 import pandas as pd

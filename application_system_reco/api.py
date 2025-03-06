@@ -51,6 +51,8 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000)) 
     uvicorn.run(app, host="0.0.0.0", port=port)
 
+# Endpoint to filter books by various attributes
+# /api/books/?book_title=<title of the book>&author_name=<name of the author>&genre=<name of the genre>&series=<name of the series>
 @app.get("/api/books/")
 async def read_api(book_title: str = None, author_name: str = None, genre: str = None, series: str = None):
     # Fetch all data from the database
@@ -70,13 +72,16 @@ async def read_api(book_title: str = None, author_name: str = None, genre: str =
         return fa.Response(status_code=204)
 
     df = df.fillna(value=False)
-    return df.to_dict(orient="records")
+    return df.to_dict(orient="records")  # Returns a list of books matching the filters
 
+# Endpoint to search for books containing a query string in any attribute
+# /api/books/search?query=<string your searching for>
 @app.get("/api/books/search")
 async def search_books(query: str):
     # Fetch all data from the database
     df = requete("SELECT * FROM allbookdata")
     df = df.fillna('')
+
     # Search for the query string in multiple attributes
     filtered_df = df[
         df.apply(
@@ -93,6 +98,9 @@ async def search_books(query: str):
 
     if filtered_df.empty:
         return fa.Response(status_code=204)
+
+    filtered_df = filtered_df.fillna(value=False)
+    return filtered_df.to_dict(orient="records")  # Returns up to 10 books containing the query string
 
     filtered_df = filtered_df.fillna(value=False)
     return filtered_df.to_dict(orient="records")

@@ -223,6 +223,19 @@ class UserID(BaseModel):
     """
     id: int
 
+def Ltitle_to_Lid(Ltitle):
+    LrecoID = []
+    for title in Ltitle:
+        #si le titre contient des ' remplacer par ''
+        for i in range(len(Ltitle)):
+            # Si le titre contient des ' remplacer par ''
+            Ltitle[i] = Ltitle[i].replace("'", "''")
+
+        result = requete(f"""select book_id from book where book_title = '{title}' """, True, False)
+        LrecoID.append(int(result["book_id"].iloc[0]))
+    return LrecoID
+
+
 @app.post("/reco1/")
 async def recommendation(user: UserID):
     """
@@ -238,7 +251,8 @@ async def recommendation(user: UserID):
     """
     try:
         Lreco = reco_esteban(user.id)
-        return {"recommendations": Lreco}
+        LrecoID = Ltitle_to_Lid(Lreco)
+        return {"recommendations": LrecoID}
     except Exception as e:
         print(f"Erreur lors de la recommandation: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
@@ -261,7 +275,8 @@ async def recommendation(user: UserID):
         reco_benj = FinalRecommender()
         Lreco = reco_benj.get_recommendations(1, 5)  # L'ID utilisateur est fixé à 1 ici
         Ltitles = [book["title"] for book in Lreco]
-        return {"recommendations": Ltitles}
+        LrecoID = Ltitle_to_Lid(Ltitles)
+        return {"recommendations": LrecoID}
     except Exception as e:
         print(f"Erreur lors de la recommandation: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")

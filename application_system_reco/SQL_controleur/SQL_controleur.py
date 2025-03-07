@@ -66,6 +66,7 @@ def requete(requete, no_limit=False, cache=True):
     try:
         # Execute the query
         if no_limit:
+            print(requete)
             result = pd.read_sql(requete, engine)
         else:
             chunk = 0

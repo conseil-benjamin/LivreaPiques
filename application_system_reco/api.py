@@ -216,11 +216,26 @@ async def connection(user: UserLogin):
         print(f"Erreur lors de la connexion: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erreur lors de la connexion: {str(e)}")
 
-class UserID (BaseModel):
-    id : int
+
+class UserID(BaseModel):
+    """
+    Modèle représentant un utilisateur avec un identifiant unique.
+    """
+    id: int
 
 @app.post("/reco1/")
 async def recommendation(user: UserID):
+    """
+    Génère des recommandations personnalisées en fonction de l'ID utilisateur.
+
+    Entrée :
+    - user (UserID) : Un objet contenant l'identifiant de l'utilisateur.
+
+    Sortie :
+    - Un dictionnaire contenant une liste de recommandations de livres.
+
+    Cette fonction utilise la méthode `reco_esteban` pour générer des recommandations.
+    """
     try:
         Lreco = reco_esteban(user.id)
         return {"recommendations": Lreco}
@@ -230,23 +245,43 @@ async def recommendation(user: UserID):
 
 @app.post("/reco2/")
 async def recommendation(user: UserID):
+    """
+    Génère des recommandations de livres basées sur un système de recommandation avancé.
+
+    Entrée :
+    - user (UserID) : Un objet contenant l'identifiant de l'utilisateur (non utilisé ici).
+
+    Sortie :
+    - Un dictionnaire contenant une liste de titres de livres recommandés.
+
+    Cette fonction utilise `FinalRecommender` pour obtenir les recommandations, mais l'ID utilisateur n'est
+    pas pris en compte dans cette version (valeur fixe de 1).
+    """
     try:
         reco_benj = FinalRecommender()
-        Lreco = reco_benj.get_recommendations(1, 5)
+        Lreco = reco_benj.get_recommendations(1, 5)  # L'ID utilisateur est fixé à 1 ici
         Ltitles = [book["title"] for book in Lreco]
         return {"recommendations": Ltitles}
     except Exception as e:
         print(f"Erreur lors de la recommandation: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
-    
-  
+
 @app.post("/reco3/")
 async def recommendation(user: UserID):
+    """
+    Attend d'avoir régler le problème du système de reco
+
+    Entrée :
+    - user (UserID) : Un objet contenant l'identifiant de l'utilisateur (non utilisé ici).
+
+    Sortie :
+    - Un dictionnaire contenant une liste de titres de livres recommandés.
+
+    """
     try:
-        #pour l'instant de fausse données
+        # Liste de recommandations statiques
         Ltitles = ['Harry Potter Collection', 'The Anomaly', 'No and Me', 'Jane Eyre', 'Fables']
         return {"recommendations": Ltitles}
     except Exception as e:
         print(f"Erreur lors de la recommandation: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
-    

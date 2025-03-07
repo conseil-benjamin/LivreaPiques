@@ -6,6 +6,10 @@ from SQL_controleur.SQL_controleur import *
 import pandas as pd
 from sqlalchemy import create_engine, text
 from sqlalchemy import text  # Ajoute cette ligne
+from system_reco.reco_esteban import *
+from system_reco.reco_benjamin import *
+
+
 
 # Pour lancer le serveur : uvicorn api:app --reload (dans le dossier de l'api)
 
@@ -144,3 +148,27 @@ async def connection(user: UserLogin):
         print(f"Erreur lors de la connexion: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erreur lors de la connexion: {str(e)}")
 
+class UserID (BaseModel):
+    id : int
+
+@app.post("/reco1/")
+async def recommendation(user: UserID):
+    try:
+        Lreco = reco_esteban(user.id)
+        return {"recommendations": Lreco}
+    except Exception as e:
+        print(f"Erreur lors de la recommandation: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
+
+@app.post("/reco2/")
+async def recommendation(user: UserID):
+    try:
+        reco_benj = FinalRecommender()
+        Lreco = reco_benj.get_recommendations(1, 5)
+        Ltitles = [book["title"] for book in Lreco]
+        return {"recommendations": Ltitles}
+    except Exception as e:
+        print(f"Erreur lors de la recommandation: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
+    
+  

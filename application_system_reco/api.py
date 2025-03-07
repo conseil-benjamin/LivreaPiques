@@ -13,8 +13,6 @@ import uvicorn
 from system_reco.reco_esteban import *
 from system_reco.reco_benjamin import *
 
-
-
 # Pour lancer le serveur : uvicorn api:app --reload (dans le dossier de l'api)
 
 app = fa.FastAPI()
@@ -228,29 +226,7 @@ def Ltitle_to_Lid(Ltitle):
         LrecoID.append(int(result["book_id"].iloc[0]))
     return LrecoID
 
-
-@app.post("/reco1/")
-async def recommendation(user: UserID):
-    """
-    Génère des recommandations personnalisées en fonction de l'ID utilisateur.
-
-    Entrée :
-    - user (UserID) : Un objet contenant l'identifiant de l'utilisateur.
-
-    Sortie :
-    - Un dictionnaire contenant une liste de recommandations de livres.
-
-    Cette fonction utilise la méthode `reco_esteban` pour générer des recommandations.
-    """
-    try:
-        Lreco = reco_esteban(user.id)
-        LrecoID = Ltitle_to_Lid(Lreco)
-        return {"recommendations": LrecoID}
-    except Exception as e:
-        print(f"Erreur lors de la recommandation: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
-
-@app.post("/reco2/")
+@app.post("/api/reco2/")
 async def recommendation(user: UserID):
     """
     Génère des recommandations de livres basées sur un système de recommandation avancé.
@@ -273,32 +249,12 @@ async def recommendation(user: UserID):
     except Exception as e:
         print(f"Erreur lors de la recommandation: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
-
-@app.post("/reco3/")
-async def recommendation(user: UserID):
-    """
-    Attend d'avoir régler le problème du système de reco
-
-    Entrée :
-    - user (UserID) : Un objet contenant l'identifiant de l'utilisateur (non utilisé ici).
-
-    Sortie :
-    - Un dictionnaire contenant une liste de titres de livres recommandés.
-
-    """
-    try:
-        # Liste de recommandations statiques
-        Ltitles = ['Harry Potter Collection', 'The Anomaly', 'No and Me', 'Jane Eyre', 'Fables']
-        return {"recommendations": Ltitles}
-    except Exception as e:
-        print(f"Erreur lors de la recommandation: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
     
 class UserBook (BaseModel):
     user_id: int
     book_id: int
 
-@app.post("/LikedBook/")
+@app.post("/api/likedbook/")
 async def LikedBook(UserBook: UserBook):
     #mettre sous forme de dataFrame UserBook avec comme colonne user_id et book_id
     df = pd.DataFrame([UserBook.model_dump()])
@@ -310,3 +266,119 @@ async def LikedBook(UserBook: UserBook):
     except Exception as e:
         print(f"Erreur lors de la recommandation: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erreur lors de l'insertion: {str(e)}")
+    
+@app.get("/api/likedbook/{user_id}/{book_id}")
+async def check_if_liked(user_id: int, book_id: int):
+    """
+    Vérifie si un utilisateur a liké un livre.
+    """
+    try:
+        # Requête pour vérifier si une entrée existe dans liked_books pour cet utilisateur et ce livre
+        query = text("""
+            SELECT * FROM liked_books WHERE user_id = :user_id AND book_id = :book_id
+        """)
+        
+        # Exécution de la requête
+        engine, session = conexion_db()
+        result = session.execute(query, {"user_id": user_id, "book_id": book_id}).fetchone()
+        
+        if result:
+            # Si une entrée existe, l'utilisateur a liké le livre
+            return {"liked": True}
+        else:
+            # Sinon, l'utilisateur n'a pas liké le livre
+            return {"liked": False}
+    except SQLAlchemyError as e:
+        # Gestion des erreurs SQL
+        raise HTTPException(status_code=500, detail="Erreur de base de données: " + str(e))
+    finally:
+        session.close()  # Assure-toi de fermer la session
+
+
+@app.get("/api/user/{user_id}/profile")
+async def get_user_profile(user_id: int):
+    try:
+        # Récupération des informations de l'utilisateur
+        user_query = text("""
+            SELECT username, age, gender, nb_book_per_year, nb_book_pleasure, nb_book_work, initiated_by, reading_time, choice_motivation
+            FROM "user" WHERE user_id = :user_id
+        """)
+        
+        # Exécution de la requête pour récupérer les infos de l'utilisateur
+        engine, session = conexion_db()
+        user_result = session.execute(user_query, {"user_id": user_id}).fetchone()
+
+        if not user_result:
+            raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+        
+        # Récupération des livres likés par l'utilisateur
+        liked_books_query = text("""
+            SELECT book_id FROM liked_books WHERE user_id = :user_id
+        """)
+        
+        liked_books_result = session.execute(liked_books_query, {"user_id": user_id}).fetchall()
+        liked_books = [book[0] for book in liked_books_result]
+
+        # Récupération des informations détaillées des livres likés
+        books_query = text("""
+            SELECT book_id, book_cover, book_description FROM book WHERE book_id IN :book_ids
+        """)
+        
+        books_result = session.execute(books_query, {"book_ids": tuple(liked_books)}).fetchall()
+        books_details = [
+            {"book_id": book[0], "book_cover": book[1], "book_description": book[2][:150]}  # Limiter la description à 100 caractères
+            for book in books_result
+        ]
+
+        # Fermeture de la session
+        session.close()
+
+        # Construction de la réponse
+        user_profile = {
+            "username": user_result[0],
+            "age": user_result[1],
+            "gender": user_result[2],
+            "nb_book_per_year": user_result[3],
+            "nb_book_pleasure": user_result[4],
+            "nb_book_work": user_result[5],
+            "initiated_by": user_result[6],
+            "reading_time": user_result[7],
+            "choice_motivation": user_result[8],
+            "liked_books": books_details
+        }
+
+        return user_profile
+
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail="Erreur lors de la récupération des données: " + str(e))
+    
+
+@app.delete("/api/user/{user_id}/like/{book_id}")
+async def remove_like(user_id: int, book_id: int):
+    try:
+        # Connexion à la base de données
+        engine, session = conexion_db()
+
+        # Vérifier si le livre est déjà liké par l'utilisateur
+        liked_book_query = text("""
+            SELECT 1 FROM liked_books WHERE user_id = :user_id AND book_id = :book_id
+        """)
+        result = session.execute(liked_book_query, {"user_id": user_id, "book_id": book_id}).fetchone()
+
+        if not result:
+            raise HTTPException(status_code=404, detail="Like non trouvé")
+
+        # Supprimer le like de la base de données
+        delete_like_query = text("""
+            DELETE FROM liked_books WHERE user_id = :user_id AND book_id = :book_id
+        """)
+        session.execute(delete_like_query, {"user_id": user_id, "book_id": book_id})
+        session.commit()
+
+        # Fermeture de la session
+        session.close()
+
+        return {"message": "Like supprimé avec succès"}
+
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail="Erreur lors de la suppression du like: " + str(e))

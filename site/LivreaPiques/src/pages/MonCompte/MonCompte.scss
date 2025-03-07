@@ -1,0 +1,73 @@
+$primary-color: #4CAF50;
+$secondary-color: #f4f4f4;
+$white-color: #fff;
+
+.profile-page {
+  padding: 20px;
+  background-color: $secondary-color;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .profile-info, .liked-books {
+    background-color: $white-color;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  h2, h3 {
+    margin-top: 0;
+    color: $primary-color;
+  }
+
+  p {
+    font-size: 1rem;
+    margin: 5px 0;
+  }
+
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  li {
+    font-size: 1rem;
+    margin: 5px 0;
+  }
+
+  // Responsive design
+  @media (max-width: 768px) {
+    .profile-page {
+      padding: 10px;
+    }
+
+    .profile-info, .liked-books {
+      padding: 15px;
+    }
+
+    p, li {
+      font-size: 0.9rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .profile-page {
+      padding: 10px;
+    }
+
+    .profile-info, .liked-books {
+      padding: 10px;
+    }
+
+    h2, h3 {
+      font-size: 1.2rem;
+    }
+
+    p, li {
+      font-size: 0.85rem;
+    }
+  }
+}

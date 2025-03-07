@@ -1,0 +1,18 @@
+{
+  "loading": "Chargement...",
+  "error_fetching": "Erreur lors de la récupération des données.",
+  "book_not_found": "Livre non trouvé.",
+  "book_author": "Auteur(s)",
+  "book_genres": "Genres",
+  "book_description": "Description",
+  "book_avg_rating": "Note moyenne ",
+  "unknown": "Inconnu",
+  "not_specified": "Non spécifié",
+  "no_description": "Pas de description disponible",
+  "not_rated": "Non évalué",
+  "go_back": "Retour",
+  "error_404": "Oups ! Page introuvable.",
+  "go_back_404": "Retour à l'accueil",
+  "liked_book": "Like ajouté",
+  "unliked_book": "Like retiré"
+}

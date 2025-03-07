@@ -1,0 +1,18 @@
+{
+  "loading": "Loading...",
+  "error_fetching": "Error while fetching data.",
+  "book_not_found": "Book not found.",
+  "book_author": "Author(s)",
+  "book_genres": "Genres",
+  "book_description": "Description",
+  "book_avg_rating": "Average Rating",
+  "unknown": "Unknown",
+  "not_specified": "Not specified",
+  "no_description": "No description available",
+  "not_rated": "Not rated",
+  "go_back": "Go Back",
+  "error_404": "Oops! Page not found.",
+  "go_back_404": "Go back to home",
+  "liked_book": "Like added",
+  "unliked_book": "Like removed"
+}

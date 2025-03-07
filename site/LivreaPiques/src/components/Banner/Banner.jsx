@@ -1,11 +1,23 @@
+import React, {useEffect, useState} from "react";
 import "./Banner.scss";
-import {useState} from "react";
 import Swal from "sweetalert2";
 import {useNavigate} from "react-router-dom";
+import Cookies from "js-cookie";
+import LanguageSwitcher from "../LanguageSwitcher/LanguageSwitcher.jsx";
 
 function Banner() {
-    const [searchValue, setSearchValue] = useState("");
     const navigate = useNavigate();
+    const jwt = Cookies.get("user_id");
+    const [loginClicked, setLoginClicked] = useState(false);
+    const [registerClicked, setRegisterClicked] = useState(false);
+
+    useEffect(() => {
+        if (loginClicked) {
+            navigate("/login");
+        } else if (registerClicked) {
+            navigate("/register");
+        }
+    }, [loginClicked, registerClicked]);
 
     return (
         <header className={"banner"}>
@@ -14,26 +26,36 @@ function Banner() {
                     style={{cursor: "pointer"}}
                     width={50}
                     height={50}
-                    src={"./bigboss.png"} alt="logo"
+                    src={"/public/bigboss.png"} alt="logo"
                     onClick={() => {
                         navigate("/")
                     }
                     }/>
-                <div className={"div-input-search"}>
-                    <input
-                        type="text"
-                        value={searchValue}
-                        placeholder="Rechercher un livre"
-                        onChange={(e) => setSearchValue(e.target.value)}
-                    />
-                    <img
-                        src={"https://cdn-icons-png.flaticon.com/512/54/54481.png"}
-                        alt={"img serach"}
-                        width={24}
-                        height={24}
-                        style={{cursor: "pointer"}}
-                    />
-                </div>
+                <h2 style={{color: "#fff", fontSize: "1.5rem", fontWeight: "bold"}}>Big Book Society</h2>
+                {!jwt ? (
+                        <div style={{display: "flex", alignItems: "center"}}>
+                            <LoginComposant jwt={jwt} setLoginClicked={setLoginClicked} setRegisterClicked={setRegisterClicked}/>
+                            <LanguageSwitcher/>
+                        </div>
+                    ): (
+                    <div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+                        <Compte/>
+                        <LanguageSwitcher/>
+                    </div>
+                )}
+            </div>
+            <hr style={{
+                height: "1px",
+                width: "100%"
+            }}/>
+        </header>
+    );
+}
+
+function LoginComposant({ jwt, setLoginClicked, setRegisterClicked }) {
+    return (
+        <div className={"login-composant"}>
+            {jwt ? (
                 <img
                     style={{cursor: "pointer"}}
                     src={"https://cdn-icons-png.flaticon.com/512/456/456212.png"}
@@ -44,14 +66,30 @@ function Banner() {
                         navigate("/login")
                     }}
                 />
-            </div>
+            ) : (
+                <>
+                    <button onClick={() => setLoginClicked(true)}>
+                        Connexion
+                    </button>
+                    <button onClick={() => setRegisterClicked(true)}>
+                        S'inscrire
+                    </button>
+                </>
+            )}
+        </div>
+    )
+}
 
-            <hr style={{
-                height: "1px",
-                width: "100%"
-            }}/>
-        </header>
-    );
+function Compte() {
+    const navigate = useNavigate();
+
+    return (
+        <div className={"compte"}>
+            <button>
+                <h1 style={{color: "#fff", cursor: "pointer"}} onClick={() => navigate("/profile")}>Mon compte</h1>
+            </button>
+        </div>
+    )
 }
 
 export default Banner;

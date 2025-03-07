@@ -240,3 +240,13 @@ async def recommendation(user: UserID):
         raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
     
   
+@app.post("/reco3/")
+async def recommendation(user: UserID):
+    try:
+        #pour l'instant de fausse données
+        Ltitles = ['Harry Potter Collection', 'The Anomaly', 'No and Me', 'Jane Eyre', 'Fables']
+        return {"recommendations": Ltitles}
+    except Exception as e:
+        print(f"Erreur lors de la recommandation: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
+    

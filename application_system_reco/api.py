@@ -135,13 +135,6 @@ class UserLogin(BaseModel):
     name: str
     password: str
 
-def insert(requete: str):
-    """
-    Fonction simulant l'insertion dans une base de données.
-    Dans une vraie application, elle exécuterait une requête SQL.
-    """
-    print(f"Exécution de la requête : {requete}")
-
 def hash_password(password: str):
     """
     Fonction de hashage du mot de passe.
@@ -300,3 +293,20 @@ async def recommendation(user: UserID):
     except Exception as e:
         print(f"Erreur lors de la recommandation: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
+    
+class UserBook (BaseModel):
+    user_id: int
+    book_id: int
+
+@app.post("/LikedBook/")
+async def LikedBook(UserBook: UserBook):
+    #mettre sous forme de dataFrame UserBook avec comme colonne user_id et book_id
+    df = pd.DataFrame([UserBook.model_dump()])
+    try:
+        if(insert(df, "liked_books")):
+            return {"message": "Liked ajouté"}
+        else:
+            raise HTTPException(status_code=500, detail=f"Erreur lors de l'insertion")
+    except Exception as e:
+        print(f"Erreur lors de la recommandation: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de l'insertion: {str(e)}")

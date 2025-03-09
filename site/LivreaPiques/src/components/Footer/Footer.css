@@ -1,0 +1,53 @@
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  background-color: #1d2938;
+  color: #fff;
+  padding: 20px 0;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 300;
+  font-family: "Roboto", sans-serif;
+}
+.footer .footer-p {
+  width: 100%;
+  text-align: center;
+  margin: 0.5em 0 0 0;
+}
+.footer h3 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin: 0.7em 0 0 1em;
+}
+.footer h5 {
+  color: #98a0a9;
+  cursor: pointer;
+}
+.footer h5 hover {
+  color: red;
+}
+.footer div {
+  margin: 0.25em 0 0 1em;
+  display: flex;
+  align-items: start;
+  justify-content: start;
+  flex-direction: column;
+}
+.footer a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+}
+.footer .footer__social {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.footer .footer__social a {
+  margin: 0 10px;
+  font-size: 1.5rem;
+}
+
+/*# sourceMappingURL=Footer.css.map */

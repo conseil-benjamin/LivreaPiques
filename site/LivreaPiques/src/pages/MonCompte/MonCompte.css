@@ -1,0 +1,58 @@
+.profile-page {
+  padding: 20px;
+  background-color: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.profile-page .profile-info, .profile-page .liked-books {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.profile-page h2, .profile-page h3 {
+  margin-top: 0;
+  color: #4CAF50;
+}
+.profile-page p {
+  font-size: 1rem;
+  margin: 5px 0;
+}
+.profile-page ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+.profile-page li {
+  font-size: 1rem;
+  margin: 5px 0;
+}
+@media (max-width: 768px) {
+  .profile-page .profile-page {
+    padding: 10px;
+  }
+  .profile-page .profile-info, .profile-page .liked-books {
+    padding: 15px;
+  }
+  .profile-page p, .profile-page li {
+    font-size: 0.9rem;
+  }
+}
+@media (max-width: 480px) {
+  .profile-page .profile-page {
+    padding: 10px;
+  }
+  .profile-page .profile-info, .profile-page .liked-books {
+    padding: 10px;
+  }
+  .profile-page h2, .profile-page h3 {
+    font-size: 1.2rem;
+  }
+  .profile-page p, .profile-page li {
+    font-size: 0.85rem;
+  }
+}
+
+/*# sourceMappingURL=MonCompte.css.map */

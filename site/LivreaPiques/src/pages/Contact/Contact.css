@@ -1,0 +1,247 @@
+.team-contact-page {
+  background-color: #f9fafb;
+  min-height: 100vh;
+  padding: 3rem 1rem;
+}
+.team-contact-page .header {
+  max-width: 1200px;
+  margin: 0 auto 4rem;
+  text-align: center;
+}
+.team-contact-page .header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+.team-contact-page .header p {
+  font-size: 1.25rem;
+  color: #6b7280;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.team-contact-page .team-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 2rem;
+}
+@media (min-width: 640px) {
+  .team-contact-page .team-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  .team-contact-page .team-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.team-contact-page .team-grid .team-member-card {
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  cursor: pointer;
+  transform: translateY(0);
+  transition: all 0.3s ease;
+}
+.team-contact-page .team-grid .team-member-card:hover {
+  transform: translateY(-0.5rem);
+}
+.team-contact-page .team-grid .team-member-card img {
+  width: 100%;
+  height: 16rem;
+  object-fit: cover;
+}
+.team-contact-page .team-grid .team-member-card .member-info {
+  padding: 1.5rem;
+}
+.team-contact-page .team-grid .team-member-card .member-info h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+.team-contact-page .team-grid .team-member-card .member-info .member-role {
+  color: #4f46e5;
+  font-weight: 500;
+}
+.team-contact-page .contact-section {
+  max-width: 1000px;
+  margin: 5rem auto 0;
+}
+.team-contact-page .contact-section .contact-container {
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+@media (min-width: 768px) {
+  .team-contact-page .contact-section .contact-container {
+    flex-direction: row;
+  }
+}
+.team-contact-page .contact-section .contact-container .contact-form {
+  padding: 2rem;
+  flex: 1;
+}
+.team-contact-page .contact-section .contact-container .contact-form h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+.team-contact-page .contact-section .contact-container .contact-form p {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+.team-contact-page .contact-section .contact-container .contact-form form .form-group {
+  margin-bottom: 1rem;
+}
+.team-contact-page .contact-section .contact-container .contact-form form .form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+.team-contact-page .contact-section .contact-container .contact-form form .form-group input, .team-contact-page .contact-section .contact-container .contact-form form .form-group textarea {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.team-contact-page .contact-section .contact-container .contact-form form .form-group input:focus, .team-contact-page .contact-section .contact-container .contact-form form .form-group textarea:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+.team-contact-page .contact-section .contact-container .contact-form form button {
+  width: 100%;
+  background-color: #4f46e5;
+  color: #ffffff;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.team-contact-page .contact-section .contact-container .contact-form form button:hover {
+  background-color: #4338ca;
+}
+.team-contact-page .contact-section .contact-container .contact-form form button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+}
+.team-contact-page .contact-section .contact-container .contact-info {
+  background-color: #4f46e5;
+  color: #ffffff;
+  padding: 2rem;
+  flex: 1;
+}
+.team-contact-page .contact-section .contact-container .contact-info h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+.team-contact-page .contact-section .contact-container .contact-info .info-items .info-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+.team-contact-page .contact-section .contact-container .contact-info .info-items .info-item .icon {
+  height: 1.5rem;
+  width: 1.5rem;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+.team-contact-page .contact-section .contact-container .contact-info .info-items .info-item span {
+  line-height: 1.5;
+}
+.team-contact-page .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  z-index: 50;
+}
+.team-contact-page .modal-overlay .modal-content {
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  max-width: 42rem;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.team-contact-page .modal-overlay .modal-content .modal-container {
+  position: relative;
+}
+.team-contact-page .modal-overlay .modal-content .modal-container .close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+}
+.team-contact-page .modal-overlay .modal-content .modal-container .close-button:hover {
+  color: #1f2937;
+}
+.team-contact-page .modal-overlay .modal-content .modal-container .close-button .icon {
+  height: 1.5rem;
+  width: 1.5rem;
+}
+.team-contact-page .modal-overlay .modal-content .modal-container img {
+  width: 100%;
+  height: 16rem;
+  object-fit: cover;
+}
+.team-contact-page .modal-overlay .modal-content .modal-container .modal-body {
+  padding: 2rem;
+}
+.team-contact-page .modal-overlay .modal-content .modal-container .modal-body h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+.team-contact-page .modal-overlay .modal-content .modal-container .modal-body .member-role {
+  color: #4f46e5;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+.team-contact-page .modal-overlay .modal-content .modal-container .modal-body .member-bio {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+.team-contact-page .modal-overlay .modal-content .modal-container .modal-body .member-email {
+  display: flex;
+  align-items: center;
+  color: #6b7280;
+}
+.team-contact-page .modal-overlay .modal-content .modal-container .modal-body .member-email .icon {
+  height: 1.25rem;
+  width: 1.25rem;
+  margin-right: 0.5rem;
+}
+.team-contact-page .modal-overlay .modal-content .modal-container .modal-body .member-email a {
+  color: #4f46e5;
+  text-decoration: none;
+}
+.team-contact-page .modal-overlay .modal-content .modal-container .modal-body .member-email a:hover {
+  text-decoration: underline;
+}
+
+/*# sourceMappingURL=Contact.css.map */

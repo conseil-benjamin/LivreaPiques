@@ -1,10 +1,9 @@
-/**
--- Drop database
-DROP DATABASE IF EXISTS db_livreapique;
 
---create data base
-CREATE DATABASE db_livreapique;
-*/
+DROP SCHEMA IF EXISTS public CASCADE;
+
+CREATE SCHEMA public;
+SET SCHEMA 'public';
+
 --create table
 CREATE TABLE Book(
     book_id SERIAL PRIMARY KEY,
@@ -128,7 +127,7 @@ CREATE TABLE Book_Characters(
     FOREIGN KEY(character_id) REFERENCES Characters(character_id)
 );
 
-CREATE VIEW Book_rating AS
+CREATE OR REPLACE VIEW Book_rating AS
 SELECT 
     book_id, 
     book_title, 
@@ -156,8 +155,6 @@ FROM
     JOIN Author ON Book_Author.author_id = Author.author_id
 GROUP BY 
     Author.author_id, author_name;
-
-SET SCHEMA 'public';
 
 CREATE TABLE "user" (
   user_id           SERIAL       PRIMARY KEY,

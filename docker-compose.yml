@@ -27,26 +27,19 @@ services:
     build:
       dockerfile: Dockerfile
     container_name: app_container
-    restart: always
     ports:
       - "8000:8000"
+    volumes:
+      - .:/app
+      - ./new_data:/app/new_data
     networks:
       - livreapiques-network
     depends_on:
       postgres:
         condition: service_healthy
-        restart: true
-  
-#  elasticSearch:
-#    image: docker.elastic.co/elasticsearch/elasticsearch:8.16.3
-#    container_name: db_elasticSearch
-#    restart: always
-#    ports:
-#      - "9200:9200"
-#    volumes:
-#      - ./data_docker/db_elastic:/usr/share/elasticsearch/data
-#    networks:
-#      - livreapiques-network
-    
+    environment:
+      - POPULATE_DB=${POPULATE_DB}
+
 networks:
   livreapiques-network:
+    driver: bridge

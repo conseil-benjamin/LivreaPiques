@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from SQL_controleur.SQL_controleur import insert_table_assocation
+from utils.SQL_controleur.SQL_controleur import insert_table_assocation
 
 def traitement_data():
     # Charger le fichier CSV

@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 # Import la donnée du fichier yml
 try:
-    with open('utils/config.yml', 'r') as file:
+    with open('config.yml', 'r') as file:
         config = yaml.safe_load(file)
 except Exception as e:
     raise Exception(f"Error loading the configuration file : {e}") from e
@@ -48,6 +48,7 @@ def requete(requete, no_limit=False):
     """
     try:
         connexion_db = conexion_db()
+        print("Connection to the database successful")
         engine = connexion_db[0]
         session = connexion_db[1]
     except Exception as e:
@@ -172,9 +173,9 @@ def insert_table_assocation(dataframe, table1, table2, table1_key, table2_key, t
             # Check that both IDs exist before inserting
             if table1_id_base is not None and table2_id_base is not None:
                 associations.append({table1_id: table1_id_base, table2_id: table2_id_base})
-                print(f"Association created between {table1_id_base} and {table2_id_base}")
-            else:
-                print(f"Association NOT created between {table1_id_base} and {table2_id_base}")
+                #print(f"Association created between {table1_id_base} and {table2_id_base}")
+            #else:
+            #    print(f"Association NOT created between {table1_id_base} and {table2_id_base}")
     except Exception as e:
         print(e)
         raise Exception("Error creating associations") from e
@@ -260,9 +261,9 @@ def insert_table_assocation_book(dataframe, table1, table1_key, table1_id):
             # Check that both IDs exist before inserting
             if table1_id_base is not None:
                 associations.append({table1_id: table1_id_base, 'book_id': row['book_id']})
-                print(f"Association created between {table1_id_base} and {row['book_id']}")
-            else:
-                print(f"Association NOT created between {table1_id_base} and {row['book_id']}")
+                #print(f"Association created between {table1_id_base} and {row['book_id']}")
+            #else:
+            #    print(f"Association NOT created between {table1_id_base} and {row['book_id']}")
     except Exception as e:
         print(e)
         print(f"coucou{e}")

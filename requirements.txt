@@ -6,14 +6,11 @@ plotly
 factor_analyzer
 fanalysis
 seaborn
-re
 ftfy
 sqlalchemy
-yaml
-time
+pyyaml
 tqdm
 datetime
-sklearn
-math
+scikit-learn
 torch
 torch_geometric

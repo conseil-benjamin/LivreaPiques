@@ -1,4 +1,4 @@
-from SQL_controleur.SQL_controleur import requete
+from utils.SQL_controleur.SQL_controleur import requete
 
 LArequete = '''
 SELECT * FROM "book"

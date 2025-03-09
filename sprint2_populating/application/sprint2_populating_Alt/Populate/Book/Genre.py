@@ -2,10 +2,9 @@ import pandas as pd
 import numpy as np
 import re
 import yaml
+import os
 
-
-
-from SQL_controleur.SQL_controleur import insert, insert_table_assocation
+from utils.SQL_controleur.SQL_controleur import insert, insert_table_assocation
 
 def traitement_data():
     """
@@ -16,11 +15,11 @@ def traitement_data():
     book_genre_df: DataFrame with the columns 'book_id', 'genre_id' and 'nb_of_vote' to insert in the table 'book_genre'
     """
 
+    data = 'new_data/new_book.csv'
+    output_file = "new_data/book_genre.csv"
+
     # Lire le fichier CSV par morceaux
     chunk_size = 1000  # Réduire la taille des morceaux pour éviter les problèmes de mémoire
-    output_file = "book_genre.csv"
-    data = 'new_data/new_book.csv'
-
 
     # Créer le fichier CSV avec les en-têtes
     with open(output_file, 'w') as f:
@@ -54,7 +53,7 @@ def traitement_data():
     print("Traitement terminé Genre et résultats sauvegardés dans", output_file)
 
     # Lire le fichier CSV généré précédemment
-    data = pd.read_csv("book_genre.csv")
+    data = pd.read_csv(output_file)
 
     # Extraire les genres uniques
     unique_genres = data['genre'].unique()
@@ -66,20 +65,19 @@ def traitement_data():
     unique_genres_df = unique_genres_df.sort_values(by='genre').reset_index(drop=True)
 
     # Sauvegarder les genres uniques dans un nouveau fichier CSV
-    unique_genres_df.to_csv("unique_genres.csv", index=False)
+    unique_genres_df.to_csv("new_data/unique_genres.csv", index=False)
 
     print("Nombre de genres uniques :", len(unique_genres))
-    print("Les genres uniques ont été sauvegardés dans unique_genres.csv")
+    print("Les genres uniques ont été sauvegardés dans new_data/unique_genres.csv")
 
     # Lire le fichier CSV contenant les genres uniques
-    unique_genres_df = pd.read_csv("unique_genres.csv")
+    unique_genres_df = pd.read_csv("new_data/unique_genres.csv")
 
     # Renommer la colonne pour correspondre au nom de la colonne dans la table
     unique_genres_df.rename(columns={'genre': 'genre_name'}, inplace=True)
 
-
     # Lire le fichier CSV contenant les données de book_genre
-    book_genre_df = pd.read_csv("book_genre.csv")
+    book_genre_df = pd.read_csv(output_file)
 
     # Renommer les colonnes pour correspondre aux noms des colonnes dans la table book_genre
     book_genre_df.rename(columns={'id': 'book_id', 'votes': 'nb_of_vote'}, inplace=True)
@@ -106,7 +104,6 @@ def populate_genre():
         with open('sprint2_populating/application/config.yml', 'r') as file:
             config = yaml.safe_load(file)
 
-
         # Paramètres de connexion à la base de données
         database_url = config['adress_sql']
         engine = create_engine(database_url)
@@ -114,7 +111,6 @@ def populate_genre():
         # Lire les genres de la table Genre pour obtenir les IDs des genres
         with engine.connect() as connection:
             genre_df = pd.read_sql("SELECT * FROM genre", connection)
-
 
         # Fusionner les DataFrames pour obtenir l'ID du genre
         merged_df = pd.merge(book_genre_df, genre_df, left_on='genre', right_on='genre_name', how='left')
@@ -150,5 +146,4 @@ def __main__():
         populate_genre()
     except Exception as e:
         print(f"Error while populating the database: {e}")
-        raise e    
-
+        raise e

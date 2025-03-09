@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Load the original CSV file
-df = pd.read_csv("C:/Users/utilisateur/Documents/Perso/SAE/LivreaPiques/new_data/books_corrected.csv")
+df = pd.read_csv("new_data/books_corrected.csv")
 
 # Select "id" and "awards" columns
 df_awards = df[['id', 'awards']].copy()

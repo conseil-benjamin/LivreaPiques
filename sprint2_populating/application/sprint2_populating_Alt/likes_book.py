@@ -1,10 +1,10 @@
 import pandas as pd
 import numpy as np
-from SQL_controleur.SQL_controleur import insert_table_assocation
+from utils.SQL_controleur.SQL_controleur import insert_table_assocation
 
 def traitement_data():
     # Charger les fichiers CSV
-    formulair_corrected_data = pd.read_csv('C:/Users/utilisateur/Documents/Perso/SAE/LivreaPiques/new_data/formulair_corrected.csv')
+    formulair_corrected_data = pd.read_csv('new_data/formulair_corrected.csv')
     formulair_corrected_data['username'] = formulair_corrected_data['email'].apply(lambda x: x.split('@')[0] if '@' in str(x) else x)
     formulair_corrected_data = formulair_corrected_data[['username','favorite_book_1','favorite_book_2','favorite_book_3']]
     data = formulair_corrected_data.melt(id_vars=['username'], 

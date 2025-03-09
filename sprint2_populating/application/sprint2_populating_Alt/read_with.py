@@ -1,9 +1,9 @@
 import pandas as pd
 
 # Charger les fichiers CSV
-user_data = pd.read_csv('C:/Users/utilisateur/Documents/Perso/SAE/LivreaPiques/new_data/user.csv')
-formulair_corrected_data = pd.read_csv('C:/Users/utilisateur/Documents/Perso/SAE/LivreaPiques/new_data/formulair_corrected.csv')
-reading_mean_data = pd.read_csv('C:/Users/utilisateur/Documents/Perso/SAE/LivreaPiques/new_data/reading_mean.csv')
+user_data = pd.read_csv('new_data/user.csv')
+formulair_corrected_data = pd.read_csv('new_data/formulair_corrected.csv')
+reading_mean_data = pd.read_csv('new_data/reading_mean.csv')
 
 # Étape 1: Sélectionner les ID des utilisateurs dans 'user.csv'
 user_ids = user_data[['id']]  # Supposons que 'id' est la colonne des utilisateurs
@@ -45,5 +45,5 @@ print("\nAssociation table preview (after removing rows with missing 'reading_me
 print(association_table.head())
 
 # Sauvegarder la table d'association dans un fichier CSV
-output_file = 'C:/Users/utilisateur/Documents/Perso/SAE/LivreaPiques/new_data/Associations_mean.csv'
+output_file = 'new_data/Associations_mean.csv'
 association_table.to_csv(output_file, index=False)

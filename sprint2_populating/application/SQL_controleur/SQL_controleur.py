@@ -6,8 +6,11 @@ import time
 from tqdm import tqdm
 
 # Import la donnée du fichier yml
-with open('sprint2_populating/application/config.yml', 'r') as file:
-    config = yaml.safe_load(file)
+try:
+    with open('config.yml', 'r') as file:
+        config = yaml.safe_load(file)
+except Exception as e:
+    raise Exception(f"Error loading the configuration file : {e}") from e
 
 
 def conexion_db():
@@ -30,8 +33,44 @@ def conexion_db():
         session = session()
         print("Connection to the database successful")
         return engine, session
-    except:
-        raise Exception("Error in the connection to the database")
+    except Exception as e:
+        raise Exception(f"Error in the connection to the database : {e}") from e
+
+def requete(requete, no_limit=False):
+    """
+    Execute a query on the database., if the number of rows is greater than 1000, the function will make several requests
+
+    Args:
+        requete (str): The query to execute.
+
+    Returns:
+        pd.DataFrame: The result of the query.
+    """
+    try:
+        connexion_db = conexion_db()
+        print("Connection to the database successful")
+        engine = connexion_db[0]
+        session = connexion_db[1]
+    except Exception as e:
+        raise Exception(f"Failed to connect to the database : {e}") from e
+    
+    
+    try:
+        # Execute the query
+        if no_limit:
+            result = pd.read_sql(requete, engine)
+        else:
+            chunk = 0
+            requete = requete + f" LIMIT 2000 OFFSET {chunk};"
+            result = pd.read_sql(requete, engine)
+            while len(result)- chunk >= 2000:
+                chunk = chunk + 2000
+                requete = requete.replace(f"LIMIT 2000 OFFSET {chunk-2000};", f"LIMIT 2000 OFFSET {chunk};")
+                print(requete)
+                result = pd.concat([result, pd.read_sql(requete, engine)])
+    except Exception as e:
+        raise Exception(f"Error executing query : {e}") from e
+    return result
 
 def insert(dataframe, table_name):
     """
@@ -57,7 +96,7 @@ def insert(dataframe, table_name):
             if attempt < attempts - 1:
                 time.sleep(interval)
             else:
-                raise Exception("Failed to connect to the database after multiple attempts") from e
+                raise Exception(f"Failed to connect to the database after multiple attempts: {e}") from e
     try:
         dataframe.to_sql(table_name, con=engine, if_exists='append', index=False)
         print("Data inserted into the database")
@@ -134,9 +173,9 @@ def insert_table_assocation(dataframe, table1, table2, table1_key, table2_key, t
             # Check that both IDs exist before inserting
             if table1_id_base is not None and table2_id_base is not None:
                 associations.append({table1_id: table1_id_base, table2_id: table2_id_base})
-                print(f"Association created between {table1_id_base} and {table2_id_base}")
-            else:
-                print(f"Association NOT created between {table1_id_base} and {table2_id_base}")
+                #print(f"Association created between {table1_id_base} and {table2_id_base}")
+            #else:
+            #    print(f"Association NOT created between {table1_id_base} and {table2_id_base}")
     except Exception as e:
         print(e)
         raise Exception("Error creating associations") from e
@@ -222,9 +261,9 @@ def insert_table_assocation_book(dataframe, table1, table1_key, table1_id):
             # Check that both IDs exist before inserting
             if table1_id_base is not None:
                 associations.append({table1_id: table1_id_base, 'book_id': row['book_id']})
-                print(f"Association created between {table1_id_base} and {row['book_id']}")
-            else:
-                print(f"Association NOT created between {table1_id_base} and {row['book_id']}")
+                #print(f"Association created between {table1_id_base} and {row['book_id']}")
+            #else:
+            #    print(f"Association NOT created between {table1_id_base} and {row['book_id']}")
     except Exception as e:
         print(e)
         print(f"coucou{e}")
@@ -244,32 +283,3 @@ def insert_table_assocation_book(dataframe, table1, table1_key, table1_id):
     except Exception as e:
         raise Exception("Error inserting associations into the database") from e
     
-def requete(requete):
-    """
-    Execute a query on the database., if the number of rows is greater than 1000, the function will make several requests
-
-    Args:
-        requete (str): The query to execute.
-
-    Returns:
-        pd.DataFrame: The result of the query.
-    """
-    try:
-        engine = conexion_db()[0]
-        session = conexion_db()[1]
-    except Exception as e:
-        raise Exception("Failed to connect to the database") from e
-    
-    try:
-        # Execute the query
-        chunk = 0
-        requete = requete + f" LIMIT 2000 OFFSET {chunk};"
-        result = pd.read_sql(requete, engine)
-        while len(result)- chunk >= 2000:
-            chunk = chunk + 2000
-            requete = requete.replace(f"LIMIT 2000 OFFSET {chunk-2000};", f"LIMIT 2000 OFFSET {chunk};")
-            print(requete)
-            result = pd.concat([result, pd.read_sql(requete, engine)])
-    except Exception as e:
-        raise Exception("Error executing query") from e
-    return result

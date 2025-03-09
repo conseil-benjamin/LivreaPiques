@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from SQL_controleur.SQL_controleur import insert, insert_table_assocation_book
+from utils.SQL_controleur.SQL_controleur import insert, insert_table_assocation_book
 
 def traitement_data():
     """

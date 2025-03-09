@@ -1,9 +1,9 @@
 import pandas as pd
 
 # Charger les fichiers CSV
-user_data = pd.read_csv('C:/Users/utilisateur/Documents/Perso/SAE/LivreaPiques/new_data/user.csv')
-formulair_corrected_data = pd.read_csv('C:/Users/utilisateur/Documents/Perso/SAE/LivreaPiques/new_data/formulair_corrected.csv')
-origin_of_books_data = pd.read_csv('C:/Users/utilisateur/Documents/Perso/SAE/LivreaPiques/new_data/book_source.csv')
+user_data = pd.read_csv('new_data/user.csv')
+formulair_corrected_data = pd.read_csv('new_data/formulair_corrected.csv')
+origin_of_books_data = pd.read_csv('new_data/book_source.csv')
 
 # Étape 1: Sélectionner les ID des utilisateurs dans 'user.csv'
 user_ids = user_data[['id']]  # Supposons que 'id' est la colonne des utilisateurs
@@ -42,5 +42,5 @@ print("\nAssociation table preview (after removing 'origin_of_books'):")
 print(association_table.head())
 
 # Sauvegarder la table d'association dans un fichier CSV
-output_file = 'C:/Users/utilisateur/Documents/Perso/SAE/LivreaPiques/new_data/Associations_user_origin.csv'
+output_file = 'new_data/Associations_user_origin.csv'
 association_table.to_csv(output_file, index=False)

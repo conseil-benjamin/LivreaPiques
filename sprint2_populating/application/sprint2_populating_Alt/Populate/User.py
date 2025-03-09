@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from SQL_controleur.SQL_controleur import insert
+from utils.SQL_controleur.SQL_controleur import insert
 
 def traitement_data():
     """

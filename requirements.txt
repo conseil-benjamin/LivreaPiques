@@ -1,0 +1,16 @@
+numpy
+pandas
+psycopg2-binary
+prince
+plotly
+factor_analyzer
+fanalysis
+seaborn
+ftfy
+sqlalchemy
+pyyaml
+tqdm
+datetime
+scikit-learn
+torch
+torch_geometric

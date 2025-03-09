@@ -3,3 +3,6 @@
 configure.ini
 /caches
 /application_system_reco/caches
+tempCodeRunnerFile.py
+/data_docker/db_elastic
+/data_docker/db_pgsql

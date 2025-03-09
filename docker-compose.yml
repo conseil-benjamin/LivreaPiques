@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: db_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db_livreapiques
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data_docker/db_pgsql:/var/lib/postgresql/data
+      - ./sprint2_create_database/database.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    networks:
+      - livreapiques-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d db_livreapiques"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  app:
+    build:
+      dockerfile: Dockerfile
+    container_name: app_container
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - ./new_data:/app/new_data
+    networks:
+      - livreapiques-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - POPULATE_DB=${POPULATE_DB}
+
+networks:
+  livreapiques-network:
+    driver: bridge

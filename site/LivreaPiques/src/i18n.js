@@ -5,6 +5,7 @@ import fr from "./locales/fr.json";
 import Cookies from "js-cookie";
 import Swal from "sweetalert2";
 
+// Initialisation de i18n avec la langue par défaut définie par les cookies ou "fr"
 i18n
     .use(initReactI18next)
     .init({
@@ -25,7 +26,7 @@ i18n.on("languageChanged", (lang) => {
     Swal.fire({
         position: "top-end",
         icon: "success",
-        title: `Langue changée avec succès vers ${lang === "fr" ? "Français" : "Anglais"}`,
+        title: `Langue changée avec succès vers ${lang}`,
         showConfirmButton: false,
         timer: 2000,
         timerProgressBar: true,

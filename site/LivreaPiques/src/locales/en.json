@@ -14,5 +14,158 @@
   "error_404": "Oops! Page not found.",
   "go_back_404": "Go back to home",
   "liked_book": "Like added",
-  "unliked_book": "Like removed"
+  "unliked_book": "Like removed",
+  "get_recommendations": "Get recommendations",
+  "recommendations_title": "Your recommendations",
+  "recommandations_loading": "Loading recommendations...",
+  "home_page_label": "Discover your next favorite read",
+  "home_page_description": "Our platform uses artificial intelligence to recommend books that perfectly match your tastes.",
+  "home_page_register": "Register for free",
+  "button_deconnexion": "Logout",
+  "books_i_have_liked": "Books I have liked",
+  "profile_title": "My Profile",
+  "username": "Username",
+  "age": "Age",
+  "gender": "Gender",
+  "books_per_year": "Books per year",
+  "books_for_pleasure": "Books for pleasure per year",
+  "books_for_work": "Books for work per year",
+  "initial_motivation": "Initially motivated by",
+  "daily_reading_time": "Daily reading time",
+  "reading_motivation": "Motivation for reading",
+  "why_choose_platform": "Why choose our platform",
+  "best_experience": "We have designed the best possible experience for book lovers",
+  "feature_personal_library": "Personal Library",
+  "desc_personal_library": "Keep track of a list of your favorite books and those you want to read.",
+  "feature_ai_recommendations": "AI Recommendations",
+  "desc_ai_recommendations": "Quality suggestions based on your preferences and reading habits.",
+  "feature_active_community": "Active Community",
+  "desc_active_community": "Engage with other readers and discover their impressions.",
+  "placeholder_search": "Search for a book, author, genre...",
+  "none_books_found": "No books found",
+  "team_title": "Our Team",
+  "team_description": "Meet the literature enthusiasts who created this book recommendation platform to help you find your next favorite read.",
+  "contact_us": "Contact Us",
+  "contact_description": "Do you have any questions or suggestions? Feel free to contact us!",
+  "form_name": "Name",
+  "form_email": "Email",
+  "form_message": "Message",
+  "form_send": "Send",
+  "info_title": "Information",
+  "info_address": "Rue Édouard Branly, 22300 Lannion, France",
+  "info_email": "contact@bigbooksociety.com",
+  "info_phone": "+33 1 23 45 67 89",
+  "team": {
+    "manager": "Manager",
+    "database_admin": "Database Administrator",
+    "fullstack_dev": "Full-Stack Developer",
+    "data_ia": "Data AI",
+    "backend_dev": "Back-End Developer",
+    "system_admin": "System Administrator",
+
+    "bio_stefan": "Stéfan is responsible for managing the team and the overall strategy of the platform. His goal is to ensure that everything runs smoothly and that users have a seamless experience.",
+    "bio_diane": "Diane manages the architecture and administration of databases, ensuring optimal organization of information for quick and secure access to books and user data.",
+    "bio_ethan": "Ethan is in charge of front-end and back-end development of the platform, making sure that the application's features are efficient and tailored to user needs.",
+    "bio_benjamin": "Benjamin works on the entire technical development of the platform, optimizing existing features and adding new ones to improve user experience.",
+    "bio_esteban": "Esteban uses artificial intelligence and data analysis techniques to personalize book recommendations and improve the suggestion algorithm based on user preferences.",
+    "bio_pierig": "Pierig is responsible for managing the server-side of the platform, optimizing performance and data security while ensuring the database runs reliably and quickly.",
+    "bio_samuel": "Samuel takes care of system administration and IT infrastructure, ensuring stability, security, and performance of the platform's servers."
+  },
+  "banner_my_profile": "My account",
+  "banner_login": "Login",
+  "banner_register": "Register",
+  "footer_title": "Your smart platform for book recommendations",
+  "footer_navigation_accueil": "Home",
+  "footer_navigation_profile": "My account",
+  "footer_navigation_contact": "Contact",
+  "footer_navigation_documentation": "Documentation",
+  "footer_rights": "© 2025 LivreaPiques. All rights reserved",
+  "connexion_title_login": "Login",
+  "connexion_title_register": "Register",
+  "connexion_description": "Log in to access your account and discover personalized book recommendations.",
+  "register_description": "Register to access your account and discover personalized book recommendations.",
+  "connexion_button_login": "Login",
+  "connexion_button_register": "Register",
+  "no_account": "Don't have an account?",
+  "already_account": "Already have an account?",
+  "connexion_login_redirection": "Log in",
+  "connexion_register_redirection": "Register",
+  "connexion_label_username": "Username",
+    "connexion_label_password": "Password",
+  "connexion_swal_success": "You are now logged in!",
+  "connexion_swal_error": "Invalid username or password",
+  "connexion_password_contrainsts": "Password must contain at least 8 characters, including uppercase, lowercase, and numbers",
+  "connexion_age_contraints": "Age must be between 13 and 115",
+  "connexion_swal_username_error_already_taken": "This username is already taken",
+  "connexion_swal_register_success": "You are now registered!",
+  "connexion_swal_register_error": "An error occurred while registering",
+  "connexion_label_age": "Age",
+  "connexion_gender_male": "Male",
+  "connexion_gender_female": "Female",
+  "connexion_gender_other": "Other",
+  "connexion_step2_button": "Next step",
+  "connexion_motivations_choose_books": "Motivations for choosing books",
+  "connexion_best_time_for_reading": "Best time for reading",
+  "connexion_initiated_by": "Iniated by",
+  "connexion_book_read_for_work": "Books read for work",
+  "connexion_book_read_for_pleasure": "Books read for pleasure",
+  "connexion_number_books_read_by_year": "Number of books read per year",
+  "no_liked_books": "No liked books for now.",
+  "documentation": {
+    "title": "Project Documentation",
+    "prerequisites": {
+      "title": "Prerequisites",
+      "description": "Before starting, make sure you have the following installed on your computer:",
+      "list": [
+        "Git",
+        "Docker and Docker Compose",
+        "A terminal"
+      ]
+    },
+    "installation": {
+      "title": "Installation Steps",
+      "step1": {
+        "title": "1. Get the code from GitHub",
+        "command": "git clone https://github.com/conseil-benjamin/LivreaPiques.git\ncd livreapiques"
+      },
+      "step2": {
+        "title": "2. Verify Docker installation",
+        "description": "Make sure Docker is properly installed:",
+        "command": "docker --version\ndocker-compose --version",
+        "notInstalled": {
+          "description": "If Docker is not installed:",
+          "options": [
+            "Windows/macOS: Download Docker Desktop",
+            "Linux: Use your package manager (apt, dnf, pacman)"
+          ]
+        }
+      },
+      "step3": {
+        "title": "3. Start the project",
+        "description": "In the project directory, run:",
+        "command": "./start_project -p",
+        "note": "The -p option populates the database with initial data."
+      }
+    },
+    "access": {
+      "title": "Accessing the Application",
+      "description": "Once the project is started, you can access the application:",
+      "options": [
+        "User interface: http://localhost:5173",
+        "API (if applicable): http://localhost:8000"
+      ]
+    },
+    "commands": {
+      "title": "Useful Commands",
+      "list": "# Stop the application\n./stop_project\n\n# Restart without resetting the database\n./start_project\n\n# View logs\ndocker-compose logs -f"
+    },
+    "troubleshooting": {
+      "title": "Troubleshooting",
+      "list": [
+        "Check that Docker is running",
+        "Make sure the necessary ports (5173, 8000) are not already in use",
+        "Check the logs: docker-compose logs -f"
+      ]
+    }
+  }
 }

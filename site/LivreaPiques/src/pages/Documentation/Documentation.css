@@ -1,0 +1,115 @@
+@charset "UTF-8";
+.documentation-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 30px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #333333;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+.documentation-container .title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: #3366cc;
+  border-bottom: 2px solid #dddddd;
+  padding-bottom: 15px;
+}
+.documentation-container .sections {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+.documentation-container .section {
+  border-left: 4px solid #3366cc;
+  padding-left: 20px;
+}
+.documentation-container .section-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: rgb(25.5, 25.5, 25.5);
+}
+.documentation-container .section-text {
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+.documentation-container .subsection {
+  margin-bottom: 20px;
+}
+.documentation-container .subsection-title {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  color: rgb(38.25, 38.25, 38.25);
+}
+.documentation-container .code-block {
+  background-color: #f8f8f8;
+  border-radius: 6px;
+  padding: 15px;
+  margin: 10px 0;
+}
+.documentation-container .code-block pre {
+  margin: 0;
+  font-family: "Consolas", "Monaco", monospace;
+  font-size: 14px;
+  overflow-x: auto;
+  line-height: 1.4;
+}
+.documentation-container .list {
+  padding-left: 20px;
+  margin: 10px 0;
+}
+.documentation-container .list li {
+  margin-bottom: 8px;
+  position: relative;
+  line-height: 1.5;
+}
+.documentation-container .list li::before {
+  content: "•";
+  position: absolute;
+  left: -15px;
+  color: #3366cc;
+}
+.documentation-container .note {
+  font-size: 14px;
+  color: #666666;
+  font-style: italic;
+  margin-top: 8px;
+}
+.documentation-container code {
+  background-color: rgb(240.35, 240.35, 240.35);
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: "Consolas", "Monaco", monospace;
+  font-size: 0.9em;
+}
+.documentation-container .link {
+  color: #0066cc;
+  text-decoration: none;
+}
+.documentation-container .link:hover {
+  text-decoration: underline;
+}
+.documentation-container .install-info {
+  margin-top: 12px;
+}
+
+@media screen and (max-width: 768px) {
+  .documentation-container {
+    padding: 20px;
+  }
+  .documentation-container .title {
+    font-size: 28px;
+  }
+  .documentation-container .section-title {
+    font-size: 22px;
+  }
+  .documentation-container .subsection-title {
+    font-size: 18px;
+  }
+}
+
+/*# sourceMappingURL=Documentation.css.map */

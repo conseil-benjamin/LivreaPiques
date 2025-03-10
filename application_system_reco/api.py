@@ -319,16 +319,21 @@ async def get_user_profile(user_id: int):
         liked_books_result = session.execute(liked_books_query, {"user_id": user_id}).fetchall()
         liked_books = [book[0] for book in liked_books_result]
 
-        # Récupération des informations détaillées des livres likés
-        books_query = text("""
-            SELECT book_id, book_cover, book_description FROM book WHERE book_id IN :book_ids
-        """)
+        # Initialiser books_details comme une liste vide
+        books_details = []
         
-        books_result = session.execute(books_query, {"book_ids": tuple(liked_books)}).fetchall()
-        books_details = [
-            {"book_id": book[0], "book_cover": book[1], "book_description": book[2][:150]}  # Limiter la description à 100 caractères
-            for book in books_result
-        ]
+        # Ne récupérer les informations détaillées des livres que s'il y a des livres likés
+        if liked_books:
+            # Récupération des informations détaillées des livres likés
+            books_query = text("""
+                SELECT book_id, book_cover, book_description FROM book WHERE book_id IN :book_ids
+            """)
+            
+            books_result = session.execute(books_query, {"book_ids": tuple(liked_books)}).fetchall()
+            books_details = [
+                {"book_id": book[0], "book_cover": book[1], "book_description": book[2][:150]}  # Limiter la description à 150 caractères
+                for book in books_result
+            ]
 
         # Fermeture de la session
         session.close()
@@ -352,7 +357,6 @@ async def get_user_profile(user_id: int):
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail="Erreur lors de la récupération des données: " + str(e))
     
-
 @app.delete("/api/user/{user_id}/like/{book_id}")
 async def remove_like(user_id: int, book_id: int):
     try:

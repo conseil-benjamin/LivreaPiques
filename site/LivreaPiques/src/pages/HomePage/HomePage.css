@@ -66,10 +66,19 @@
 .home-page .home-page-header button:hover {
   background-color: #555;
 }
+.home-page .home-page-recommandations {
+  min-height: 50vh;
+}
 .home-page .home-page-recommandations .recommandations-list {
   margin: 20px auto;
   width: 90%;
-  max-width: 1200px;
+  max-width: 100%;
+}
+.home-page .home-page-recommandations .recommandations-list .slick-slider .slick-prev, .home-page .home-page-recommandations .recommandations-list .slick-slider .slick-next {
+  color: black !important;
+}
+.home-page .home-page-recommandations .recommandations-list .slick-slider .slick-prev:before, .home-page .home-page-recommandations .recommandations-list .slick-slider .slick-next:before {
+  color: black !important;
 }
 .home-page .home-page-recommandations .recommandations-list .slick-slider .slick-track {
   display: flex;
@@ -81,9 +90,9 @@
 }
 .home-page .home-page-recommandations .recommandations-list .book-card {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
   padding: 10px;
   background-color: #fff;
   border-radius: 8px;

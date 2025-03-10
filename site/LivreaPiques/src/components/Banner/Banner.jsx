@@ -1,16 +1,16 @@
 import React, {useEffect, useState} from "react";
 import "./Banner.scss";
-import Swal from "sweetalert2";
 import {useNavigate} from "react-router-dom";
 import Cookies from "js-cookie";
 import LanguageSwitcher from "../LanguageSwitcher/LanguageSwitcher.jsx";
+import { useTranslation } from "react-i18next";
 
 function Banner() {
     const navigate = useNavigate();
     const jwt = Cookies.get("user_id");
     const [loginClicked, setLoginClicked] = useState(false);
     const [registerClicked, setRegisterClicked] = useState(false);
-
+    const { t } = useTranslation();
     useEffect(() => {
         if (loginClicked) {
             navigate("/login");
@@ -22,24 +22,37 @@ function Banner() {
     return (
         <header className={"banner"}>
             <div className={"banner-row"}>
-                <img
-                    style={{cursor: "pointer"}}
-                    width={50}
-                    height={50}
-                    src={"/public/bigboss.png"} alt="logo"
-                    onClick={() => {
-                        navigate("/")
-                    }
-                    }/>
-                <h2 style={{color: "#fff", fontSize: "1.5rem", fontWeight: "bold"}}>Big Book Society</h2>
+                <div style={{display: "flex", flexDirection: "row", alignItems: "center"}}>
+                    <img
+                        style={{cursor: "pointer"}}
+                        width={50}
+                        height={50}
+                        src={"/public/bigboss.png"} alt="logo"
+                        onClick={() => {
+                            navigate("/")
+                        }
+                        }/>
+                    <h2 style={{color: "#fff", fontSize: "1.5rem", fontWeight: "bold"}}>Big Book Society</h2>
+                </div>
+
+                <div style={{display: "flex", alignItems: "center", flexDirection: "row"}}>
+                    <h3 style={{margin: "0 1em 0 0", fontSize: "1.3rem", color: "#fff", cursor: "pointer"}}
+                        onClick={() => navigate("/")}>{t("footer_navigation_accueil")}</h3>
+                    <h3 style={{margin: "0 1em 0 0", fontSize: "1.3rem", color: "#fff", cursor: "pointer"}}
+                        onClick={() => navigate("/contact")}>{t("footer_navigation_contact")}</h3>
+                    <h3 style={{margin: "0 1em 0 0", fontSize: "1.3rem", color: "#fff", cursor: "pointer"}}
+                        onClick={() => navigate("/documentation")}>{t("footer_navigation_documentation")}</h3>
+                    {jwt && <Compte/>}
+                </div>
+
                 {!jwt ? (
-                        <div style={{display: "flex", alignItems: "center"}}>
-                            <LoginComposant jwt={jwt} setLoginClicked={setLoginClicked} setRegisterClicked={setRegisterClicked}/>
-                            <LanguageSwitcher/>
+                    <div style={{display: "flex", alignItems: "center"}}>
+                        <LoginComposant jwt={jwt} setLoginClicked={setLoginClicked}
+                                        setRegisterClicked={setRegisterClicked}/>
+                        <LanguageSwitcher/>
                         </div>
                     ): (
                     <div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
-                        <Compte/>
                         <LanguageSwitcher/>
                     </div>
                 )}
@@ -53,6 +66,7 @@ function Banner() {
 }
 
 function LoginComposant({ jwt, setLoginClicked, setRegisterClicked }) {
+    const {t} = useTranslation();
     return (
         <div className={"login-composant"}>
             {jwt ? (
@@ -69,10 +83,10 @@ function LoginComposant({ jwt, setLoginClicked, setRegisterClicked }) {
             ) : (
                 <>
                     <button onClick={() => setLoginClicked(true)}>
-                        Connexion
+                        {t("banner_login")}
                     </button>
                     <button onClick={() => setRegisterClicked(true)}>
-                        S'inscrire
+                        {t("banner_register")}
                     </button>
                 </>
             )}
@@ -82,11 +96,12 @@ function LoginComposant({ jwt, setLoginClicked, setRegisterClicked }) {
 
 function Compte() {
     const navigate = useNavigate();
+    const {t} = useTranslation();
 
     return (
         <div className={"compte"}>
             <button>
-                <h1 style={{color: "#fff", cursor: "pointer"}} onClick={() => navigate("/profile")}>Mon compte</h1>
+                <h3 style={{margin: "0 1em 0 0", fontSize: "1.3rem", color: "#fff", cursor: "pointer"}} onClick={() => navigate("/profile")}>{t("banner_my_profile")}</h3>
             </button>
         </div>
     )

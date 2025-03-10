@@ -14,5 +14,159 @@
   "error_404": "Oups ! Page introuvable.",
   "go_back_404": "Retour à l'accueil",
   "liked_book": "Like ajouté",
-  "unliked_book": "Like retiré"
+  "unliked_book": "Like retiré",
+  "get_recommendations": "Obtenir des recommandations",
+  "recommendations_title": "Vos recommendations",
+  "recommandations_loading": "Chargement de vos recommandations...",
+  "home_page_label": "Découvrez votre prochaine lecture préférée",
+  "home_page_description": " Notre plateforme utilise l'intelligence artificielle pour vous recommander des livres qui correspondent parfaitement à vos goûts.",
+  "home_page_register": "Inscrivez-vous gratuitement",
+  "button_deconnexion": "Déconnexion",
+  "connexion_password_contrainsts": "Le mot de passe doit contenir au moins 8 caractères, une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.",
+  "books_i_have_liked": "Livres que j'ai aimés",
+  "profile_title": "Mon Profil",
+  "username": "Nom d'utilisateur",
+  "age": "Âge",
+  "gender": "Genre",
+  "books_per_year": "Livres par an",
+  "books_for_pleasure": "Livres de plaisir par an",
+  "books_for_work": "Livres de travail par an",
+  "initial_motivation": "Initialement motivé par",
+  "daily_reading_time": "Temps de lecture quotidien",
+  "reading_motivation": "Motivation pour la lecture",
+  "why_choose_platform": "Pourquoi choisir notre plateforme",
+  "best_experience": "Nous avons conçu la meilleure expérience possible pour les passionnés de lecture",
+  "feature_personal_library": "Bibliothèque personnelle",
+  "desc_personal_library": "Tenez à jour une liste de vos livres favoris et de ceux que vous souhaitez lire.",
+  "feature_ai_recommendations": "Recommandations IA",
+  "desc_ai_recommendations": "Des suggestions de qualité basées sur vos préférences et habitudes de lecture.",
+  "feature_active_community": "Communauté active",
+  "desc_active_community": "Échangez avec d'autres lecteurs et découvrez leurs impressions.",
+  "placeholder_search": "Rechercher un livre, un auteur, un genre...",
+  "none_books_found": "Aucun livre trouvé",
+  "team_title": "Notre Équipe",
+  "team_description": "Découvrez les passionnés de littérature qui ont créé cette plateforme de recommandations de livres pour vous aider à trouver votre prochaine lecture préférée.",
+  "contact_us": "Contactez-nous",
+  "contact_description": "Vous avez des questions ou des suggestions ? N'hésitez pas à nous contacter !",
+  "form_name": "Nom",
+  "form_email": "Email",
+  "form_message": "Message",
+  "form_send": "Envoyer",
+  "info_title": "Informations",
+  "info_address": "Rue Édouard Branly, 22300 Lannion, France",
+  "info_email": "contact@bigbooksociety.com",
+  "info_phone": "+33 1 23 45 67 89",
+  "team": {
+    "manager": "Manager",
+    "database_admin": "Administratrice Base de données",
+    "fullstack_dev": "Développeur Full-Stack",
+    "data_ia": "Data IA",
+    "backend_dev": "Développeur Back-End",
+    "system_admin": "Administrateur Système",
+
+    "bio_stefan": "Stéfan est responsable de la gestion de l'équipe et de la stratégie globale de la plateforme. Son objectif est de s'assurer que tout fonctionne harmonieusement et que les utilisateurs aient une expérience fluide.",
+    "bio_diane": "Diane gère l'architecture et la gestion des bases de données, garantissant une organisation optimale des informations pour un accès rapide et sécurisé aux données des livres et des utilisateurs.",
+    "bio_ethan": "Ethan est en charge du développement front-end et back-end de la plateforme, en s'assurant que les fonctionnalités de l'application soient performantes et adaptées aux besoins des utilisateurs.",
+    "bio_benjamin": "Benjamin travaille sur l'ensemble du développement technique de la plateforme, en optimisant les fonctionnalités existantes et en ajoutant de nouvelles fonctionnalités pour améliorer l'expérience utilisateur.",
+    "bio_esteban": "Esteban utilise des techniques d'intelligence artificielle et d'analyse de données pour personnaliser les recommandations de livres et améliorer l'algorithme de suggestion en fonction des préférences des utilisateurs.",
+    "bio_pierig": "Pierig est responsable de la gestion du côté serveur de la plateforme, en optimisant la performance et la sécurité des données tout en s'assurant que la base fonctionne de manière fiable et rapide.",
+    "bio_samuel": "Samuel s'occupe de l'administration et de la gestion des systèmes informatiques, en garantissant la stabilité, la sécurité et la performance des serveurs de la plateforme."
+  },
+  "banner_my_profile": "Mon compte",
+  "banner_login": "Connexion",
+  "banner_register": "Inscription",
+  "footer_title": "Votre plateforme de recommandation de livres intelligente",
+  "footer_navigation_accueil": "Accueil",
+  "footer_navigation_profile": "Mon compte",
+  "footer_navigation_contact": "Contact",
+  "footer_naviation_documentation": "Documentation",
+  "footer_rights": "© 2025 Big Book Society. Tous droits réservés.",
+  "connexion_title_login": "Connectez-vous",
+  "connexion_title_register": "Inscrivez-vous",
+  "coonexion_description": "Connectez-vous pour accéder à votre compte et découvrir des recommandations personnalisées.",
+  "register_description": "Inscrivez-vous pour accéder à votre compte et découvrir des recommandations personnalisées.",
+  "connexion_button_login": "Connexion",
+  "connexion_button_register": "Inscription",
+  "no_account": "Pas encore de compte ?",
+  "already_account": "Déjà un compte ?",
+  "connexion_login_redirection": "Connectez-vous",
+  "connexion_register_redirection": "Inscrivez-vous",
+    "connexion_label_username": "Nom d'utilisateur",
+    "connexion_label_password": "Mot de passe",
+  "connexion_swal_success": "Vous êtes maintenant connecté !",
+  "connexion_swal_error": "Nom d'utilisateur ou mot de passe incorrect.",
+  "connexion_password_contrainst": "Le mot de passe doit contenir au moins 8 caractères, une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.",
+  "connexion_age_contraints": "L'âge doit être compris entre 13 et 115.",
+  "connexion_swal_username_error_already_taken": "Ce nom d'utilisateur est déjà pris.",
+  "connexion_swal_register_success": "Vous êtes maintenant inscrit !",
+  "connexion_swal_register_error": "Erreur lors de l'inscription.",
+  "connexion_label_age": "Âge",
+  "connexion_gennder_male": "Homme",
+  "connexion_gender_female": "Femme",
+  "connexion_gender_other": "Autre",
+  "connexion_step2_button": "Étape suivante",
+  "connexion_motivations_choose_books": "Motivations pour choisir des livres",
+  "connexion_best_time_for_reading": "Meilleur moment pour lire",
+  "connexion_initiated_by": "Initié par",
+  "connexion_book_read_for_work": "Livres lus pour le travail",
+  "connexion_book_read_for_pleasure": "Livres lus pour le plaisir",
+  "connexion_number_books_read_by_year": "Nombre de livres lus par an",
+  "no_liked_books": "No liked books for now.",
+  "documentation": {
+    "title": "Documentation du Projet",
+    "prerequisites": {
+      "title": "Prérequis",
+      "description": "Avant de commencer, assurez-vous d'avoir les éléments suivants installés sur votre ordinateur :",
+      "list": [
+        "Git",
+        "Docker et Docker Compose",
+        "Un terminal"
+      ]
+    },
+    "installation": {
+      "title": "Étapes d'installation",
+      "step1": {
+        "title": "1. Récupérer le code depuis GitHub",
+        "command": "git clone https://github.com/conseil-benjamin/LivreaPiques.git\ncd livreapiques"
+      },
+      "step2": {
+        "title": "2. Vérifier l'installation de Docker",
+        "description": "Assurez-vous que Docker est correctement installé :",
+        "command": "docker --version\ndocker-compose --version",
+        "notInstalled": {
+          "description": "Si Docker n'est pas installé :",
+          "options": [
+            "Windows/macOS : Téléchargez Docker Desktop",
+            "Linux : Utilisez votre gestionnaire de paquets (apt, dnf, pacman)"
+          ]
+        }
+      },
+      "step3": {
+        "title": "3. Démarrer le projet",
+        "description": "Dans le répertoire du projet, exécutez :",
+        "command": "./start_project -p",
+        "note": "L'option -p permet de peupler la base de données avec des données initiales."
+      }
+    },
+    "access": {
+      "title": "Accès à l'application",
+      "description": "Une fois le projet démarré, vous pouvez accéder à l'application :",
+      "options": [
+        "Interface utilisateur : http://localhost:5173",
+        "API (si applicable) : http://localhost:8000"
+      ]
+    },
+    "commands": {
+      "title": "Commandes utiles",
+      "list": "# Arrêter l'application\n./stop_project\n\n# Redémarrer sans réinitialiser la base\n./start_project\n\n# Afficher les logs\ndocker-compose logs -f"
+    },
+    "troubleshooting": {
+      "title": "Dépannage",
+      "list": [
+        "Vérifiez que Docker est en cours d'exécution",
+        "Assurez-vous que les ports nécessaires (5173, 8000) ne sont pas déjà utilisés",
+        "Consultez les logs : docker-compose logs -f"
+      ]
+    }
+  }
 }

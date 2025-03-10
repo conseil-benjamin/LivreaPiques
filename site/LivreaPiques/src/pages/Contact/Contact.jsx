@@ -2,63 +2,65 @@ import React, { useState } from 'react';
 import './Contact.scss';
 import Banner from "../../components/Banner/Banner.jsx";
 import Footer from "../../components/Footer/Footer.jsx";
+import { useTranslation } from 'react-i18next';
 
 const Contact = () => {
+    const { t } = useTranslation();
     // Données de l'équipe - remplacez avec vos vraies informations
     const teamMembers = [
-        {
+            {
             id: 0,
-            name: "Stéfan Beaulieu",
-            role: "Manager",
-            bio: "Stéfan est responsable de la gestion de l'équipe et de la stratégie globale de la plateforme. Son objectif est de s'assurer que tout fonctionne harmonieusement et que les utilisateurs aient une expérience fluide.",
-            email: "stefan.beaulieu@etudiant.univ-rennes.fr",
-            image: "./stephane.jpg"
+                name: "Stéfan Beaulieu",
+                role: t("team.manager"),
+                bio: t("team.bio_stefan"),
+                email: "stefan.beaulieu@etudiant.univ-rennes.fr",
+                image: "./stephane.jpg"
         },
-        {
-            id: 1,
-            name: "Diane Monéger",
-            role: "Administratrice Base de données",
-            bio: "Diane gère l'architecture et la gestion des bases de données, garantissant une organisation optimale des informations pour un accès rapide et sécurisé aux données des livres et des utilisateurs.",
+            {
+                id: 1,
+                name: "Diane Monéger",
+                role: t("team.database_admin"),
+            bio: t("team.bio_diane"),
             email: "diane.moneger@etudiant.univ-rennes.fr",
             image: "./diane.jpg"
         },
         {
             id: 2,
-            name: "Ethan Brehin",
-            role: "Développeur Full-Stack",
-            bio: "Ethan est en charge du développement front-end et back-end de la plateforme, en s'assurant que les fonctionnalités de l'application soient performantes et adaptées aux besoins des utilisateurs.",
+                name: "Ethan Brehin",
+            role: t("team.fullstack_dev"),
+            bio: t("team.bio_ethan"),
             email: "ethan.brehin@etudiant.univ-rennes.fr",
             image: "./ethan.jpg"
         },
         {
             id: 3,
-            name: "Benjamin Conseil",
-            role: "Développeur Full-Stack",
-            bio: "Benjamin travaille sur l'ensemble du développement technique de la plateforme, en optimisant les fonctionnalités existantes et en ajoutant de nouvelles fonctionnalités pour améliorer l'expérience utilisateur.",
+                name: "Benjamin Conseil",
+            role: t("team.fullstack_dev"),
+            bio: t("team.bio_benjamin"),
             email: "benjamin.conseil@etudiant.univ-rennes.fr",
             image: "./benjamin.png"
         },
         {
             id: 4,
-            name: "Esteban Debroise",
-            role: "Data IA",
-            bio: "Esteban utilise des techniques d'intelligence artificielle et d'analyse de données pour personnaliser les recommandations de livres et améliorer l'algorithme de suggestion en fonction des préférences des utilisateurs.",
+                name: "Esteban Debroise",
+            role: t("team.data_ia"),
+            bio: t("team.bio_esteban"),
             email: "esteban.debroise@etudiant.univ-rennes.fr",
             image: "./esteban.png"
         },
         {
             id: 5,
-            name: "Pierig Malnoë",
-            role: "Développeur Back-End",
-            bio: "Pierig est responsable de la gestion du côté serveur de la plateforme, en optimisant la performance et la sécurité des données tout en s'assurant que la base fonctionne de manière fiable et rapide.",
+                name: "Pierig Malnoë",
+            role: t("team.backend_dev"),
+            bio: t("team.bio_pierig"),
             email: "pierig.malnoe@etudiant.univ-rennes.fr",
             image: "./pierig.png"
         },
         {
             id: 6,
-            name: "Samuel Jouffe",
-            role: "Administrateur Système",
-            bio: "Samuel s'occupe de l'administration et de la gestion des systèmes informatiques, en garantissant la stabilité, la sécurité et la performance des serveurs de la plateforme.",
+                name: "Samuel Jouffe",
+            role: t("team.system_admin"),
+            bio: t("team.bio_samuel"),
             email: "samuel.jouffe@etudiant.univ-rennes.fr",
             image: "./samuel.png"
         }
@@ -80,9 +82,9 @@ const Contact = () => {
         <div className="team-contact-page">
             {/* En-tête */}
             <div className="header">
-                <h1>Notre Équipe</h1>
+                <h1>{t("team_title")}</h1>
                 <p>
-                    Découvrez les passionnés de littérature qui ont créé cette plateforme de recommandations de livres pour vous aider à trouver votre prochaine lecture préférée.
+                    {t("team_description")}
                 </p>
             </div>
 
@@ -110,28 +112,28 @@ const Contact = () => {
             <div className="contact-section">
                 <div className="contact-container">
                     <div className="contact-form">
-                        <h2>Contactez-nous</h2>
+                        <h2>{t("contact_us")}</h2>
                         <p>
-                            Vous avez des questions ou des suggestions ? N'hésitez pas à nous contacter !
+                            {t("contact_description")}
                         </p>
                         <form>
                             <div className="form-group">
-                                <label htmlFor="name">Nom</label>
+                                <label htmlFor="name">{t("form_name")}</label>
                                 <input type="text" id="name" />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="email">Email</label>
+                                <label htmlFor="email">{t("form_email")}</label>
                                 <input type="email" id="email" />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="message">Message</label>
+                                <label htmlFor="message">{t("form_message")}</label>
                                 <textarea id="message" rows="4"></textarea>
                             </div>
-                            <button type="submit">Envoyer</button>
+                            <button type="submit">{t("form_send")}</button>
                         </form>
                     </div>
                     <div className="contact-info">
-                        <h3>Informations</h3>
+                        <h3>{t("info_title")}</h3>
                         <div className="info-items">
                             <p className="info-item">
                                 <svg className="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -144,7 +146,7 @@ const Contact = () => {
                                 <svg className="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                 </svg>
-                                <span>contact@livresapiques.com</span>
+                                <span>contact@bigbooksociety.com</span>
                             </p>
                             <p className="info-item">
                                 <svg className="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">

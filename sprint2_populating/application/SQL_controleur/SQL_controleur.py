@@ -245,7 +245,7 @@ def insert_table_assocation_book(dataframe, table1, table1_key, table1_id):
     except Exception as e:
         raise Exception("Error inserting associations into the database") from e
     
-def update(table, values, conditions):
+def update(data):
     attempts = 3
     interval = 3
 
@@ -260,17 +260,23 @@ def update(table, values, conditions):
                 raise Exception("Échec de connexion à la base de données après plusieurs tentatives") from e
 
     try:
-        set_clause = ", ".join([f"{col} = :{col}" for col in values.keys()])
-        where_clause = " AND ".join([f"{col} = :{col}" for col in conditions.keys()])
+        with tqdm(total=len(data), desc="Mise à jour de la base", unit="ligne") as pbar:
+            for index, row in data.iterrows():
+                book_id = row['book_id']
+                book_cover = row['book_cover']
 
-        sql = text(f"UPDATE {table} SET {set_clause} WHERE {where_clause}")  # Utilisation explicite de text()
-        params = {**values, **conditions}
+                sql = text("UPDATE book SET book_cover = :book_cover WHERE book_id = :book_id")
+                params = {'book_cover': book_cover, 'book_id': book_id}
 
-        session.execute(sql, params)
+                session.execute(sql, params)
+                pbar.update(1)  
+
         session.commit()
-        print(f"Mise à jour réussie dans la table {table}")
+        print("Mise à jour réussie pour tous les enregistrements.")
         return True
     except Exception as e:
-        print(f"Erreur lors de la mise à jour de la table {table} : {e}")
+        session.rollback()
+        print(f"Erreur lors de la mise à jour : {e}")
         return False
-
+    finally:
+        session.close()

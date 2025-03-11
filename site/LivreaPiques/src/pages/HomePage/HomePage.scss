@@ -68,15 +68,23 @@
 }
 
   .home-page-recommandations {
+    min-height: 50vh;
     .recommandations-list {
       margin: 20px auto;
       width: 90%;
-      max-width: 1200px; // Largeur maximale du carrousel
+      max-width: 100%; // Largeur maximale du carrousel
 
       .slick-slider {
+        .slick-prev, .slick-next {
+          color: black !important;
+        }
+
+        .slick-prev:before, .slick-next:before {
+          color: black !important;
+        }
         .slick-track {
           display: flex;
-          gap: 20px; // Espacement entre les cartes du carrousel
+          gap: 20px;
         }
 
         .slick-slide {
@@ -87,9 +95,9 @@
 
       .book-card {
         display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+        flex-direction: row;
         align-items: center;
+        justify-content: center;
         padding: 10px;
         background-color: #fff;
         border-radius: 8px;

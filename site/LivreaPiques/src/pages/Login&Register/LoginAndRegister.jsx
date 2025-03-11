@@ -6,6 +6,7 @@ import validator from "validator";
 import Swal from "sweetalert2";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons'
+import {t} from "i18next";
 
 function LoginAndRegister() {
     const navigate = useNavigate();
@@ -36,11 +37,10 @@ function LoginAndRegister() {
             <div className="login-register-container">
         <div className="card">
             <div className="card-header">
-                    <h2>{isLoginPage ? "Connectez-vous" : "Créez un compte"}</h2>
-                    <h3>
-                        {isLoginPage
-                            ? "Accédez à votre compte pour découvrir vos recommandations"
-                            : "Rejoignez notre communauté de lecteurs"}
+                <h2>{isLoginPage ? t("connexion_title_login") : t("connexion_title_register")}</h2>
+                <h3>
+                    {isLoginPage
+                        ? t("connexion_description") : t("register_description")}
                     </h3>
                 </div>
 
@@ -49,13 +49,13 @@ function LoginAndRegister() {
                         className={isLoginPage ? "active" : ""}
                         onClick={() => navigate("/login")}
                     >
-                        Connexion
+                        {t("connexion_button_login")}
                     </button>
                     <button
                         className={!isLoginPage ? "active" : ""}
                         onClick={() => navigate("/register")}
                     >
-                        Inscription
+                        {t("connexion_button_register")}
                     </button>
                 </div>
 
@@ -70,13 +70,13 @@ function LoginAndRegister() {
                 <div className="footer-text">
                     {isLoginPage ? (
                         <p>
-                            Pas encore de compte ?{" "}
-                            <span onClick={() => navigate("/register")}>Inscrivez-vous</span>
+                            {t("no_account")} ?{" "}
+                            <span onClick={() => navigate("/register")}>{t("connexion_register_redirection")}</span>
                         </p>
                     ) : (
                         <p>
-                            Déjà un compte ?{" "}
-                            <span onClick={() => navigate("/login")}>Connectez-vous</span>
+                            {t("already_account")} ?{" "}
+                            <span onClick={() => navigate("/login")}>{t("connexion_login_redirection")}</span>
                         </p>
                     )}
                 </div>
@@ -90,7 +90,7 @@ function LoginForm({ username, setUsername, password, setPassword, navigate}) {
     return (
         <div className="form">
             <div className="form-group">
-                <label>Nom d'utilisateur</label>
+                <label>{t("connexion_label_username")}</label>
                 <input
                     type="text"
                     value={username}
@@ -100,7 +100,7 @@ function LoginForm({ username, setUsername, password, setPassword, navigate}) {
                 />
             </div>
             <div className="form-group">
-                <label>Mot de passe</label>
+                <label>{t("connexion_label_password")}</label>
                 <input
                     type="password"
                     value={password}
@@ -109,7 +109,7 @@ function LoginForm({ username, setUsername, password, setPassword, navigate}) {
                     required
                 />
             </div>
-            <button onClick={() => login(username, password, navigate)}>Se connecter</button>
+            <button onClick={() => login(username, password, navigate)}>{t("connexion_button_login")}</button>
         </div>
     );
 }
@@ -137,7 +137,7 @@ function RegisterForm({ username, setUsername, password, setPassword, age, setAg
         {firstStepInscriptionAccomplished === true ? (
             <div className="form">
                 <div className="form-group">
-                    <label>Nombres de livres lu par an</label>
+                    <label>{t("connexion_number_books_read_by_year")}</label>
                     <div className="select-container">
                         <select value={nbBooksReadByYear} onChange={(e) => setNbBooksReadByYear(e.target.value)} onBlur={handleBlur}
                                 onFocus={handleFocus}>
@@ -152,7 +152,7 @@ function RegisterForm({ username, setUsername, password, setPassword, age, setAg
                     </div>
                 </div>
                 <div className="form-group">
-                    <label>Nombre pour le plaisir</label>
+                    <label>{t("connexion_book_read_for_pleasure")}</label>
                     <div className="select-container">
                         <select value={nbBooksForPleasure} onChange={(e) => setNbBooksForPleasure(e.target.value)}
                                 onBlur={handleBlur}
@@ -168,7 +168,7 @@ function RegisterForm({ username, setUsername, password, setPassword, age, setAg
                     </div>
                 </div>
                 <div className="form-group">
-                    <label>Nombre pour le travail</label>
+                    <label>{t("connexion_book_read_for_work")}</label>
                     <div className="select-container">
                         <select value={nbBooksForWork} onChange={(e) => setNbBooksForWork(e.target.value)}
                                 onBlur={handleBlur}
@@ -184,7 +184,7 @@ function RegisterForm({ username, setUsername, password, setPassword, age, setAg
                     </div>
                 </div>
                 <div className="form-group">
-                    <label>Initié à la lecture par </label>
+                    <label>{t("connexion_initiated_by")}</label>
                     <div className="select-container">
                         <select value={initatedBy} onChange={(e) => setInitiatedBy(e.target.value)} onBlur={handleBlur}
                                 onFocus={handleFocus}>
@@ -199,7 +199,7 @@ function RegisterForm({ username, setUsername, password, setPassword, age, setAg
                     </div>
                 </div>
                 <div className="form-group">
-                    <label>Meilleur moment pour lire</label>
+                    <label>{t("connexion_best_time_for_reading")}</label>
                     <div className="select-container">
                         <select value={readingTime} onChange={(e) => setReadingTime(e.target.value)} onBlur={handleBlur}
                                 onFocus={handleFocus}>
@@ -214,7 +214,7 @@ function RegisterForm({ username, setUsername, password, setPassword, age, setAg
                     </div>
                 </div>
                 <div className="form-group">
-                    <label>Motivations pour choisir un livre</label>
+                    <label>{t("connexion_motivations_choose_books")}</label>
                     <div className="select-container">
                         <select value={motivationOptions} onChange={(e) => setChoiceMotivation(e.target.value)} onBlur={handleBlur}
                                 onFocus={handleFocus}>
@@ -253,7 +253,7 @@ function RegisterForm({ username, setUsername, password, setPassword, age, setAg
         ) : (
             <div className="form">
                 <div className="form-group">
-                    <label>Nom d'utilisateur</label>
+                    <label>{t("connexion_label_username")}</label>
                     <input
                         type="text"
                         value={username}
@@ -263,7 +263,7 @@ function RegisterForm({ username, setUsername, password, setPassword, age, setAg
                     />
                 </div>
                 <div className="form-group">
-                    <label>Mot de passe</label>
+                    <label>{t("connexion_label_password")}</label>
                     <input
                         type="password"
                         value={password}
@@ -273,7 +273,7 @@ function RegisterForm({ username, setUsername, password, setPassword, age, setAg
                     />
                 </div>
                 <div className="form-group">
-                    <label>Age</label>
+                    <label>{t("connexion_label_age")}</label>
                     <input
                         type="number"
                         value={age}
@@ -291,7 +291,7 @@ function RegisterForm({ username, setUsername, password, setPassword, age, setAg
                             className={gender === "M" ? "active" : ""}
                             onClick={() => setGender("M")}
                         >
-                            Homme
+                            {t("connexion_gender_male")}
                         </button>
                         <button
                             style={{backgroundColor: gender === "F" ? "#000000" : "#FFFFFF", color: gender !== "F" ? "#000000" : "#FFFFFF"}}
@@ -299,7 +299,7 @@ function RegisterForm({ username, setUsername, password, setPassword, age, setAg
                             className={gender === "F" ? "active" : ""}
                             onClick={() => setGender("F")}
                         >
-                            Femme
+                            {t("connexion_gender_female")}
                         </button>
                         <button
                             style={{backgroundColor: gender === "A" ? "#000000" : "#FFFFFF", color: gender !== "A" ? "#000000" : "#FFFFFF"}}
@@ -307,7 +307,7 @@ function RegisterForm({ username, setUsername, password, setPassword, age, setAg
                             className={gender === "A" ? "active" : ""}
                             onClick={() => setGender("A")}
                         >
-                            Autre
+                            {t("connexion_gender_other")}
                         </button>
                     </div>
                 </div>
@@ -321,7 +321,7 @@ function RegisterForm({ username, setUsername, password, setPassword, age, setAg
                         setFirstStepInscriptionAccomplished
                     )
                 }
-                >{isLoading ? "Chargement..." : "Étape suivante"}
+                >{isLoading ? t("loading") : t("connexion_step2_button")}
                 </button>
             </div>
         )}
@@ -345,7 +345,7 @@ function login(username, password, navigate) {
             r.json().then((data) => {
                 Swal.fire({
                     timer: 2000,
-                    text: "Connexion réussie",
+                    text: t("connexion_swal_success"),
                     icon: "success",
                     position: "top-end",
                     toast: true,
@@ -357,7 +357,7 @@ function login(username, password, navigate) {
             });
         } else {
             Swal.fire({
-                text: "Nom d'utilisateur ou mot de passe incorrect",
+                text: t("connexion_swal_error"),
                 timer: 3000,
                 icon: "error",
                 toast: true,
@@ -375,16 +375,16 @@ async function verifyValidityFormRegister(username, password, age, gender, setFi
     let hasSameUsername = false;
     if (!validator.isStrongPassword(password)) {
         Swal.fire({
-            text: "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial",
+            text: t("connexion_password_contrainsts"),
             icon: "error",
             confirmButtonText: "Ok",
         }).then(r =>
             console.log(r)
         );
     }
-    if (age > 110 || age < 13) {
+    if (age > 115 || age < 13) {
         Swal.fire({
-            text: "Vous avez moins de 13 ans ou plus de 110 ans, vous ne pouvez pas vous inscrire",
+            text: t("connexion_age_contraints"),
             icon: "error",
             confirmButtonText: "Ok",
         }).then(r =>
@@ -392,7 +392,7 @@ async function verifyValidityFormRegister(username, password, age, gender, setFi
         );
     }
 
-    const response = await fetch(`https://livreapiques.onrender.com/api/check_username_availabitily/${username}`, {
+    const response = await fetch(`http://localhost:8000/api/check_username_availabitily/${username}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -401,7 +401,7 @@ async function verifyValidityFormRegister(username, password, age, gender, setFi
 
     if (response.status === 409) {
       await Swal.fire({
-            text: "Nom d'utilisateur déjà utilisé",
+            text: t("connexion_swal_username_error_already_taken"),
             icon: "error",
             confirmButtonText: "Ok",
         }).then(r =>
@@ -431,7 +431,7 @@ function createInscription(
     navigate
 ) {
 
-    fetch("https://livreapiques.onrender.com/api/create_user/", {
+    fetch("http://localhost:8000/api/create_user/", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -453,7 +453,7 @@ function createInscription(
             r.json().then((data) => {
                 Swal.fire({
                     timer: 2500,
-                    text: "Inscription réussie",
+                    text: t("connexion_swal_register_success"),
                     icon: "success",
                     position: "top-end",
                     toast: true,
@@ -465,7 +465,7 @@ function createInscription(
             });
         } else{
             Swal.fire({
-                text: "Erreur lors de l'inscription",
+                text: t("connexion_swal_register_error"),
                 timer: 3000,
                 icon: "error",
                 toast: true,
@@ -495,7 +495,6 @@ function createInscription(
         navigate
     ) {
         // todo : vérifier si l'étape 2 de l'inscription est correcte
-        console.log("vérifier si l'étape 2 de l'inscription est correcte")
         if (nbBooksReadByYear === 0 || nbBooksForPleasure === 0 || nbBooksForWork === 0 || initatedBy === "" || readingTime === "" || choiceMotivation === "") {
             Swal.fire({
                 text: "Veuillez remplir tous les champs",

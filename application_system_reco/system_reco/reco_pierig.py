@@ -2,7 +2,7 @@ import pandas as pd
 from math import sqrt
 from supabase import create_client, Client
 from sklearn.preprocessing import MinMaxScaler
-from SQL_controleur.SQL_controleur import *
+from application_system_reco.SQL_controleur.SQL_controleur import *
 
 
 url = "https://pczyoeavtwijgtkzgcaz.supabase.co"

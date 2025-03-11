@@ -14,3 +14,8 @@ datetime
 scikit-learn
 torch
 torch_geometric
+uvicorn
+fastapi
+spacy
+gensim
+supabase

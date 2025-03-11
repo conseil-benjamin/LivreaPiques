@@ -3,7 +3,7 @@ import numpy as np
 from supabase import create_client 
 from sklearn.preprocessing import MinMaxScaler
 from collections import Counter
-from SQL_controleur.SQL_controleur import *
+from application_system_reco.SQL_controleur.SQL_controleur import *
 
 class FinalRecommender:
     def __init__(self):

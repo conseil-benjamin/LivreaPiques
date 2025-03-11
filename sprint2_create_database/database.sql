@@ -20,6 +20,7 @@ CREATE TABLE Book(
     three_star_rating INT,
     four_star_rating INT,
     five_star_rating INT,
+    book_cover VARCHAR(280),
     CONSTRAINT book_isbn_unique UNIQUE(isbn),
     CONSTRAINT book_isbn13_unique UNIQUE(isbn13)
 );
@@ -284,3 +285,17 @@ alter table "user" ALTER COLUMN nb_book_work TYPE VARCHAR(10);
 alter table "user" ALTER COLUMN initiated_by TYPE VARCHAR(100);
 alter table "user" ALTER COLUMN choice_motivation TYPE VARCHAR(200);
 alter table Media ALTER COLUMN media_name TYPE VARCHAR(40);
+
+CREATE OR REPLACE VIEW allbookdata as
+SELECT book.book_id, book.book_title, book.book_cover, book.book_description, STRING_AGG(DISTINCT author.author_name, ', ') AS authors , STRING_AGG(DISTINCT awards.award_name, ', ') AS awards, STRING_AGG(DISTINCT genre.genre_name, ', ') AS genres,  book_rating.book_avg_rating, STRING_AGG(DISTINCT series.series_name, ', ') AS series
+FROM book 
+LEFT JOIN book_author ON book.book_id = book_author.book_id
+LEFT JOIN author ON book_author.author_id = author.author_id
+LEFT JOIN book_awards ON book_awards.book_id = book.book_id
+LEFT JOIN awards ON book_awards.award_id = awards.award_id
+LEFT JOIN book_genre ON book_genre.book_id = book.book_id
+LEFT JOIN genre ON book_genre.genre_id = genre.genre_id
+LEFT JOIN book_rating on book.book_id = book_rating.book_id
+LEFT JOIN book_series on book.book_id = book_series.book_id
+LEFT JOIN series on series.series_id = book_series.book_id
+GROUP BY book.book_id, book_rating.book_avg_rating;

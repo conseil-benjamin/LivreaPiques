@@ -2,7 +2,7 @@ import fastapi as fa
 from fastapi import HTTPException
 from pydantic import BaseModel
 import hashlib
-from SQL_controleur.SQL_controleur import *
+from application_system_reco.SQL_controleur.SQL_controleur import *
 import pandas as pd
 from sqlalchemy import create_engine, text
 from sqlalchemy import text  # Ajoute cette ligne
@@ -10,8 +10,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import SQLAlchemyError
 import os
 import uvicorn
-from system_reco.reco_esteban import *
-from system_reco.reco_benjamin import *
+from  application_system_reco.system_reco.reco_esteban import *
+from  application_system_reco.system_reco.reco_benjamin import *
 
 # Pour lancer le serveur : uvicorn api:app --reload (dans le dossier de l'api)
 

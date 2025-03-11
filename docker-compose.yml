@@ -40,6 +40,16 @@ services:
     environment:
       - POPULATE_DB=${POPULATE_DB}
 
+  react-app:
+    build:
+      context: ./site/LivreaPiques
+      dockerfile: Dockerfile
+    container_name: react_app_container
+    ports:
+      - "3000:3000"
+    networks:
+      - livreapiques-network
+
 networks:
   livreapiques-network:
     driver: bridge

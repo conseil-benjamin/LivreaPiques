@@ -1,7 +1,7 @@
 import pandas as pd
 from tqdm import tqdm
 
-from SQL_controleur.SQL_controleur import *
+from application_system_reco.SQL_controleur.SQL_controleur import *
 
 def get_data():
     data = requete("SELECT user_id, STRING_AGG(book_title, ' , ') AS books_liked FROM liked_books NATURAL JOIN book GROUP BY user_id")

@@ -10,6 +10,14 @@ import os
 
 CACHE_EXPIRATION = 24 * 3600  # 24 hours
 
+# Import la donnée du fichier yml
+try:
+    with open('application_system_reco/config.yml', 'r') as file:
+        config = yaml.safe_load(file)
+except Exception as e:
+    raise Exception(f"Error loading the configuration file : {e}") from e
+
+
 
 def conexion_db():
     """
@@ -25,15 +33,15 @@ def conexion_db():
     """
     try:
         ## URL of the database
-        database_url = "postgresql://postgres.pczyoeavtwijgtkzgcaz:D0jVgaoGmDAFuaMS@aws-0-eu-west-3.pooler.supabase.com:6543/postgres"
+        database_url = config['adress_sql']
+        schema = config['schema']
         engine = create_engine(database_url)
         session = sessionmaker(bind=engine)
         session = session()
-        print("Connection to the database successful")
-        return engine, session
+        return engine, session, schema
     except Exception as e:
         raise Exception(f"Error in the connection to the database : {e}") from e
-
+    
 def requete(requete, no_limit=False, cache=True):
     """
     Execute a query on the database., if the number of rows is greater than 1000, the function will make several requests
@@ -47,7 +55,7 @@ def requete(requete, no_limit=False, cache=True):
 
     hashed_filename = hashlib.sha256(requete.encode()).hexdigest()[:16]  # On limite à 16 caractères
     # Création d'un nom de fichier basé sur un hash de la requête
-    cache_file = f'caches/{hashed_filename}.csv'
+    cache_file = f'application_system_reco/caches/{hashed_filename}.csv'
     # Vérification du cache
     if cache and os.path.exists(cache_file):
         file_age = time.time() - os.path.getmtime(cache_file)
@@ -79,7 +87,7 @@ def requete(requete, no_limit=False, cache=True):
                 result = pd.concat([result, pd.read_sql(requete, engine)])
                 
         # Save the result to a CSV file
-        result.to_csv(f'caches/{hashed_filename}.csv', index=False)
+        result.to_csv(f'application_system_reco/caches/{hashed_filename}.csv', index=False)
     except Exception as e:
         raise Exception(f"Error executing query : {e}") from e
     return result

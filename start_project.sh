@@ -16,8 +16,9 @@ while getopts "p" opt; do
   esac
 done
 
-# Changez les permissions des fichiers dans le répertoire new_data
-chmod -R 777 ./new_data
+# Créez le dossier caches avec les droits dans le dossier application_system_reco
+mkdir -p /home/ascud/Documents/LivreaPiques/application_system_reco/caches
+chmod 777 /home/ascud/Documents/LivreaPiques/application_system_reco/caches
 
 # Exécutez docker-compose up avec la variable d'environnement
 POPULATE_DB=$POPULATE_DB docker compose down

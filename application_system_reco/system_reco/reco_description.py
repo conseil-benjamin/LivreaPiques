@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
 
-from SQL_controleur.SQL_controleur import requete
+from application_system_reco.SQL_controleur.SQL_controleur import requete
 from tqdm import tqdm
 
 

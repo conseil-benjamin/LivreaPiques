@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
 from scipy.spatial.distance import pdist, squareform
-from SQL_controleur.SQL_controleur import *
+from application_system_reco.SQL_controleur.SQL_controleur import *
 from gensim.models import Word2Vec
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity

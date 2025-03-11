@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-ARG PYTHON_VERSION=3.13.1
+ARG PYTHON_VERSION=3.11.3
 FROM python:${PYTHON_VERSION}-slim as base
 
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -17,6 +17,13 @@ RUN adduser \
     --no-create-home \
     --uid "${UID}" \
     appuser
+
+# Installer les dépendances nécessaires
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    build-essential \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 

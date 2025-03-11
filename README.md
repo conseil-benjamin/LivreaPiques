@@ -1,4 +1,28 @@
-## Si vous avez l'image du docker, utilisez le kernel python 3.12.6( /usr/local/bin/python3.12 ) pour que toutes les bibliothèques soient installées.
+# Projet LivresaPiques
+
+## Comment lancer le projet ?
+
+### Requis :
+- Docker 
+
+La version utilisée pour le développement est la 24.0.6 mais normalement, toutes les versions devraient fonctionner.
+
+### Lancer le projet :
+
+1. Cloner le projet
+
+```bash
+git clone
+```
+
+2. Se placer dans le dossier du projet
+
+3. Lancer le projet
+
+```bash
+./start_project.sh -p
+```
+L'option -p permet de lancer le projet en peuplant la base de données. Si vous ne voulez pas peupler la base de données, vous pouvez lancer le projet sans l'option -p. L'option -p est nécessaire pour le premier lancement du projet sinon la base sera vide.
 
 ## Sprint 2
 # Création de la base de données

@@ -13,6 +13,7 @@ import i18n from "i18next";
 import { translateText } from "../../utils/translate.js";
 import Cookies from "js-cookie";
 import Swal from "sweetalert2";
+import ImageUnvailable from "../../components/ImageUnvailable.jsx";
 
 function BookDetails() {
     const { book_id } = useParams();
@@ -71,7 +72,7 @@ function BookDetails() {
                     icon: "success",
                     title: t("unliked_book"),
                     showConfirmButton: false,
-                    timer: 1500,
+                    timer: 3000,
                     timerProgressBar: true,
                     toast: true,
                     position: "top-end",
@@ -84,7 +85,7 @@ function BookDetails() {
                     icon: "success",
                     title: t("liked_book"),
                     showConfirmButton: false,
-                    timer: 1500,
+                    timer: 3000,
                     timerProgressBar: true,
                     toast: true,
                     position: "top-end",
@@ -177,11 +178,20 @@ function BookDetails() {
                     fontSize="large"
                 />
                 <div className="book-card">
-                    <img
-                        src={book.book_cover || "default-cover.jpg"}
-                        alt={book.book_title}
-                        className="book-cover"
-                    />
+                    {book[0]?.book_cover && book[0].book_cover !== "null" && book[0].book_cover !== "" ? (
+                        <img
+                            src={book[0].book_cover}
+                            alt={book[0]?.book_title || "Livre inconnu"}
+                            style={{width: 'auto', height: '100px', borderRadius: '8px'}}
+                            onError={(e) => {
+                                console.log("Image loading error");
+                                e.target.style.display = 'none';
+                                e.target.nextElementSibling.style.display = 'block';
+                            }}
+                        />
+                    ) : (
+                        <ImageUnvailable />
+                    )}
                     <div className="book-info">
                         <h1>{translatedTitle ? translatedTitle : t("unknown")}</h1>
                         <p className="author">
@@ -196,13 +206,15 @@ function BookDetails() {
                         <p>
                             <strong>{t("book_avg_rating")}</strong>: ⭐ {book.book_avg_rating || t("not_rated")}
                         </p>
-                        <div
-                            className="like-button"
-                            onClick={() => handleLikeToggle(book.book_id)}
-                            style={{ cursor: "pointer", color: isLiked ? "red" : "gray" }}
-                        >
-                            {isLiked ? <FavoriteIcon fontSize="large" /> : <FavoriteBorderIcon fontSize="large" />}
-                        </div>
+                        {userId && (
+                            <div
+                                className="like-button"
+                                onClick={() => handleLikeToggle(book.book_id)}
+                                style={{cursor: "pointer", color: isLiked ? "red" : "gray"}}
+                            >
+                                {isLiked ? <FavoriteIcon fontSize="large"/> : <FavoriteBorderIcon fontSize="large"/>}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

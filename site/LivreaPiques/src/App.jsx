@@ -7,6 +7,7 @@ import BookDetails from "./pages/Book/BookDetails.jsx";
 import ConditionsUtilisations from "./pages/ConditionsUtilisations/ConditionsUtilisations.jsx";
 import Error404 from "./pages/Error404/Error404.jsx";
 import MonCompte from "./pages/MonCompte/MonCompte.jsx";
+import Documentation from "./pages/Documentation/Documentation.jsx";
 
 function App() {
 
@@ -22,6 +23,7 @@ function App() {
                 <Route path="/book/:book_id" element={<BookDetails />} />
                 <Route path="/conditions-utilisations" element={<ConditionsUtilisations />} />
                 <Route path="/profile" element={<MonCompte />} />
+                <Route path={"/documentation"} element={<Documentation/>}/>
                 <Route path="*" element={<Error404 />} />
             </Routes>
         </Router>

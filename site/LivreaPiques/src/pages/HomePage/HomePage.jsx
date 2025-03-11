@@ -8,11 +8,14 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import Slider from "react-slick"; // Import de react-slick
+import Slider from "react-slick";
+import {useTranslation} from "react-i18next"; // Import de react-slick
+import ImageUnvailable from "../../components/ImageUnvailable.jsx";
 
 function HomePage() {
     const [searchValue, setSearchValue] = useState("");
     const userId = Cookies.get("user_id");
+    const {t} = useTranslation();
     return (
         <div className={"home-page"}>
             <Banner/>
@@ -21,21 +24,29 @@ function HomePage() {
             )}
             <SearchBar searchValue={searchValue} setSearchValue={setSearchValue}/>
             {!userId ? (
-                <div className={"home-page-explanation"}>
-                    <h1>Pourquoi choisir notre plateforme</h1>
-                    <h2>Nous avons concu la meilleure expérience possible pour les passionnés de lecture</h2>
-                    <CardExplanation title={"Bibliothèque personnelle"}
-                                     description={"Organisez vos lectures passées et futures dans votre espace personnel."}
-                                     img={"./book-bookmark.png"}/>
-                    <CardExplanation title={"Recommandations IA"}
-                                     description={"Des suggestions de qualité basées sur vos préférences et habitudes de lecture."}
-                                     img={"./star.png"}/>
-                    <CardExplanation title={"Communauté active"}
-                                     description={"Échangez avec d'autres lecteurs et découvrez leurs impressions."}
-                                     img={"./users.png"}/>
+                <div className="home-page-explanation">
+                    <h1>{t("why_choose_platform")}</h1>
+                    <h2>{t("best_experience")}</h2>
+                    <CardExplanation
+                        title={t("feature_personal_library")}
+                        description={t("desc_personal_library")}
+                        img={"./book-bookmark.png"}
+                    />
+                    <CardExplanation
+                        title={t("feature_ai_recommendations")}
+                        description={t("desc_ai_recommendations")}
+                        img={"./star.png"}
+                    />
+                    {/*
+                    <CardExplanation
+                        title={t("feature_active_community")}
+                        description={t("desc_active_community")}
+                        img={"./users.png"}
+                    />
+                    */}
                 </div>
             ) : (
-                <Recommandations />
+                <Recommandations/>
             )}
             <Footer/>
         </div>
@@ -49,6 +60,7 @@ function Recommandations() {
     const [error, setError] = useState(null);
     const userId = Cookies.get("user_id");
     const navigate = useNavigate();
+    const {t} = useTranslation();
 
     // Fonction pour récupérer les recommandations de livres
     const fetchRecommendations = async () => {
@@ -119,15 +131,15 @@ function Recommandations() {
 
     return (
         <div className="home-page-recommandations">
-            <h1 style={{textAlign: "center", fontSize: "1.75rem"}}>Vos recommandations personnalisées</h1>
+            <h1 style={{textAlign: "center", fontSize: "1.75rem"}}>{t("recommendations_title")}</h1>
 
             <div style={{display: "flex", alignItems: "center", justifyContent: "center", margin: "1em 0 1em 0"}}>
                 <button style={{backgroundColor: "#000", color: "#fff", borderRadius: "10px", padding: "1em", cursor: "pointer"}} onClick={fetchRecommendations}>
-                    <h3>Obtenir des recommandations</h3>
+                    <h3>{t("get_recommendations")}</h3>
                 </button>
             </div>
 
-            {loading && <p style={{textAlign: "center"}}>Chargement de vos recommandations...</p>}
+            {loading && <p style={{textAlign: "center"}}>{t("recommandations_loading")}</p>}
             {error && <p style={{color: 'red'}}>{error}</p>}
 
             <div className="recommandations-list">
@@ -136,11 +148,20 @@ function Recommandations() {
                         {recoBooks.map((book, index) => (
                             <div key={index} className="book-card"
                                  onClick={() => navigate(`/book/${book[0].book_id}`)}>
-                                <img
-                                    src={book[0]?.book_cover || "default-cover.jpg"}
-                                    alt={book[0]?.book_title || "Livre inconnu"}
-                                    style={{width: 'auto', height: '100px', borderRadius: '8px'}}
-                                />
+                                {book[0]?.book_cover && book[0].book_cover !== "null" && book[0].book_cover !== "" ? (
+                                    <img
+                                        src={book[0].book_cover}
+                                        alt={book[0]?.book_title || "Livre inconnu"}
+                                        style={{width: 'auto', height: '100px', borderRadius: '8px'}}
+                                        onError={(e) => {
+                                            console.log("Image loading error");
+                                            e.target.style.display = 'none';
+                                            e.target.nextElementSibling.style.display = 'block';
+                                        }}
+                                    />
+                                ) : (
+                                    <ImageUnvailable />
+                                )}
                                 <div>
                                     <h4>{book[0]?.book_title || "Titre inconnu"}</h4>
                                     <p>{book[0]?.book_description?.slice(0, 150)}...</p>
@@ -157,6 +178,7 @@ function Recommandations() {
 
 function HeaderHomePage() {
     const navigate = useNavigate();
+    const {t} = useTranslation();
 
     return (
         <header className={"home-page-header"}>
@@ -164,15 +186,14 @@ function HeaderHomePage() {
                 <div>
                     <div>
                         <h1>
-                            Découvrez votre prochaine lecture préférée
+                            {t("home_page_label")}
                         </h1>
                         <h4>
-                            Notre plateforme utilise l'intelligence artificielle pour vous recommander des livres qui
-                            correspondent parfaitement à vos goûts.
+                            {t("home_page_description")}
                         </h4>
                         <div style={{display: "flex", flexDirection: "row", margin: "1em 0 0 0"}}>
                             <button style={{display: "flex", flexDirection: "row"}} onClick={() =>  navigate("/register")}>
-                                S'inscrire gratuitement
+                                {t("home_page_register")}
                                 <ChevronRight size={18}/>
                             </button>
                         </div>
@@ -189,6 +210,7 @@ function SearchBar() {
     const [debounceTimeout, setDebounceTimeout] = useState(null); // Pour stocker l'ID du setTimeout
     const [isLoading, setIsLoading] = useState(false); // Pour afficher un spinner de chargement
     const navigate = useNavigate();
+    const {t} = useTranslation();
 
     // Fonction pour gérer la recherche
     const handleSearch = async () => {
@@ -231,7 +253,7 @@ function SearchBar() {
                 <input
                     type="text"
                     value={searchValue}
-                    placeholder="Rechercher un livre, un auteur..."
+                    placeholder={t("placeholder_search")}
                     onChange={handleChange}
                 />
                 {isLoading ? (
@@ -287,7 +309,7 @@ function SearchBar() {
                 </div>
             ) : searchValue !== "" && books.length === 0 ? (
                 <div className="search-results-list">
-                    <p style={{ textAlign: 'center' }}>Aucun résultat trouvé</p>
+                    <p style={{ textAlign: 'center' }}>{t("none_books_found")}</p>
                 </div>
             ): null}
         </div>

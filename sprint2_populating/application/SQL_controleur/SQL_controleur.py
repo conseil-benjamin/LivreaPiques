@@ -282,4 +282,40 @@ def insert_table_assocation_book(dataframe, table1, table1_key, table1_id):
         return True
     except Exception as e:
         raise Exception("Error inserting associations into the database") from e
+
+def update(data):
+    attempts = 3
+    interval = 3
+
+    for attempt in range(attempts):
+        try:
+            engine, session = conexion_db()
+            break
+        except Exception as e:
+            if attempt < attempts - 1:
+                time.sleep(interval)
+            else:
+                raise Exception("Échec de connexion à la base de données après plusieurs tentatives") from e
+
+    try:
+        with tqdm(total=len(data), desc="Mise à jour de la base", unit="ligne") as pbar:
+            for index, row in data.iterrows():
+                book_id = row['book_id']
+                book_cover = row['book_cover']
+
+                sql = text("UPDATE book SET book_cover = :book_cover WHERE book_id = :book_id")
+                params = {'book_cover': book_cover, 'book_id': book_id}
+
+                session.execute(sql, params)
+                pbar.update(1)  
+
+        session.commit()
+        print("Mise à jour réussie pour tous les enregistrements.")
+        return True
+    except Exception as e:
+        session.rollback()
+        print(f"Erreur lors de la mise à jour : {e}")
+        return False
+    finally:
+        session.close()
     

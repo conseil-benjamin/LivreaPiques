@@ -263,6 +263,21 @@ CREATE TABLE Reads_With (
   FOREIGN KEY (mean_id) REFERENCES Reading_Mean(mean_id)
 );
 
+CREATE OR REPLACE VIEW allbookdata as
+SELECT book.book_id, book.book_title, book.book_cover, book.book_description, STRING_AGG(DISTINCT author.author_name, ', ') AS authors , STRING_AGG(DISTINCT awards.award_name, ', ') AS awards, STRING_AGG(DISTINCT genre.genre_name, ', ') AS genres,  book_rating.book_avg_rating, STRING_AGG(DISTINCT series.series_name, ', ') AS series
+FROM book 
+LEFT JOIN book_author ON book.book_id = book_author.book_id
+LEFT JOIN author ON book_author.author_id = author.author_id
+LEFT JOIN book_awards ON book_awards.book_id = book.book_id
+LEFT JOIN awards ON book_awards.award_id = awards.award_id
+LEFT JOIN book_genre ON book_genre.book_id = book.book_id
+LEFT JOIN genre ON book_genre.genre_id = genre.genre_id
+LEFT JOIN book_rating on book.book_id = book_rating.book_id
+LEFT JOIN book_series on book.book_id = book_series.book_id
+LEFT JOIN series on series.series_id = book_series.series_id
+GROUP BY book.book_id, book_rating.book_avg_rating;
+
+
 alter table "user" ALTER COLUMN nb_book_per_year TYPE VARCHAR(25);
 alter table "user" ALTER COLUMN nb_book_pleasure TYPE VARCHAR(25);
 alter table "user" ALTER COLUMN nb_book_work TYPE VARCHAR(10);

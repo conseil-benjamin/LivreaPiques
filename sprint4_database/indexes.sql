@@ -14,9 +14,6 @@ ON book_awards(book_id);
 create index idx_book_genre_genre_id
 ON book_genre(genre_id);
 
-create index idx_book_rating_book_id
-ON book_rating(book_id);
-
 create index idx_book_series_book_id
 ON book_series(book_id);
 

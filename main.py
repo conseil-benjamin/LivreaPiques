@@ -4,7 +4,6 @@ import uvicorn
 import sprint2_populating.application.populate as ppl
 
 def populate_database():
-    print(os.getenv('POPULATE_DB', 'false'))
     if os.getenv('POPULATE_DB', 'false').lower() == 'true':
         print("Populating the database...")
         if ppl.populate():

@@ -17,6 +17,7 @@ while getopts "p" opt; do
 done
 
 # Créez le dossier caches avec les droits dans le dossier application_system_reco
+<<<<<<< HEAD
 mkdir -p ./application_system_reco/caches
 chmod 777 ./application_system_reco/caches
 

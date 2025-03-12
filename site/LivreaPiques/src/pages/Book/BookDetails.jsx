@@ -182,7 +182,7 @@ function BookDetails() {
                     <img
                         src={book.book_cover}
                         alt={book?.book_title || "Livre inconnu"}
-                        style={{width: 'auto', height: '100px', borderRadius: '8px'}}
+                        style={{width: 'auto', height: 'auto', borderRadius: '8px'}}
                         onError={(e) => {
                             console.log("Image loading error");
                             e.target.style.display = 'none';

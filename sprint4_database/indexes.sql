@@ -8,9 +8,6 @@ ON book(book_title);
 create index idx_book_book_cover
 ON book(book_cover);
 
-create index idx_book_book_description
-ON book(book_description);
-
 create index idx_book_awards_book_id
 ON book_awards(book_id);
 

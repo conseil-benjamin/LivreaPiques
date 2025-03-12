@@ -22,7 +22,7 @@ CREATE TABLE Book(
     five_star_rating INT,
     book_cover VARCHAR(280),
     CONSTRAINT book_isbn_unique UNIQUE(isbn),
-    CONSTRAINT book_isbn13_unique UNIQUE(isbn13),
+    CONSTRAINT book_isbn13_unique UNIQUE(isbn13)
 );
 
 CREATE TYPE Gender AS ENUM('M', 'F', 'A');

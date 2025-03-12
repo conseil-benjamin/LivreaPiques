@@ -178,20 +178,20 @@ function BookDetails() {
                     fontSize="large"
                 />
                 <div className="book-card">
-                    {book[0]?.book_cover && book[0].book_cover !== "null" && book[0].book_cover !== "" ? (
-                        <img
-                            src={book[0].book_cover}
-                            alt={book[0]?.book_title || "Livre inconnu"}
-                            style={{width: 'auto', height: '100px', borderRadius: '8px'}}
-                            onError={(e) => {
-                                console.log("Image loading error");
-                                e.target.style.display = 'none';
-                                e.target.nextElementSibling.style.display = 'block';
-                            }}
-                        />
-                    ) : (
-                        <ImageUnvailable />
-                    )}
+                {book?.book_cover && book.book_cover !== "" ? (
+                    <img
+                        src={book.book_cover}
+                        alt={book?.book_title || "Livre inconnu"}
+                        style={{width: 'auto', height: '100px', borderRadius: '8px'}}
+                        onError={(e) => {
+                            console.log("Image loading error");
+                            e.target.style.display = 'none';
+                            e.target.nextElementSibling.style.display = 'block';
+                        }}
+                    />
+                ) : (
+                    <ImageUnvailable width={"auto"} height={"auto"}/>
+                )}
                     <div className="book-info">
                         <h1>{translatedTitle ? translatedTitle : t("unknown")}</h1>
                         <p className="author">

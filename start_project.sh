@@ -17,15 +17,6 @@ while getopts "p" opt; do
 done
 
 # Créez le dossier caches avec les droits dans le dossier application_system_reco
-<<<<<<< HEAD
-mkdir -p ./application_system_reco/caches
-chmod 777 ./application_system_reco/caches
-
-# Exécutez docker-compose up avec la variable d'environnement
-POPULATE_DB=$POPULATE_DB docker compose down
-#POPULATE_DB=$POPULATE_DB docker compose build
-POPULATE_DB=$POPULATE_DB docker compose up
-=======
 mkdir -p application_system_reco/caches
 chmod 777 application_system_reco/caches
 
@@ -34,4 +25,3 @@ chmod 777 application_system_reco/caches
 POPULATE_DB=$POPULATE_DB docker compose down
 POPULATE_DB=$POPULATE_DB docker compose build
 POPULATE_DB=$POPULATE_DB docker compose up
->>>>>>> 0a92c8ab4878c9e22e4205411005405b3aed118a

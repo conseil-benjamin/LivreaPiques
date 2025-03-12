@@ -146,7 +146,7 @@ def hash_password(password: str):
 
 @app.get("/api/check_username_availabitily/{username}")
 async def check_username_availabitily(username: str):
-    engine, session = conexion_db()
+    engine, session, schema = conexion_db()
 
     try:
         # Utilisation de paramètres pour la requête pour éviter l'injection SQL
@@ -177,7 +177,7 @@ async def create_user(user: UserCreate):
     RETURNING user_id """)
     
     try:
-        engine, session = conexion_db()
+        engine, session, schema = conexion_db()
         result = session.execute(query, {"username": user.name, "password": user.password, "age": user.age, "gender": user.gender, "nb_book_per_year" : user.nb_book_per_year, "nb_book_pleasure" : user.nb_book_pleasure, "nb_book_work" : user.nb_book_work, "initiated_by" : user.initiated_by, "reading_time" : user.reading_time, "choice_motivation" : user.choice_motivation})
         session.commit()
         user_id = result.fetchone()[0]
@@ -195,7 +195,7 @@ async def connection(user: UserLogin):
     query = text('SELECT * FROM "user" WHERE username = :username AND password = :password')
     
     try:
-        engine, session = conexion_db()
+        engine, session, schema = conexion_db()
         result = session.execute(query, {"username": user.name, "password": hashed_password}).fetchone()
 
         if result:
@@ -279,7 +279,7 @@ async def check_if_liked(user_id: int, book_id: int):
         """)
         
         # Exécution de la requête
-        engine, session = conexion_db()
+        engine, session, schema = conexion_db()
         result = session.execute(query, {"user_id": user_id, "book_id": book_id}).fetchone()
         
         if result:
@@ -305,7 +305,7 @@ async def get_user_profile(user_id: int):
         """)
         
         # Exécution de la requête pour récupérer les infos de l'utilisateur
-        engine, session = conexion_db()
+        engine, session, schema = conexion_db()
         user_result = session.execute(user_query, {"user_id": user_id}).fetchone()
 
         if not user_result:
@@ -361,7 +361,7 @@ async def get_user_profile(user_id: int):
 async def remove_like(user_id: int, book_id: int):
     try:
         # Connexion à la base de données
-        engine, session = conexion_db()
+        engine, session, schema = conexion_db()
 
         # Vérifier si le livre est déjà liké par l'utilisateur
         liked_book_query = text("""

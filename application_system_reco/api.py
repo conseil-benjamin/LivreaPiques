@@ -217,14 +217,42 @@ class UserID(BaseModel):
 def Ltitle_to_Lid(Ltitle):
     LrecoID = []
     for title in Ltitle:
-        #si le titre contient des ' remplacer par ''
-        for i in range(len(Ltitle)):
-            # Si le titre contient des ' remplacer par ''
-            Ltitle[i] = Ltitle[i].replace("'", "''")
+        # Remplacement des ' uniquement pour le titre en cours
+        safe_title = title.replace("'", "''")
 
-        result = requete(f"""select book_id from book where book_title = '{title}' """, True, False)
+        result = requete(f"""select book_id from book where book_title = '{safe_title}' """, True, False)
+        
+        if result.empty:  # Vérification pour éviter l'erreur "out-of-bounds"
+            print(f"Erreur : Aucun résultat trouvé pour le titre '{title}'")
+            continue
+        
         LrecoID.append(int(result["book_id"].iloc[0]))
     return LrecoID
+
+
+@app.post("/api/reco1/")
+async def recommendation1(user: UserID):
+    """
+    Génère des recommandations de livres basées sur un système de recommandation avancé.
+
+    Entrée :
+    - user (UserID) : Un objet contenant l'identifiant de l'utilisateur (non utilisé ici).
+
+    Sortie :
+    - Un dictionnaire contenant une liste de titres de livres recommandés.
+
+    Cette fonction utilise `FinalRecommender` pour obtenir les recommandations, mais l'ID utilisateur n'est
+    pas pris en compte dans cette version (valeur fixe de 1).
+    """
+    try:
+        Lreco = reco_esteban(user.id) 
+        print(Lreco)
+        print('coucou')
+        LrecoID = Ltitle_to_Lid(Lreco)
+        return {"recommendations": LrecoID}
+    except Exception as e:
+        print(f"Erreur lors de la recommandation: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
 
 @app.post("/api/reco2/")
 async def recommendation(user: UserID):
@@ -242,7 +270,7 @@ async def recommendation(user: UserID):
     """
     try:
         reco_benj = FinalRecommender()
-        Lreco = reco_benj.get_recommendations(1, 5)  # L'ID utilisateur est fixé à 1 ici
+        Lreco = reco_benj.get_recommendations(user.id, 5) 
         Ltitles = [book["title"] for book in Lreco]
         LrecoID = Ltitle_to_Lid(Ltitles)
         return {"recommendations": LrecoID}

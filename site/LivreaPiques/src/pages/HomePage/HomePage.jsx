@@ -96,11 +96,16 @@ function Recommandations() {
         }
     };
 
-    // Charger les recommandations depuis le localStorage lors du montage du composant
+    // Montage du composant
     useEffect(() => {
+        // Charger les recommandations depuis le localStorage
         const savedRecoBooks = localStorage.getItem('recoBooks');
         if (savedRecoBooks) {
             setRecoBooks(JSON.parse(savedRecoBooks));
+        }
+        // Nouvelle recommendation sinon
+        if (!savedRecoBooks) {
+            fetchRecommendations();
         }
     }, []);
 
@@ -164,7 +169,7 @@ function Recommandations() {
                                 )}
                                 <div>
                                     <h4>{book[0]?.book_title || "Titre inconnu"}</h4>
-                                    <p>{book[0]?.book_description?.slice(0, 150)}...</p>
+                                    <p>{typeof book[0]?.book_description === "string" ? book[0].book_description.slice(0, 150) + "..." : "Pas de description disponible."}</p>
                                     <p>Auteur(s): {book[0]?.authors || 'Inconnu'}</p>
                                 </div>
                             </div>

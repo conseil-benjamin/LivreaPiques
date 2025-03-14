@@ -79,6 +79,24 @@
   margin-top: 20px;
   font-style: italic;
   color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Change this number to the desired number of lines */
+  -webkit-box-orient: vertical;
+}
+
+.description.expanded {
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+.see-more-button {
+  color: #007bff;
+  cursor: pointer;
+  margin-bottom: 30px;
+  font-size: 1rem;
+  text-decoration: underline;
 }
 
 @keyframes fadeIn {

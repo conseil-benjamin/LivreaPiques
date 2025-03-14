@@ -82,7 +82,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 3; /* Change this number to the desired number of lines */
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
 }
 

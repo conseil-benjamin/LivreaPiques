@@ -101,7 +101,7 @@
   "connexion_swal_register_success": "Vous êtes maintenant inscrit !",
   "connexion_swal_register_error": "Erreur lors de l'inscription.",
   "connexion_label_age": "Âge",
-  "connexion_gennder_male": "Homme",
+  "connexion_gender_male": "Homme",
   "connexion_gender_female": "Femme",
   "connexion_gender_other": "Autre",
   "connexion_step2_button": "Étape suivante",

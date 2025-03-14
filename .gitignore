@@ -6,3 +6,4 @@ configure.ini
 tempCodeRunnerFile.py
 /data_docker/db_elastic
 /data_docker/db_pgsql
+.vscode/*

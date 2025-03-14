@@ -146,7 +146,7 @@ def hash_password(password: str):
 
 @app.get("/api/check_username_availabitily/{username}")
 async def check_username_availabitily(username: str):
-    engine, session = conexion_db()
+    engine, session, schema = conexion_db()
 
     try:
         # Utilisation de paramètres pour la requête pour éviter l'injection SQL
@@ -177,7 +177,7 @@ async def create_user(user: UserCreate):
     RETURNING user_id """)
     
     try:
-        engine, session = conexion_db()
+        engine, session, schema = conexion_db()
         result = session.execute(query, {"username": user.name, "password": user.password, "age": user.age, "gender": user.gender, "nb_book_per_year" : user.nb_book_per_year, "nb_book_pleasure" : user.nb_book_pleasure, "nb_book_work" : user.nb_book_work, "initiated_by" : user.initiated_by, "reading_time" : user.reading_time, "choice_motivation" : user.choice_motivation})
         session.commit()
         user_id = result.fetchone()[0]
@@ -195,7 +195,7 @@ async def connection(user: UserLogin):
     query = text('SELECT * FROM "user" WHERE username = :username AND password = :password')
     
     try:
-        engine, session = conexion_db()
+        engine, session, schema = conexion_db()
         result = session.execute(query, {"username": user.name, "password": hashed_password}).fetchone()
 
         if result:
@@ -217,14 +217,42 @@ class UserID(BaseModel):
 def Ltitle_to_Lid(Ltitle):
     LrecoID = []
     for title in Ltitle:
-        #si le titre contient des ' remplacer par ''
-        for i in range(len(Ltitle)):
-            # Si le titre contient des ' remplacer par ''
-            Ltitle[i] = Ltitle[i].replace("'", "''")
+        # Remplacement des ' uniquement pour le titre en cours
+        safe_title = title.replace("'", "''")
 
-        result = requete(f"""select book_id from book where book_title = '{title}' """, True, False)
+        result = requete(f"""select book_id from book where book_title = '{safe_title}' """, True, False)
+        
+        if result.empty:  # Vérification pour éviter l'erreur "out-of-bounds"
+            print(f"Erreur : Aucun résultat trouvé pour le titre '{title}'")
+            continue
+        
         LrecoID.append(int(result["book_id"].iloc[0]))
     return LrecoID
+
+
+@app.post("/api/reco1/")
+async def recommendation1(user: UserID):
+    """
+    Génère des recommandations de livres basées sur un système de recommandation avancé.
+
+    Entrée :
+    - user (UserID) : Un objet contenant l'identifiant de l'utilisateur (non utilisé ici).
+
+    Sortie :
+    - Un dictionnaire contenant une liste de titres de livres recommandés.
+
+    Cette fonction utilise `FinalRecommender` pour obtenir les recommandations, mais l'ID utilisateur n'est
+    pas pris en compte dans cette version (valeur fixe de 1).
+    """
+    try:
+        Lreco = reco_esteban(user.id) 
+        print(Lreco)
+        print('coucou')
+        LrecoID = Ltitle_to_Lid(Lreco)
+        return {"recommendations": LrecoID}
+    except Exception as e:
+        print(f"Erreur lors de la recommandation: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
 
 @app.post("/api/reco2/")
 async def recommendation(user: UserID):
@@ -242,7 +270,7 @@ async def recommendation(user: UserID):
     """
     try:
         reco_benj = FinalRecommender()
-        Lreco = reco_benj.get_recommendations(1, 5)  # L'ID utilisateur est fixé à 1 ici
+        Lreco = reco_benj.get_recommendations(user.id, 5) 
         Ltitles = [book["title"] for book in Lreco]
         LrecoID = Ltitle_to_Lid(Ltitles)
         return {"recommendations": LrecoID}
@@ -279,7 +307,7 @@ async def check_if_liked(user_id: int, book_id: int):
         """)
         
         # Exécution de la requête
-        engine, session = conexion_db()
+        engine, session, schema = conexion_db()
         result = session.execute(query, {"user_id": user_id, "book_id": book_id}).fetchone()
         
         if result:
@@ -305,7 +333,7 @@ async def get_user_profile(user_id: int):
         """)
         
         # Exécution de la requête pour récupérer les infos de l'utilisateur
-        engine, session = conexion_db()
+        engine, session, schema = conexion_db()
         user_result = session.execute(user_query, {"user_id": user_id}).fetchone()
 
         if not user_result:
@@ -361,7 +389,7 @@ async def get_user_profile(user_id: int):
 async def remove_like(user_id: int, book_id: int):
     try:
         # Connexion à la base de données
-        engine, session = conexion_db()
+        engine, session, schema = conexion_db()
 
         # Vérifier si le livre est déjà liké par l'utilisateur
         liked_book_query = text("""

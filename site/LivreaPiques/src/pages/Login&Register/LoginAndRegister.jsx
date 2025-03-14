@@ -216,7 +216,7 @@ function RegisterForm({ username, setUsername, password, setPassword, age, setAg
                 <div className="form-group">
                     <label>{t("connexion_motivations_choose_books")}</label>
                     <div className="select-container">
-                        <select value={motivationOptions} onChange={(e) => setChoiceMotivation(e.target.value)} onBlur={handleBlur}
+                        <select value={choiceMotivation} onChange={(e) => setChoiceMotivation(e.target.value)} onBlur={handleBlur}
                                 onFocus={handleFocus}>
                             {motivationOptions.map((option, index) => (
                                 <option key={index} value={option}>{option}</option>

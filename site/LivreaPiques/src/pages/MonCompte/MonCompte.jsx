@@ -79,10 +79,11 @@ function MonCompte() {
                                         onClick={() => navigate(`/book/${book.book_id}`)}
                                         style={{display: 'flex', alignItems: 'center', cursor: 'pointer' }}
                                     >
-                                        {book[0]?.book_cover && book[0].book_cover !== "null" && book[0].book_cover !== "" ? (
-                                            <img
-                                                src={book[0].book_cover}
-                                                alt={book[0]?.book_title || "Livre inconnu"}
+                                        {book?.book_cover && book.book_cover !== "" ? (
+                                            <div style={{width: "20%"}}>
+                                                <img
+                                                src={book.book_cover}
+                                                alt={book?.book_title || "Livre inconnu"}
                                                 style={{width: 'auto', height: '100px', borderRadius: '8px'}}
                                                 onError={(e) => {
                                                     console.log("Image loading error");
@@ -90,10 +91,11 @@ function MonCompte() {
                                                     e.target.nextElementSibling.style.display = 'block';
                                                 }}
                                             />
+                                                </div>
                                         ) : (
-                                            <ImageUnvailable />
+                                            <ImageUnvailable width={"80px"} height={"100px"}/>
                                         )}
-                                        <span>{book.book_description.length > 50 ? `${book.book_description.substring(0, 50)}...` : book.book_description}</span>
+                                        <span style={{margin: "0 0 0 0.5em"}}>{book.book_description.length > 50 ? `${book.book_description.substring(0, 50)}...` : book.book_description}</span>
                                     </div>
                                 </li>
                             ))}

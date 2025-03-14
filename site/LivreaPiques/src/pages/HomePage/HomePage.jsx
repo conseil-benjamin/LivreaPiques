@@ -160,7 +160,7 @@ function Recommandations() {
                                         }}
                                     />
                                 ) : (
-                                    <ImageUnvailable />
+                                    <ImageUnvailable height={"110px"} width={"110px"}/>
                                 )}
                                 <div>
                                     <h4>{book[0]?.book_title || "Titre inconnu"}</h4>

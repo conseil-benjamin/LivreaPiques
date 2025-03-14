@@ -1,8 +1,12 @@
-function ImageUnvailable() {
+function ImageUnvailable({
+    height,
+    width
+}) {
+    console.log(height)
     return (
         <div style={{
-            width: "100px",
-            height: "100px",
+            width: width,
+            height: height,
             backgroundColor: "#f8d7da",
             color: "#721c24",
             display: "flex",

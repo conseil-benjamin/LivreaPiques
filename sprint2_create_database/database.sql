@@ -22,7 +22,7 @@ CREATE TABLE Book(
     five_star_rating INT,
     book_cover VARCHAR(280),
     CONSTRAINT book_isbn_unique UNIQUE(isbn),
-    CONSTRAINT book_isbn13_unique UNIQUE(isbn13),
+    CONSTRAINT book_isbn13_unique UNIQUE(isbn13)
 );
 
 CREATE TYPE Gender AS ENUM('M', 'F', 'A');
@@ -262,6 +262,14 @@ CREATE TABLE Reads_With (
   PRIMARY KEY (mean_id, user_id),
   FOREIGN KEY (user_id) REFERENCES "user"(user_id),
   FOREIGN KEY (mean_id) REFERENCES Reading_Mean(mean_id)
+);
+
+CREATE TABLE wishlist (
+    user_id INTEGER,
+    book_id INTEGER,
+    FOREIGN KEY (user_id) REFERENCES "user"(user_id),
+    FOREIGN KEY (book_id) REFERENCES book(book_id),
+    PRIMARY KEY (user_id, book_id)
 );
 
 CREATE OR REPLACE VIEW allbookdata as

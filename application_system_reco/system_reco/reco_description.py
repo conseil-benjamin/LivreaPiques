@@ -28,6 +28,8 @@ def entrainementModele(resumes):
 def preTraitementResume(resumes):
     # Charger le modèle SpaCy pour l'anglais
     nlp = spacy.load("en_core_web_sm")
+    
+
 
     # Prétraitement des textes
     def preprocess_text(text):

@@ -12,6 +12,8 @@ import os
 import uvicorn
 from  application_system_reco.system_reco.reco_esteban import *
 from  application_system_reco.system_reco.reco_benjamin import *
+from  application_system_reco.system_reco.reco_description import *
+
 
 # Pour lancer le serveur : uvicorn api:app --reload (dans le dossier de l'api)
 
@@ -255,7 +257,7 @@ async def recommendation1(user: UserID):
         raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
 
 @app.post("/api/reco2/")
-async def recommendation(user: UserID):
+async def recommendation2(user: UserID):
     """
     Génère des recommandations de livres basées sur un système de recommandation avancé.
 
@@ -277,7 +279,37 @@ async def recommendation(user: UserID):
     except Exception as e:
         print(f"Erreur lors de la recommandation: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
+
+@app.post("/api/reco3/")
+async def recommendation3(user: UserID):
+    """
+    Génère des recommandations de livres basées sur un système de recommandation avancé.
+
+    Entrée :
+    - user (UserID) : Un objet contenant l'identifiant de l'utilisateur (non utilisé ici).
+
+    Sortie :
+    - Un dictionnaire contenant une liste de titres de livres recommandés.
+
+    Cette fonction utilise `FinalRecommender` pour obtenir les recommandations, mais l'ID utilisateur n'est
+    pas pris en compte dans cette version (valeur fixe de 1).
+    """
+    try:
+        try:
+            print('coucou')
+            Lreco = reco_description(user.id, 5)
+        except:
+            print('coucou2')
+            Lreco = reco_description(user.id, 5, False)
+        print(Lreco)
+        Ltitles = [book["title"] for book in Lreco]
+        LrecoID = Ltitle_to_Lid(Ltitles)
+        return {"recommendations": LrecoID}
+    except Exception as e:
+        print(f"Erreur lors de la recommandation: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
     
+
 class UserBook (BaseModel):
     user_id: int
     book_id: int

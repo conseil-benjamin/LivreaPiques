@@ -44,6 +44,11 @@
   animation: fadeIn 0.6s ease-in-out;
 }
 
+.book-card > img {
+  height: fit-content;
+  border-radius: 8px
+}
+
 .book-cover {
   width: 300px;
   object-fit: cover;

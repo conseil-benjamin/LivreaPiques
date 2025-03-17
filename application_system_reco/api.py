@@ -463,3 +463,34 @@ async def remove_from_wishlist(user_id: int, book_id: int):
         return {"message": "Retiré de la wishlist"}
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
+
+@app.get("/api/user/{user_id}/wishlist")
+async def get_user_wishlist(user_id: int):
+    try:
+        # Récupération des livres dans la wishlist
+        wishlist_query = text("""
+            SELECT b.book_id, b.book_title, b.book_cover, b.book_description 
+            FROM book b
+            JOIN wishlist w ON b.book_id = w.book_id
+            WHERE w.user_id = :user_id
+        """)
+        
+        engine, session, schema = conexion_db()
+        result = session.execute(wishlist_query, {"user_id": user_id}).fetchall()
+        
+        # Convert result to list of dictionaries
+        wishlist_books = [
+            {
+                "book_id": book[0],
+                "book_title": book[1],
+                "book_cover": book[2],
+                "book_description": book[3][:150] if book[3] else None
+            }
+            for book in result
+        ]
+        
+        return wishlist_books
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        session.close()

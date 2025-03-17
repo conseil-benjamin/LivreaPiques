@@ -162,4 +162,35 @@
   }
 }
 
+.action-buttons {
+  display: inline-flex; 
+  gap: 20px; 
+  margin-top: 1rem;
+
+  .like-button, .wishlist-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 8px;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  .like-button {
+    &:hover {
+      color: red;
+    }
+  }
+
+  .wishlist-button {
+    &:hover {
+      color: #FFD700;
+    }
+  }
+}
+
 /*# sourceMappingURL=BookDetails.css.map */

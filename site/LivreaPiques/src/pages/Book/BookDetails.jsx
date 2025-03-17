@@ -304,6 +304,7 @@ function BookDetails() {
                                 >
                                     {isLiked ? <FavoriteIcon fontSize="large"/> : <FavoriteBorderIcon fontSize="large"/>}
                                 </div>
+                                
                                 <div
                                     className="wishlist-button"
                                     onClick={() => handleWishlistToggle(book.book_id)}

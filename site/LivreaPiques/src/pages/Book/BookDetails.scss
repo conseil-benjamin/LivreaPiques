@@ -87,11 +87,17 @@
   align-items: center;
   gap: 1rem;
   margin: 1rem 0;
+  width: auto;
 
   .like-button, .wishlist-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     transition: transform 0.2s ease;
-
+    width: 40px;
+    height: 40px;
+    
     &:hover {
       transform: scale(1.1);
     }
@@ -164,7 +170,12 @@
   }
 
   .action-buttons {
+    display: flex;
+    flex-direction: row;
     justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
   }
 }
 

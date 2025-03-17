@@ -307,7 +307,7 @@ function BookDetails() {
                                 <div
                                     className="wishlist-button"
                                     onClick={() => handleWishlistToggle(book.book_id)}
-                                    style={{color: isWishlisted ? "#FFD700" : "gray"}}
+                                     style={{color: isWishlisted ? "#FFD700" : "gray"}}
                                 >
                                     {isWishlisted ? <BookmarkIcon fontSize="large"/> : <BookmarkBorderIcon fontSize="large"/>}
                                 </div>

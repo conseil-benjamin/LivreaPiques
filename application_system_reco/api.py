@@ -310,7 +310,7 @@ async def recommendation3(user: UserID):
         raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
     
 @app.post("/api/reco3/")
-async def recommendation(user: UserID):
+async def recommendation3(user: UserID):
     """
     Génère des recommandations de livres basées sur un système de recommandation avancé.
 
@@ -324,8 +324,13 @@ async def recommendation(user: UserID):
     pas pris en compte dans cette version (valeur fixe de 1).
     """
     try:
-        reco_benj = FinalRecommender()
-        Lreco = reco_benj.get_recommendations(user.id, 5) 
+        try:
+            print('coucou')
+            Lreco = reco_description(user.id, 5)
+        except:
+            print('coucou2')
+            Lreco = reco_description(user.id, 5, False)
+        print(Lreco)
         Ltitles = [book["title"] for book in Lreco]
         LrecoID = Ltitle_to_Lid(Ltitles)
         return {"recommendations": LrecoID}

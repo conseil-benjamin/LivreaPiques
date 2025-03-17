@@ -130,8 +130,9 @@ function BookDetails() {
     const handleWishlistToggle = async (bookId) => {
         try {
             if (isWishlisted) {
+                // Si déjà dans la wishlist, retirer
                 await axios.delete(`http://localhost:8000/api/user/${userId}/wishlist/${bookId}`);
-                setIsWishlisted(false);
+                setIsWishlisted(false); // Met à jour l'état immédiatement
                 await Swal.fire({
                     icon: "success",
                     title: t("removed_from_wishlist"),
@@ -142,6 +143,7 @@ function BookDetails() {
                     position: "top-end",
                 });
             } else {
+                // Vérifier si le livre est liké avant d'ajouter à la wishlist
                 if (isLiked) {
                     await Swal.fire({
                         icon: "error",
@@ -154,11 +156,12 @@ function BookDetails() {
                     });
                     return;
                 }
-                await axios.post(`http://localhost:8000/api/wishlist/`, { 
-                    user_id: userId, 
-                    book_id: bookId 
+                // Si non dans la wishlist, ajouter
+                await axios.post(`http://localhost:8000/api/wishlist/`, {
+                    user_id: userId,
+                    book_id: bookId
                 });
-                setIsWishlisted(true);
+                setIsWishlisted(true); // Met à jour l'état immédiatement
                 await Swal.fire({
                     icon: "success",
                     title: t("added_to_wishlist"),
@@ -171,9 +174,17 @@ function BookDetails() {
             }
         } catch (error) {
             console.error("Error handling wishlist:", error);
+            await Swal.fire({
+                icon: "error",
+                title: t("error_wishlist"),
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: "top-end",
+            });
         }
     };
-
     function splitText(text, maxLength) {
         const parts = [];
         let index = 0;

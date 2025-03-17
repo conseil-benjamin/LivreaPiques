@@ -111,7 +111,12 @@
   "connexion_book_read_for_work": "Livres lus pour le travail",
   "connexion_book_read_for_pleasure": "Livres lus pour le plaisir",
   "connexion_number_books_read_by_year": "Nombre de livres lus par an",
-  "no_liked_books": "No liked books for now.",
+  "no_liked_books": "Pas de livres likés pour l'instant.",
+  "added_to_wishlist": "Ajouté à la liste de souhaits",
+  "removed_from_wishlist": "Retiré de la liste de souhaits",
+  "cannot_wishlist_liked_book": "Impossible d'ajouter un livre déjà liké à la liste de souhaits",
+  "books_in_my_wishlist": "Ma liste de souhaits",
+  "no_wishlisted_books": "Aucun livre dans la liste de souhaits",
   "documentation": {
     "title": "Documentation du Projet",
     "prerequisites": {

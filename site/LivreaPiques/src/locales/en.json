@@ -111,6 +111,11 @@
   "connexion_book_read_for_pleasure": "Books read for pleasure",
   "connexion_number_books_read_by_year": "Number of books read per year",
   "no_liked_books": "No liked books for now.",
+  "added_to_wishlist": "Added to wishlist",
+  "removed_from_wishlist": "Removed from wishlist",
+  "cannot_wishlist_liked_book": "Cannot add liked book to wishlist",
+  "books_in_my_wishlist": "Books in my wishlist",
+  "no_wishlisted_books": "No books in wishlist",
   "documentation": {
     "title": "Project Documentation",
     "prerequisites": {

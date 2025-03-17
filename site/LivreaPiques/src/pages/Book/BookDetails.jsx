@@ -24,6 +24,7 @@ function BookDetails() {
     const { t } = useTranslation();
     const userId = Cookies.get("user_id"); // ID de l'utilisateur pour lier l'action
     const [isLiked, setIsLiked] = useState(false); // Etat pour savoir si l'utilisateur a liké le livre
+    
 
     useEffect(() => {
         const fetchBookDetails = async () => {

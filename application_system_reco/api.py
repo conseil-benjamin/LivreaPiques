@@ -325,10 +325,8 @@ async def recommendation3(user: UserID):
     """
     try:
         try:
-            print('coucou')
             Lreco = reco_description(user.id, 5)
         except:
-            print('coucou2')
             Lreco = reco_description(user.id, 5, False)
         print(Lreco)
         Ltitles = [book["title"] for book in Lreco]

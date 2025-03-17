@@ -207,7 +207,7 @@ function BookDetails() {
                         <p className={`description ${isDescriptionExpanded ? "expanded" : ""}`}>
                             <strong>{t("book_description")}</strong>: {translatedDesc ? translatedDesc : book.book_description || t("no_description")}
                         </p>
-                        {translatedDesc && translatedDesc.length > 0 && translatedDesc.split(" ").length > 30 && (
+                        {translatedDesc && translatedDesc.length > 0 && translatedDesc.split(" ").length > 420 && (
                             <span className="see-more-button" onClick={toggleDescription}>
                                 {isDescriptionExpanded ? t("book_see_less") : t("book_see_more")}
                             </span>

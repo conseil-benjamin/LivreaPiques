@@ -373,11 +373,12 @@ function SearchBar() {
                         style={{cursor: "pointer"}}
                     />
                 )}
-
             </div>
 
             {/* Afficher les résultats de la recherche */}
-            {books.length > 0 ? (
+            {isLoading ? (
+                <p style={{ textAlign: 'center' }}>{t("loading_message")}</p>
+            ) : books.length > 0 ? (
                 <div className="search-results-list" style={{overflowY: 'scroll', maxHeight: '500px', marginTop: '20px' }}>
                     {books.map((book) => (
                         <div key={book.book_id} className="card" style={{

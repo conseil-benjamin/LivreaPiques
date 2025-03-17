@@ -14,6 +14,9 @@ import { translateText } from "../../utils/translate.js";
 import Cookies from "js-cookie";
 import Swal from "sweetalert2";
 import ImageUnvailable from "../../components/ImageUnvailable.jsx";
+//Partie wishlist, les signets
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 
 function BookDetails() {
     const { book_id } = useParams();
@@ -24,6 +27,7 @@ function BookDetails() {
     const { t } = useTranslation();
     const userId = Cookies.get("user_id"); // ID de l'utilisateur pour lier l'action
     const [isLiked, setIsLiked] = useState(false); // Etat pour savoir si l'utilisateur a liké le livre
+    const [isWishlisted, setIsWishlisted] = useState(false); // Etat pour savoir si l'utilisateur a ajouté le livre à sa wishlist
     
 
     useEffect(() => {
@@ -96,6 +100,69 @@ function BookDetails() {
             console.error("Erreur lors de la gestion du like", error);
         }
     };
+
+    // Section pour la wishlist
+    const checkIfWishlisted = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8000/api/wishlist/${userId}/${book_id}`);
+            setIsWishlisted(response.data.wishlisted);
+        } catch (error) {
+            console.error("Error checking wishlist status:", error);
+        }
+    };
+    
+    if (userId) {
+        checkIfLiked();
+        checkIfWishlisted();
+    }
+
+    // Add wishlist toggle handler
+    const handleWishlistToggle = async (bookId) => {
+    try {
+        if (isWishlisted) {
+            await axios.delete(`http://localhost:8000/api/user/${userId}/wishlist/${bookId}`);
+            setIsWishlisted(false);
+            await Swal.fire({
+                icon: "success",
+                title: t("removed_from_wishlist"),
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: "top-end",
+            });
+        } else {
+            if (isLiked) {
+                await Swal.fire({
+                    icon: "error",
+                    title: t("cannot_wishlist_liked_book"),
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    toast: true,
+                    position: "top-end",
+                });
+                return;
+            }
+            await axios.post(`http://localhost:8000/api/wishlist/`, { 
+                user_id: userId, 
+                book_id: bookId 
+            });
+            setIsWishlisted(true);
+            await Swal.fire({
+                icon: "success",
+                title: t("added_to_wishlist"),
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: "top-end",
+            });
+        }
+    } catch (error) {
+        console.error("Error handling wishlist:", error);
+    }
+};
 
     function splitText(text, maxLength) {
         const parts = [];
@@ -208,6 +275,7 @@ function BookDetails() {
                             <strong>{t("book_avg_rating")}</strong>: ⭐ {book.book_avg_rating || t("not_rated")}
                         </p>
                         {userId && (
+                            <div className="action-buttons">
                             <div
                                 className="like-button"
                                 onClick={() => handleLikeToggle(book.book_id)}
@@ -215,6 +283,15 @@ function BookDetails() {
                             >
                                 {isLiked ? <FavoriteIcon fontSize="large"/> : <FavoriteBorderIcon fontSize="large"/>}
                             </div>
+                            <div
+                                className="wishlist-button"
+                                onClick={() => handleWishlistToggle(book.book_id)}
+                                style={{cursor: "pointer", color: isWishlisted ? "#FFD700" : "gray"}}
+                            >
+                                {isWishlisted ? <BookmarkIcon fontSize="large"/> : <BookmarkBorderIcon fontSize="large"/>}
+                            </div>
+                        </div>
+                            
                         )}
                     </div>
                 </div>

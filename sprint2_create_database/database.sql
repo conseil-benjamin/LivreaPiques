@@ -264,6 +264,14 @@ CREATE TABLE Reads_With (
   FOREIGN KEY (mean_id) REFERENCES Reading_Mean(mean_id)
 );
 
+CREATE TABLE wishlist (
+    user_id INTEGER,
+    book_id INTEGER,
+    FOREIGN KEY (user_id) REFERENCES "user"(user_id),
+    FOREIGN KEY (book_id) REFERENCES book(book_id),
+    PRIMARY KEY (user_id, book_id)
+);
+
 CREATE OR REPLACE VIEW allbookdata as
 SELECT book.book_id, book.book_title, book.book_cover, book.book_description, STRING_AGG(DISTINCT author.author_name, ', ') AS authors , STRING_AGG(DISTINCT awards.award_name, ', ') AS awards, STRING_AGG(DISTINCT genre.genre_name, ', ') AS genres,  book_rating.book_avg_rating, STRING_AGG(DISTINCT series.series_name, ', ') AS series
 FROM book 

@@ -34,3 +34,6 @@ ON genre(genre_id);
 
 create index idx_series_series_id
 ON series(series_id);
+
+create index if not exists idx_liked_book_user_id
+ON liked_books(user_id, book_id);

@@ -81,6 +81,35 @@
   color: #666;
 }
 
+.action-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
+
+  .like-button, .wishlist-button {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  .like-button {
+    &:hover {
+      color: red;
+    }
+  }
+
+  .wishlist-button {
+    &:hover {
+      color: #FFD700;
+    }
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -132,6 +161,10 @@
   .back-icon {
     top: 10px;
     left: 10px;
+  }
+
+  .action-buttons {
+    justify-content: center;
   }
 }
 

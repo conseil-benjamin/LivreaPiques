@@ -105,6 +105,25 @@ function MonCompte() {
                     <p>{t("no_liked_books")}</p>
                 )}
             </div>
+            <div className="wishlisted-books">
+                <h3>{t("books_in_my_wishlist")}</h3>
+                {userProfile?.wishlist_books?.length > 0 ? (
+                    <div className="books-list">
+                        {userProfile.wishlist_books.map((book) => (
+                            <div key={book.book_id} className="book-item" onClick={() => navigate(`/book/${book.book_id}`)}>
+                                {book.book_cover ? (
+                                    <img src={book.book_cover} alt={book.book_title} />
+                                ) : (
+                                    <ImageUnvailable />
+                                )}
+                                <span>{book.book_title}</span>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p>{t("no_wishlisted_books")}</p>
+                )}
+            </div>
             <div style={{width: "100%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 0 2em 0"}}>
                 <button style={{borderRadius: "10px", backgroundColor: "red", padding: "1em", color: "#fff", cursor: "pointer"}} onClick={() => handleDeconnexion()}>
                     <h4>{t("button_deconnexion")}</h4>

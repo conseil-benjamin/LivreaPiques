@@ -60,10 +60,20 @@ function BookDetails() {
             }
         };
 
+        const checkIfWishlisted = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8000/api/wishlist/${userId}/${book_id}`);
+                setIsWishlisted(response.data.wishlisted);
+            } catch (error) {
+                console.error("Error checking wishlist status:", error);
+            }
+        };
+    
+        fetchBookDetails();
         if (userId) {
-            checkIfLiked(); // Vérifie si l'utilisateur a liké ce livre
+            checkIfLiked();
+            checkIfWishlisted();
         }
-        fetchBookDetails(); // Charge les détails du livre
     }, [book_id, userId, t]);
 
     // Fonction pour liker ou supprimer un like
@@ -111,58 +121,58 @@ function BookDetails() {
         }
     };
     
-    if (userId) {
-        checkIfLiked();
-        checkIfWishlisted();
-    }
+    // if (userId) {
+    //     checkIfLiked();
+    //     checkIfWishlisted();
+    // }
 
     // Add wishlist toggle handler
     const handleWishlistToggle = async (bookId) => {
-    try {
-        if (isWishlisted) {
-            await axios.delete(`http://localhost:8000/api/user/${userId}/wishlist/${bookId}`);
-            setIsWishlisted(false);
-            await Swal.fire({
-                icon: "success",
-                title: t("removed_from_wishlist"),
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                toast: true,
-                position: "top-end",
-            });
-        } else {
-            if (isLiked) {
+        try {
+            if (isWishlisted) {
+                await axios.delete(`http://localhost:8000/api/user/${userId}/wishlist/${bookId}`);
+                setIsWishlisted(false);
                 await Swal.fire({
-                    icon: "error",
-                    title: t("cannot_wishlist_liked_book"),
+                    icon: "success",
+                    title: t("removed_from_wishlist"),
                     showConfirmButton: false,
                     timer: 3000,
                     timerProgressBar: true,
                     toast: true,
                     position: "top-end",
                 });
-                return;
+            } else {
+                if (isLiked) {
+                    await Swal.fire({
+                        icon: "error",
+                        title: t("cannot_wishlist_liked_book"),
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        toast: true,
+                        position: "top-end",
+                    });
+                    return;
+                }
+                await axios.post(`http://localhost:8000/api/wishlist/`, { 
+                    user_id: userId, 
+                    book_id: bookId 
+                });
+                setIsWishlisted(true);
+                await Swal.fire({
+                    icon: "success",
+                    title: t("added_to_wishlist"),
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    toast: true,
+                    position: "top-end",
+                });
             }
-            await axios.post(`http://localhost:8000/api/wishlist/`, { 
-                user_id: userId, 
-                book_id: bookId 
-            });
-            setIsWishlisted(true);
-            await Swal.fire({
-                icon: "success",
-                title: t("added_to_wishlist"),
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                toast: true,
-                position: "top-end",
-            });
+        } catch (error) {
+            console.error("Error handling wishlist:", error);
         }
-    } catch (error) {
-        console.error("Error handling wishlist:", error);
-    }
-};
+    };
 
     function splitText(text, maxLength) {
         const parts = [];
@@ -276,22 +286,21 @@ function BookDetails() {
                         </p>
                         {userId && (
                             <div className="action-buttons">
-                            <div
-                                className="like-button"
-                                onClick={() => handleLikeToggle(book.book_id)}
-                                style={{cursor: "pointer", color: isLiked ? "red" : "gray"}}
-                            >
-                                {isLiked ? <FavoriteIcon fontSize="large"/> : <FavoriteBorderIcon fontSize="large"/>}
+                                <div
+                                    className="like-button"
+                                    onClick={() => handleLikeToggle(book.book_id)}
+                                    style={{color: isLiked ? "red" : "gray"}}
+                                >
+                                    {isLiked ? <FavoriteIcon fontSize="large"/> : <FavoriteBorderIcon fontSize="large"/>}
+                                </div>
+                                <div
+                                    className="wishlist-button"
+                                    onClick={() => handleWishlistToggle(book.book_id)}
+                                    style={{color: isWishlisted ? "#FFD700" : "gray"}}
+                                >
+                                    {isWishlisted ? <BookmarkIcon fontSize="large"/> : <BookmarkBorderIcon fontSize="large"/>}
+                                </div>
                             </div>
-                            <div
-                                className="wishlist-button"
-                                onClick={() => handleWishlistToggle(book.book_id)}
-                                style={{cursor: "pointer", color: isWishlisted ? "#FFD700" : "gray"}}
-                            >
-                                {isWishlisted ? <BookmarkIcon fontSize="large"/> : <BookmarkBorderIcon fontSize="large"/>}
-                            </div>
-                        </div>
-                            
                         )}
                     </div>
                 </div>

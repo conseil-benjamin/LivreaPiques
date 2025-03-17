@@ -5,6 +5,8 @@
   "book_author": "Auteur(s)",
   "book_genres": "Genres",
   "book_description": "Description",
+  "book_see_less": "Voir moins",
+  "book_see_more": "Voir plus",
   "book_avg_rating": "Note moyenne ",
   "unknown": "Inconnu",
   "not_specified": "Non spécifié",

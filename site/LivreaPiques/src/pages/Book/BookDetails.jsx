@@ -24,6 +24,11 @@ function BookDetails() {
     const { t } = useTranslation();
     const userId = Cookies.get("user_id"); // ID de l'utilisateur pour lier l'action
     const [isLiked, setIsLiked] = useState(false); // Etat pour savoir si l'utilisateur a liké le livre
+    const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+
+    const toggleDescription = () => {
+        setIsDescriptionExpanded(!isDescriptionExpanded);
+    };
 
     useEffect(() => {
         const fetchBookDetails = async () => {
@@ -182,7 +187,6 @@ function BookDetails() {
                     <img
                         src={book.book_cover}
                         alt={book?.book_title || "Livre inconnu"}
-                        style={{width: 'auto', height: 'auto', borderRadius: '8px'}}
                         onError={(e) => {
                             console.log("Image loading error");
                             e.target.style.display = 'none';
@@ -200,9 +204,14 @@ function BookDetails() {
                         <p>
                             <strong>{t("book_genres")}</strong>: {translatedGenres || t("no_genres")}
                         </p>
-                        <p className="description">
+                        <p className={`description ${isDescriptionExpanded ? "expanded" : ""}`}>
                             <strong>{t("book_description")}</strong>: {translatedDesc ? translatedDesc : book.book_description || t("no_description")}
                         </p>
+                        {translatedDesc && translatedDesc.length > 0 && translatedDesc.split(" ").length > 30 && (
+                            <span className="see-more-button" onClick={toggleDescription}>
+                                {isDescriptionExpanded ? t("book_see_less") : t("book_see_more")}
+                            </span>
+                        )}
                         <p>
                             <strong>{t("book_avg_rating")}</strong>: ⭐ {book.book_avg_rating || t("not_rated")}
                         </p>

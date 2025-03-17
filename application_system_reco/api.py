@@ -309,7 +309,30 @@ async def recommendation3(user: UserID):
         print(f"Erreur lors de la recommandation: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
     
+@app.post("/api/reco3/")
+async def recommendation(user: UserID):
+    """
+    Génère des recommandations de livres basées sur un système de recommandation avancé.
 
+    Entrée :
+    - user (UserID) : Un objet contenant l'identifiant de l'utilisateur (non utilisé ici).
+
+    Sortie :
+    - Un dictionnaire contenant une liste de titres de livres recommandés.
+
+    Cette fonction utilise `FinalRecommender` pour obtenir les recommandations, mais l'ID utilisateur n'est
+    pas pris en compte dans cette version (valeur fixe de 1).
+    """
+    try:
+        reco_benj = FinalRecommender()
+        Lreco = reco_benj.get_recommendations(user.id, 5) 
+        Ltitles = [book["title"] for book in Lreco]
+        LrecoID = Ltitle_to_Lid(Ltitles)
+        return {"recommendations": LrecoID}
+    except Exception as e:
+        print(f"Erreur lors de la recommandation: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
+        
 class UserBook (BaseModel):
     user_id: int
     book_id: int

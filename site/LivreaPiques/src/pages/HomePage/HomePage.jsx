@@ -58,6 +58,7 @@ function Recommandations() {
     const [reco1Books, setReco1Books] = useState([]);
     const [reco2Books, setReco2Books] = useState([]);
     const [reco3Books, setReco3Books] = useState([]);
+    const [selectedReco, setSelectedReco] = useState('reco1');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const userId = Cookies.get("user_id");
@@ -156,12 +157,37 @@ function Recommandations() {
         ]
     };
 
+    const getCurrentRecoBooks = () => {
+        switch(selectedReco) {
+            case 'reco1': return reco1Books;
+            case 'reco2': return reco2Books;
+            case 'reco3': return reco3Books;
+            default: return [];
+        }
+    };
+
     return (
         <div className="home-page-recommandations">
             <h1 style={{textAlign: "center", fontSize: "1.75rem"}}>{t("recommendations_title")}</h1>
 
-            <div style={{display: "flex", alignItems: "center", justifyContent: "center", margin: "1em 0 1em 0"}}>
-                <button style={{backgroundColor: "#000", color: "#fff", borderRadius: "10px", padding: "1em", cursor: "pointer"}} onClick={() => fetchRecommendations('reco1')}>
+            <div style={{display: "flex", alignItems: "center", justifyContent: "center", gap: "1em", margin: "1em 0 1em 0"}}>
+                <select 
+                    value={selectedReco} 
+                    onChange={(e) => setSelectedReco(e.target.value)}
+                    style={{
+                        padding: "0.5em",
+                        borderRadius: "5px",
+                        border: "1px solid #ccc"
+                    }}
+                >
+                    <option value="reco1">{t("recommendation")} 1</option>
+                    <option value="reco2">{t("recommendation")} 2</option>
+                    <option value="reco3">{t("recommendation")} 3</option>
+                </select>
+                <button 
+                    style={{backgroundColor: "#000", color: "#fff", borderRadius: "10px", padding: "1em", cursor: "pointer"}} 
+                    onClick={() => fetchRecommendations(selectedReco)}
+                >
                     <h3>{t("get_recommendations")}</h3>
                 </button>
             </div>
@@ -170,83 +196,9 @@ function Recommandations() {
             {error && <p style={{color: 'red'}}>{error}</p>}
 
             <div className="recommandations-list">
-                {reco1Books.length > 0 && !loading && (
+                {getCurrentRecoBooks().length > 0 && !loading && (
                     <Slider {...settings}>
-                        {reco1Books.map((book, index) => (
-                            <div key={index} className="book-card"
-                                 onClick={() => navigate(`/book/${book[0].book_id}`)}>
-                                {book[0]?.book_cover && book[0].book_cover !== "null" && book[0].book_cover !== "" ? (
-                                    <img
-                                        src={book[0].book_cover}
-                                        alt={book[0]?.book_title || "Livre inconnu"}
-                                        style={{width: 'auto', height: '100px', borderRadius: '8px'}}
-                                        onError={(e) => {
-                                            console.log("Image loading error");
-                                            e.target.style.display = 'none';
-                                            e.target.nextElementSibling.style.display = 'block';
-                                        }}
-                                    />
-                                ) : (
-                                    <ImageUnvailable height={"110px"} width={"110px"}/>
-                                )}
-                                <div>
-                                    <h4>{book[0]?.book_title || "Titre inconnu"}</h4>
-                                    <p>{typeof book[0]?.book_description === "string" ? book[0].book_description.slice(0, 150) + "..." : "Pas de description disponible."}</p>
-                                    <p>Auteur(s): {book[0]?.authors || 'Inconnu'}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </Slider>
-                )}
-            </div>
-
-            <div style={{display: "flex", alignItems: "center", justifyContent: "center", margin: "1em 0 1em 0"}}>
-                <button style={{backgroundColor: "#000", color: "#fff", borderRadius: "10px", padding: "1em", cursor: "pointer"}} onClick={() => fetchRecommendations('reco2')}>
-                    <h3>{t("get_recommendations")}</h3>
-                </button>
-            </div>
-
-            <div className="recommandations-list">
-                {reco2Books.length > 0 && !loading && (
-                    <Slider {...settings}>
-                        {reco2Books.map((book, index) => (
-                            <div key={index} className="book-card"
-                                 onClick={() => navigate(`/book/${book[0].book_id}`)}>
-                                {book[0]?.book_cover && book[0].book_cover !== "null" && book[0].book_cover !== "" ? (
-                                    <img
-                                        src={book[0].book_cover}
-                                        alt={book[0]?.book_title || "Livre inconnu"}
-                                        style={{width: 'auto', height: '100px', borderRadius: '8px'}}
-                                        onError={(e) => {
-                                            console.log("Image loading error");
-                                            e.target.style.display = 'none';
-                                            e.target.nextElementSibling.style.display = 'block';
-                                        }}
-                                    />
-                                ) : (
-                                    <ImageUnvailable height={"110px"} width={"110px"}/>
-                                )}
-                                <div>
-                                    <h4>{book[0]?.book_title || "Titre inconnu"}</h4>
-                                    <p>{typeof book[0]?.book_description === "string" ? book[0].book_description.slice(0, 150) + "..." : "Pas de description disponible."}</p>
-                                    <p>Auteur(s): {book[0]?.authors || 'Inconnu'}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </Slider>
-                )}
-            </div>
-
-            <div style={{display: "flex", alignItems: "center", justifyContent: "center", margin: "1em 0 1em 0"}}>
-                <button style={{backgroundColor: "#000", color: "#fff", borderRadius: "10px", padding: "1em", cursor: "pointer"}} onClick={() => fetchRecommendations('reco3')}>
-                    <h3>{t("get_recommendations")}</h3>
-                </button>
-            </div>
-
-            <div className="recommandations-list">
-                {reco3Books.length > 0 && !loading && (
-                    <Slider {...settings}>
-                        {reco3Books.map((book, index) => (
+                        {getCurrentRecoBooks().map((book, index) => (
                             <div key={index} className="book-card"
                                  onClick={() => navigate(`/book/${book[0].book_id}`)}>
                                 {book[0]?.book_cover && book[0].book_cover !== "null" && book[0].book_cover !== "" ? (

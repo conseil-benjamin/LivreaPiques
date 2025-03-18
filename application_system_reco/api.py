@@ -284,16 +284,29 @@ class UserBook (BaseModel):
 
 @app.post("/api/likedbook/")
 async def LikedBook(UserBook: UserBook):
-    #mettre sous forme de dataFrame UserBook avec comme colonne user_id et book_id
-    df = pd.DataFrame([UserBook.model_dump()])
     try:
+        # Vérifier que le livre n'est pas déjà dans la wishlist
+        wishlist_query = text("""
+            SELECT 1 FROM wishlist WHERE user_id = :user_id AND book_id = :book_id
+        """)
+        engine, session, schema = conexion_db()
+        is_wishlisted = session.execute(wishlist_query, {"user_id": UserBook.user_id, "book_id": UserBook.book_id}).fetchone()
+        
+        # Si le livre est déjà dans la wishlist, renvoyer une erreur
+        if is_wishlisted:
+            raise HTTPException(status_code=400, detail="Vous ne pouvez pas liker un livre déjà dans votre wishlist")
+            
+        df = pd.DataFrame([UserBook.model_dump()])
         if(insert(df, "liked_books")):
+            # si réussite de l'insertion, message
             return {"message": "Liked ajouté"}
         else:
+            # si échec de l'insertion, erreur
             raise HTTPException(status_code=500, detail=f"Erreur lors de l'insertion")
-    except Exception as e:
-        print(f"Erreur lors de la recommandation: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Erreur lors de l'insertion: {str(e)}")
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
+    finally:
+        session.close()
     
 @app.get("/api/likedbook/{user_id}/{book_id}")
 async def check_if_liked(user_id: int, book_id: int):
@@ -478,7 +491,7 @@ async def get_user_wishlist(user_id: int):
         engine, session, schema = conexion_db()
         result = session.execute(wishlist_query, {"user_id": user_id}).fetchall()
         
-        # Convert result to list of dictionaries
+        # Convertir les résultats en un format JSON
         wishlist_books = [
             {
                 "book_id": book[0],

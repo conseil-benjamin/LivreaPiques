@@ -82,7 +82,7 @@ function BookDetails() {
             if (isLiked) {
                 // Si déjà liké, supprimer le like
                 await axios.delete(`http://localhost:8000/api/user/${userId}/like/${bookId}`);
-                setIsLiked(false); // Met à jour l'état immédiatement
+                setIsLiked(false);
                 await Swal.fire({
                     icon: "success",
                     title: t("unliked_book"),
@@ -93,21 +93,59 @@ function BookDetails() {
                     position: "top-end",
                 });
             } else {
-                // Si non liké, ajouter le like
-                await axios.post(`http://localhost:8000/api/likedbook/`, { user_id: userId,book_id: bookId });
-                setIsLiked(true); // Met à jour l'état immédiatement
-                await Swal.fire({
-                    icon: "success",
-                    title: t("liked_book"),
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    toast: true,
-                    position: "top-end",
-                });
+                try {
+                    // Si non liké, ajouter le like
+                    await axios.post(`http://localhost:8000/api/likedbook/`, { 
+                        user_id: userId,
+                        book_id: bookId 
+                    });
+                    setIsLiked(true);
+                    await Swal.fire({
+                        icon: "success",
+                        title: t("liked_book"),
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        toast: true,
+                        position: "top-end",
+                    });
+                } catch (error) {
+                    if (error.response && error.response.status === 400) {
+                        // Handle the case when book is in wishlist
+                        await Swal.fire({
+                            icon: "error",
+                            title: t("cannot_like_wishlisted_book"),
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            toast: true,
+                            position: "top-end",
+                        });
+                    } else {
+                        console.error("Error handling like:", error);
+                        await Swal.fire({
+                            icon: "error",
+                            title: t("error_liking"),
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            toast: true,
+                            position: "top-end",
+                        });
+                    }
+                }
             }
         } catch (error) {
-            console.error("Erreur lors de la gestion du like", error);
+            console.error("Error handling like:", error);
+            await Swal.fire({
+                icon: "error",
+                title: t("error_liking"),
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: "top-end",
+            });
         }
     };
 

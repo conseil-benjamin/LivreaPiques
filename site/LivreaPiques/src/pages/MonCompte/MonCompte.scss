@@ -37,8 +37,15 @@ $white-color: #fff;
   }
 
   h2, h3 {
+    font-size: 1.3rem;
     margin-top: 0;
     color: $primary-color;
+  }
+
+  h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 0;
   }
 
   p {

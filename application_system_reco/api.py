@@ -231,33 +231,8 @@ def Ltitle_to_Lid(Ltitle):
         LrecoID.append(int(result["book_id"].iloc[0]))
     return LrecoID
 
-
 @app.post("/api/reco1/")
 async def recommendation1(user: UserID):
-    """
-    Génère des recommandations de livres basées sur un système de recommandation avancé.
-
-    Entrée :
-    - user (UserID) : Un objet contenant l'identifiant de l'utilisateur (non utilisé ici).
-
-    Sortie :
-    - Un dictionnaire contenant une liste de titres de livres recommandés.
-
-    Cette fonction utilise `FinalRecommender` pour obtenir les recommandations, mais l'ID utilisateur n'est
-    pas pris en compte dans cette version (valeur fixe de 1).
-    """
-    try:
-        Lreco = reco_esteban(user.id) 
-        print(Lreco)
-        print('coucou')
-        LrecoID = Ltitle_to_Lid(Lreco)
-        return {"recommendations": LrecoID}
-    except Exception as e:
-        print(f"Erreur lors de la recommandation: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
-
-@app.post("/api/reco2/")
-async def recommendation2(user: UserID):
     """
     Génère des recommandations de livres basées sur un système de recommandation avancé.
 
@@ -280,8 +255,8 @@ async def recommendation2(user: UserID):
         print(f"Erreur lors de la recommandation: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
 
-@app.post("/api/reco3/")
-async def recommendation3(user: UserID):
+@app.post("/api/reco2/")
+async def recommendation2(user: UserID):
     """
     Génère des recommandations de livres basées sur un système de recommandation avancé.
 
@@ -295,15 +270,10 @@ async def recommendation3(user: UserID):
     pas pris en compte dans cette version (valeur fixe de 1).
     """
     try:
-        try:
-            print('coucou')
-            Lreco = reco_description(user.id, 5)
-        except:
-            print('coucou2')
-            Lreco = reco_description(user.id, 5, False)
+        Lreco = reco_esteban(user.id) 
         print(Lreco)
-        Ltitles = [book["title"] for book in Lreco]
-        LrecoID = Ltitle_to_Lid(Ltitles)
+        print('coucou')
+        LrecoID = Ltitle_to_Lid(Lreco)
         return {"recommendations": LrecoID}
     except Exception as e:
         print(f"Erreur lors de la recommandation: {str(e)}")

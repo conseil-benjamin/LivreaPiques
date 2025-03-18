@@ -180,9 +180,8 @@ function Recommandations() {
                         border: "1px solid #ccc"
                     }}
                 >
-                    <option value="reco1">{t("recommendation")} 1</option>
-                    <option value="reco2">{t("recommendation")} 2</option>
-                    <option value="reco3">{t("recommendation")} 3</option>
+                    <option value="reco1">{t("select_reco1")}</option>
+                    <option value="reco2">{t("select_reco2")}</option>
                 </select>
                 <button 
                     style={{backgroundColor: "#000", color: "#fff", borderRadius: "10px", padding: "1em", cursor: "pointer"}} 

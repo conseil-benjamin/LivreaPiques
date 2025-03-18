@@ -17,6 +17,8 @@
   "go_back_404": "Go back to home",
   "liked_book": "Like added",
   "unliked_book": "Like removed",
+  "select_reco1": "Liked by my peers (Similar genre)",
+  "select_reco2": "Liked by my peers",
   "get_recommendations": "Get recommendations",
   "recommendations_title": "Your recommendations",
   "recommandations_loading": "Loading recommendations...",

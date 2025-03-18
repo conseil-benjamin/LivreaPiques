@@ -18,8 +18,8 @@ import ImageUnvailable from "../../components/ImageUnvailable.jsx";
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 //Partie Livres Lus
-import MenuBookIcon from '@mui/icons-material/MenuBook'; // For the "Lu" button
-import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined'; // For the hollow version
+import AutoStoriesIcon from '@mui/icons-material/AutoStories'; // Filled version
+import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined'; // Hollow version
 
 function BookDetails() {
     const { book_id } = useParams();
@@ -441,7 +441,7 @@ function BookDetails() {
                                     onClick={() => handleReadToggle(book.book_id)}
                                     style={{color: isRead ? "#4CAF50" : "gray"}}
                                 >
-                                    {isRead ? <MenuBookIcon fontSize="large"/> : <MenuBookOutlinedIcon fontSize="large"/>}
+                                    {isRead ? <AutoStoriesIcon fontSize="large"/> : <AutoStoriesOutlinedIcon fontSize="large"/>}
                                 </div>
                             </div>
                         )}

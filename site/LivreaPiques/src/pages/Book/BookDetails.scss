@@ -82,10 +82,11 @@
 }
 
 .action-buttons {
-  display:flex; 
+  display: flex; 
   gap: 20px; 
   margin-top: 1rem;
   flex-direction: row;
+  align-items: center; // Add this line to vertically center all buttons
 
   .like-button, .wishlist-button, .read-button {
     display: flex;
@@ -94,6 +95,8 @@
     cursor: pointer;
     padding: 8px;
     transition: transform 0.2s ease;
+    height: 40px; // Add this line to ensure consistent height
+    width: 40px;  // Add this line to ensure consistent width
 
     &:hover {
       transform: scale(1.1);

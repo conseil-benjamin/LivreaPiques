@@ -14,6 +14,9 @@ import { translateText } from "../../utils/translate.js";
 import Cookies from "js-cookie";
 import Swal from "sweetalert2";
 import ImageUnvailable from "../../components/ImageUnvailable.jsx";
+//Partie wishlist, les signets
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 
 function BookDetails() {
     const { book_id } = useParams();
@@ -24,8 +27,8 @@ function BookDetails() {
     const { t } = useTranslation();
     const userId = Cookies.get("user_id"); // ID de l'utilisateur pour lier l'action
     const [isLiked, setIsLiked] = useState(false); // Etat pour savoir si l'utilisateur a liké le livre
+    const [isWishlisted, setIsWishlisted] = useState(false); // Etat pour savoir si l'utilisateur a ajouté le livre à sa wishlist
     const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-
     const toggleDescription = () => {
         setIsDescriptionExpanded(!isDescriptionExpanded);
     };
@@ -60,10 +63,20 @@ function BookDetails() {
             }
         };
 
+        const checkIfWishlisted = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8000/api/wishlist/${userId}/${book_id}`);
+                setIsWishlisted(response.data.wishlisted);
+            } catch (error) {
+                console.error("Error checking wishlist status:", error);
+            }
+        };
+    
+        fetchBookDetails();
         if (userId) {
-            checkIfLiked(); // Vérifie si l'utilisateur a liké ce livre
+            checkIfLiked();
+            checkIfWishlisted();
         }
-        fetchBookDetails(); // Charge les détails du livre
     }, [book_id, userId, t]);
 
     // Fonction pour liker ou supprimer un like
@@ -72,7 +85,7 @@ function BookDetails() {
             if (isLiked) {
                 // Si déjà liké, supprimer le like
                 await axios.delete(`http://localhost:8000/api/user/${userId}/like/${bookId}`);
-                setIsLiked(false); // Met à jour l'état immédiatement
+                setIsLiked(false);
                 await Swal.fire({
                     icon: "success",
                     title: t("unliked_book"),
@@ -83,12 +96,116 @@ function BookDetails() {
                     position: "top-end",
                 });
             } else {
-                // Si non liké, ajouter le like
-                await axios.post(`http://localhost:8000/api/likedbook/`, { user_id: userId,book_id: bookId });
-                setIsLiked(true); // Met à jour l'état immédiatement
+                try {
+                    // Si non liké, ajouter le like
+                    await axios.post(`http://localhost:8000/api/likedbook/`, { 
+                        user_id: userId,
+                        book_id: bookId 
+                    });
+                    setIsLiked(true);
+                    await Swal.fire({
+                        icon: "success",
+                        title: t("liked_book"),
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        toast: true,
+                        position: "top-end",
+                    });
+                } catch (error) {
+                    if (error.response && error.response.status === 400) {
+                        // Handle the case when book is in wishlist
+                        await Swal.fire({
+                            icon: "error",
+                            title: t("cannot_like_wishlisted_book"),
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            toast: true,
+                            position: "top-end",
+                        });
+                    } else {
+                        console.error("Error handling like:", error);
+                        await Swal.fire({
+                            icon: "error",
+                            title: t("error_liking"),
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            toast: true,
+                            position: "top-end",
+                        });
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("Error handling like:", error);
+            await Swal.fire({
+                icon: "error",
+                title: t("error_liking"),
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: "top-end",
+            });
+        }
+    };
+
+    // Section pour la wishlist
+    const checkIfWishlisted = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8000/api/wishlist/${userId}/${book_id}`);
+            setIsWishlisted(response.data.wishlisted);
+        } catch (error) {
+            console.error("Error checking wishlist status:", error);
+        }
+    };
+    
+    // if (userId) {
+    //     checkIfLiked();
+    //     checkIfWishlisted();
+    // }
+
+    // Add wishlist toggle handler
+    const handleWishlistToggle = async (bookId) => {
+        try {
+            if (isWishlisted) {
+                // Si déjà dans la wishlist, retirer
+                await axios.delete(`http://localhost:8000/api/user/${userId}/wishlist/${bookId}`);
+                setIsWishlisted(false); // Met à jour l'état immédiatement
                 await Swal.fire({
                     icon: "success",
-                    title: t("liked_book"),
+                    title: t("removed_from_wishlist"),
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    toast: true,
+                    position: "top-end",
+                });
+            } else {
+                // Vérifier si le livre est liké avant d'ajouter à la wishlist
+                if (isLiked) {
+                    await Swal.fire({
+                        icon: "error",
+                        title: t("cannot_wishlist_liked_book"),
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        toast: true,
+                        position: "top-end",
+                    });
+                    return;
+                }
+                // Si non dans la wishlist, ajouter
+                await axios.post(`http://localhost:8000/api/wishlist/`, {
+                    user_id: userId,
+                    book_id: bookId
+                });
+                setIsWishlisted(true); // Met à jour l'état immédiatement
+                await Swal.fire({
+                    icon: "success",
+                    title: t("added_to_wishlist"),
                     showConfirmButton: false,
                     timer: 3000,
                     timerProgressBar: true,
@@ -97,10 +214,18 @@ function BookDetails() {
                 });
             }
         } catch (error) {
-            console.error("Erreur lors de la gestion du like", error);
+            console.error("Error handling wishlist:", error);
+            await Swal.fire({
+                icon: "error",
+                title: t("error_wishlist"),
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: "top-end",
+            });
         }
     };
-
     function splitText(text, maxLength) {
         const parts = [];
         let index = 0;
@@ -216,12 +341,22 @@ function BookDetails() {
                             <strong>{t("book_avg_rating")}</strong>: ⭐ {book.book_avg_rating || t("not_rated")}
                         </p>
                         {userId && (
-                            <div
-                                className="like-button"
-                                onClick={() => handleLikeToggle(book.book_id)}
-                                style={{cursor: "pointer", color: isLiked ? "red" : "gray"}}
-                            >
-                                {isLiked ? <FavoriteIcon fontSize="large"/> : <FavoriteBorderIcon fontSize="large"/>}
+                            <div className="action-buttons">
+                                <div
+                                    className="like-button"
+                                    onClick={() => handleLikeToggle(book.book_id)}
+                                    style={{color: isLiked ? "red" : "gray"}}
+                                >
+                                    {isLiked ? <FavoriteIcon fontSize="large"/> : <FavoriteBorderIcon fontSize="large"/>}
+                                </div>
+                                
+                                <div
+                                    className="wishlist-button"
+                                    onClick={() => handleWishlistToggle(book.book_id)}
+                                     style={{color: isWishlisted ? "#FFD700" : "gray"}}
+                                >
+                                    {isWishlisted ? <BookmarkIcon fontSize="large"/> : <BookmarkBorderIcon fontSize="large"/>}
+                                </div>
                             </div>
                         )}
                     </div>

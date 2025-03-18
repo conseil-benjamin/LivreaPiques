@@ -21,11 +21,27 @@ function MonCompte() {
         }
         const fetchUserProfile = async () => {
             try {
+                // Get user profile data
                 const response = await fetch(`http://localhost:8000/api/user/${userId}/profile`);
                 if (!response.ok) {
                     throw new Error('Erreur lors de la récupération des données');
                 }
                 const data = await response.json();
+
+                 // Récupère les livres de la liste de lecture
+                try {
+                    const wishlistResponse = await fetch(`http://localhost:8000/api/user/${userId}/wishlist`);
+                    if (wishlistResponse.ok) {
+                        const wishlistData = await wishlistResponse.json();
+                        data.wishlist_books = wishlistData || []; // Si rien n'est dans la wishlist, on met un tableau vide (évite erreur)
+                    } else {
+                        data.wishlist_books = [];
+                    }
+                } catch (error) {
+                    console.log("No wishlist books found:", error);
+                    data.wishlist_books = [];
+                }
+
                 setUserProfile(data);
             } catch (err) {
                 setError(err.message);
@@ -35,7 +51,7 @@ function MonCompte() {
         };
 
         fetchUserProfile();
-    }, [userId]);
+    }, [userId, navigate]);
 
     if (loading) {
         return <div style={{height: "100vh", display: "flex", alignItems: "center", justifyContent: "center"}}>
@@ -103,6 +119,45 @@ function MonCompte() {
                     </div>
                 ) : (
                     <p>{t("no_liked_books")}</p>
+                )}
+            </div>
+            <div className="wishlisted-books">
+                <h3>{t("books_in_my_wishlist")}</h3>
+                {userProfile?.wishlist_books?.length > 0 ? (
+                    <div style={{maxHeight: '300px', overflowY: 'scroll'}}>
+                        <ul style={{listStyleType: 'none', padding: 0}}>
+                            {userProfile.wishlist_books.map((book, index) => (
+                                <li key={index} style={{marginBottom: '10px', display: 'flex', alignItems: 'center'}}>
+                                    <div
+                                        onClick={() => navigate(`/book/${book.book_id}`)}
+                                        style={{display: 'flex', alignItems: 'center', cursor: 'pointer'}}
+                                    >
+                                        {book?.book_cover ? (
+                                            <div style={{width: "20%"}}>
+                                                <img
+                                                    src={book.book_cover}
+                                                    alt={book?.book_title || t("unknown")}
+                                                    style={{width: 'auto', height: '100px', borderRadius: '8px'}}
+                                                    onError={(e) => {
+                                                        console.log("Image loading error");
+                                                        e.target.style.display = 'none';
+                                                        e.target.nextElementSibling.style.display = 'block';
+                                                    }}
+                                                />
+                                            </div>
+                                        ) : (
+                                            <ImageUnvailable width={"80px"} height={"100px"}/>
+                                        )}
+                                        <span style={{margin: "0 0 0 0.5em"}}>
+                                            {book.book_title || t("unknown")}
+                                        </span>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ) : (
+                    <p>{t("no_wishlisted_books")}</p>
                 )}
             </div>
             <div style={{width: "100%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 0 2em 0"}}>

@@ -55,7 +55,10 @@ function HomePage() {
 
 
 function Recommandations() {
-    const [recoBooks, setRecoBooks] = useState([]);
+    const [reco1Books, setReco1Books] = useState([]);
+    const [reco2Books, setReco2Books] = useState([]);
+    const [reco3Books, setReco3Books] = useState([]);
+    const [selectedReco, setSelectedReco] = useState('reco1');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const userId = Cookies.get("user_id");
@@ -63,12 +66,12 @@ function Recommandations() {
     const {t} = useTranslation();
 
     // Fonction pour récupérer les recommandations de livres
-    const fetchRecommendations = async () => {
+    const fetchRecommendations = async (recommandation) => {
         setLoading(true);
         setError(null);
 
         try {
-            const response = await axios.post("http://localhost:8000/api/reco2/", {id: userId});
+            const response = await axios.post(`http://localhost:8000/api/${recommandation}/`, {id: userId});
 
             const bookIds = response.data.recommendations;
 
@@ -82,9 +85,15 @@ function Recommandations() {
                 const books = bookDetailsResponse.map((res) => res.data);
 
                 // Sauvegarder les recommandations dans le localStorage
-                localStorage.setItem('recoBooks', JSON.stringify(books));
+                localStorage.setItem(`${recommandation}Books`, JSON.stringify(books));
 
-                setRecoBooks(books);
+                if (recommandation === 'reco1') {
+                    setReco1Books(books);
+                } else if (recommandation === 'reco2') {
+                    setReco2Books(books);
+                } else if (recommandation === 'reco3') {
+                    setReco3Books(books);
+                }
             } else {
                 setError("Aucune recommandation trouvée.");
             }
@@ -96,11 +105,30 @@ function Recommandations() {
         }
     };
 
-    // Charger les recommandations depuis le localStorage lors du montage du composant
+    // Montage du composant
     useEffect(() => {
-        const savedRecoBooks = localStorage.getItem('recoBooks');
-        if (savedRecoBooks) {
-            setRecoBooks(JSON.parse(savedRecoBooks));
+        // Charger les recommandations depuis le localStorage
+        const savedReco1Books = localStorage.getItem('reco1Books');
+        const savedReco2Books = localStorage.getItem('reco2Books');
+        const savedReco3Books = localStorage.getItem('reco3Books');
+        if (savedReco1Books) {
+            setReco1Books(JSON.parse(savedReco1Books));
+        }
+        if (savedReco2Books) {
+            setReco2Books(JSON.parse(savedReco2Books));
+        }
+        if (savedReco3Books) {
+            setReco3Books(JSON.parse(savedReco3Books));
+        }
+        // Nouvelle recommendation sinon
+        if (!savedReco1Books) {
+            fetchRecommendations('reco1');
+        }
+        if (!savedReco2Books) {
+            fetchRecommendations('reco2');
+        }
+        if (!savedReco3Books) {
+            fetchRecommendations('reco3');
         }
     }, []);
 
@@ -129,12 +157,36 @@ function Recommandations() {
         ]
     };
 
+    const getCurrentRecoBooks = () => {
+        switch(selectedReco) {
+            case 'reco1': return reco1Books;
+            case 'reco2': return reco2Books;
+            case 'reco3': return reco3Books;
+            default: return [];
+        }
+    };
+
     return (
         <div className="home-page-recommandations">
             <h1 style={{textAlign: "center", fontSize: "1.75rem"}}>{t("recommendations_title")}</h1>
 
-            <div style={{display: "flex", alignItems: "center", justifyContent: "center", margin: "1em 0 1em 0"}}>
-                <button style={{backgroundColor: "#000", color: "#fff", borderRadius: "10px", padding: "1em", cursor: "pointer"}} onClick={fetchRecommendations}>
+            <div style={{display: "flex", alignItems: "center", justifyContent: "center", gap: "1em", margin: "1em 0 1em 0"}}>
+                <select 
+                    value={selectedReco} 
+                    onChange={(e) => setSelectedReco(e.target.value)}
+                    style={{
+                        padding: "0.5em",
+                        borderRadius: "5px",
+                        border: "1px solid #ccc"
+                    }}
+                >
+                    <option value="reco1">{t("select_reco1")}</option>
+                    <option value="reco2">{t("select_reco2")}</option>
+                </select>
+                <button 
+                    style={{backgroundColor: "#000", color: "#fff", borderRadius: "10px", padding: "1em", cursor: "pointer"}} 
+                    onClick={() => fetchRecommendations(selectedReco)}
+                >
                     <h3>{t("get_recommendations")}</h3>
                 </button>
             </div>
@@ -143,9 +195,9 @@ function Recommandations() {
             {error && <p style={{color: 'red'}}>{error}</p>}
 
             <div className="recommandations-list">
-                {recoBooks.length > 0 && !loading && (
+                {getCurrentRecoBooks().length > 0 && !loading && (
                     <Slider {...settings}>
-                        {recoBooks.map((book, index) => (
+                        {getCurrentRecoBooks().map((book, index) => (
                             <div key={index} className="book-card"
                                  onClick={() => navigate(`/book/${book[0].book_id}`)}>
                                 {book[0]?.book_cover && book[0].book_cover !== "null" && book[0].book_cover !== "" ? (
@@ -164,7 +216,7 @@ function Recommandations() {
                                 )}
                                 <div>
                                     <h4>{book[0]?.book_title || "Titre inconnu"}</h4>
-                                    <p>{book[0]?.book_description?.slice(0, 150)}...</p>
+                                    <p>{typeof book[0]?.book_description === "string" ? book[0].book_description.slice(0, 150) + "..." : "Pas de description disponible."}</p>
                                     <p>Auteur(s): {book[0]?.authors || 'Inconnu'}</p>
                                 </div>
                             </div>
@@ -272,11 +324,12 @@ function SearchBar() {
                         style={{cursor: "pointer"}}
                     />
                 )}
-
             </div>
 
             {/* Afficher les résultats de la recherche */}
-            {books.length > 0 ? (
+            {isLoading ? (
+                <p style={{ textAlign: 'center' }}>{t("loading_message")}</p>
+            ) : books.length > 0 ? (
                 <div className="search-results-list" style={{overflowY: 'scroll', maxHeight: '500px', marginTop: '20px' }}>
                     {books.map((book) => (
                         <div key={book.book_id} className="card" style={{

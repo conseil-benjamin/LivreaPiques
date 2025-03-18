@@ -30,6 +30,8 @@ COPY requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/pip \
     python3 -m pip install -r requirements.txt
 
+RUN python -m spacy download en_core_web_sm
+
 # Assurez-vous que le répertoire existe et changez les permissions avant de passer à l'utilisateur appuser
 RUN mkdir -p /app/new_data && chown -R appuser:appuser /app/new_data
 

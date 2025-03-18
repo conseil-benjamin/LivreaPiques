@@ -110,15 +110,11 @@ function Recommandations() {
         // Charger les recommandations depuis le localStorage
         const savedReco1Books = localStorage.getItem('reco1Books');
         const savedReco2Books = localStorage.getItem('reco2Books');
-        const savedReco3Books = localStorage.getItem('reco3Books');
         if (savedReco1Books) {
             setReco1Books(JSON.parse(savedReco1Books));
         }
         if (savedReco2Books) {
             setReco2Books(JSON.parse(savedReco2Books));
-        }
-        if (savedReco3Books) {
-            setReco3Books(JSON.parse(savedReco3Books));
         }
         // Nouvelle recommendation sinon
         if (!savedReco1Books) {
@@ -126,9 +122,6 @@ function Recommandations() {
         }
         if (!savedReco2Books) {
             fetchRecommendations('reco2');
-        }
-        if (!savedReco3Books) {
-            fetchRecommendations('reco3');
         }
     }, []);
 

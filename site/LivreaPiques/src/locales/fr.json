@@ -125,6 +125,14 @@
   "no_wishlisted_books": "Aucun livre dans la liste de souhaits",
   "error_liking": "Erreur lors du traitement du like",
   "error_wishlist": "Erreur lors du traitement de la liste de souhaits",
+  "added_to_read": "Livre marqué comme lu",
+  "removed_from_read": "Livre retiré des livres lus",
+  "cannot_read_liked_book": "Impossible de marquer comme lu un livre déjà liké",
+  "cannot_like_read_book": "Impossible de liker un livre déjà lu",
+  "books_i_have_read": "Livres que j'ai lus",
+  "no_read_books": "Pas de livres lus pour l'instant",
+  "removed_from_wishlist_added_to_read": "Retiré de la liste de souhaits et marqué comme lu",
+  "error_updating_read_status": "Erreur lors de la mise à jour du statut de lecture",
   "documentation": {
     "title": "Documentation du Projet",
     "prerequisites": {

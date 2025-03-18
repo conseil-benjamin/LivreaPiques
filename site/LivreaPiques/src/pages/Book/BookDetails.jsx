@@ -17,6 +17,9 @@ import ImageUnvailable from "../../components/ImageUnvailable.jsx";
 //Partie wishlist, les signets
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
+//Partie Livres Lus
+import MenuBookIcon from '@mui/icons-material/MenuBook'; // For the "Lu" button
+import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined'; // For the hollow version
 
 function BookDetails() {
     const { book_id } = useParams();
@@ -29,6 +32,7 @@ function BookDetails() {
     const [isLiked, setIsLiked] = useState(false); // Etat pour savoir si l'utilisateur a liké le livre
     const [isWishlisted, setIsWishlisted] = useState(false); // Etat pour savoir si l'utilisateur a ajouté le livre à sa wishlist
     const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+    const [isRead, setIsRead] = useState(false);
     const toggleDescription = () => {
         setIsDescriptionExpanded(!isDescriptionExpanded);
     };
@@ -71,11 +75,21 @@ function BookDetails() {
                 console.error("Error checking wishlist status:", error);
             }
         };
+
+        const checkIfRead = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8000/api/readbook/${userId}/${book_id}`);
+                setIsRead(response.data.read);
+            } catch (error) {
+                console.error("Error checking read status:", error);
+            }
+        };
     
         fetchBookDetails();
         if (userId) {
             checkIfLiked();
             checkIfWishlisted();
+            checkIfRead();
         }
     }, [book_id, userId, t]);
 
@@ -226,6 +240,71 @@ function BookDetails() {
             });
         }
     };
+    const handleReadToggle = async (bookId) => {
+        try {
+            if (isRead) {
+                // Remove from read books
+                await axios.delete(`http://localhost:8000/api/user/${userId}/read/${bookId}`);
+                setIsRead(false);
+                await Swal.fire({
+                    icon: "success",
+                    title: t("removed_from_read"),
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    toast: true,
+                    position: "top-end",
+                });
+            } else {
+                if (isLiked) {
+                    await Swal.fire({
+                        icon: "error",
+                        title: t("cannot_read_liked_book"),
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        toast: true,
+                        position: "top-end",
+                    });
+                    return;
+                }
+
+                // Add to read books
+                await axios.post(`http://localhost:8000/api/readbook/`, {
+                    user_id: userId,
+                    book_id: bookId
+                });
+                setIsRead(true);
+
+                // If book was in wishlist, remove it
+                if (isWishlisted) {
+                    await axios.delete(`http://localhost:8000/api/user/${userId}/wishlist/${bookId}`);
+                    setIsWishlisted(false);
+                }
+
+                await Swal.fire({
+                    icon: "success",
+                    title: t("added_to_read"),
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    toast: true,
+                    position: "top-end",
+                });
+            }
+        } catch (error) {
+            console.error("Error handling read status:", error);
+            await Swal.fire({
+                icon: "error",
+                title: t("error_updating_read_status"),
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: "top-end",
+            });
+        }
+    };
     function splitText(text, maxLength) {
         const parts = [];
         let index = 0;
@@ -356,6 +435,13 @@ function BookDetails() {
                                      style={{color: isWishlisted ? "#FFD700" : "gray"}}
                                 >
                                     {isWishlisted ? <BookmarkIcon fontSize="large"/> : <BookmarkBorderIcon fontSize="large"/>}
+                                </div>
+                                <div
+                                    className="read-button"
+                                    onClick={() => handleReadToggle(book.book_id)}
+                                    style={{color: isRead ? "#4CAF50" : "gray"}}
+                                >
+                                    {isRead ? <MenuBookIcon fontSize="large"/> : <MenuBookOutlinedIcon fontSize="large"/>}
                                 </div>
                             </div>
                         )}

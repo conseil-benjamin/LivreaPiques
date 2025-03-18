@@ -310,27 +310,78 @@ class UserBook (BaseModel):
     user_id: int
     book_id: int
 
-@app.post("/api/likedbook/")
-async def LikedBook(UserBook: UserBook):
+@app.post("/api/readbook/")
+async def ReadBook(UserBook: UserBook):
     try:
-        # Vérifier que le livre n'est pas déjà dans la wishlist
+        engine, session, schema = conexion_db()
+        
+        # Check if book is liked
+        liked_query = text("""
+            SELECT 1 FROM liked_books WHERE user_id = :user_id AND book_id = :book_id
+        """)
+        is_liked = session.execute(liked_query, {"user_id": UserBook.user_id, "book_id": UserBook.book_id}).fetchone()
+        
+        if is_liked:
+            raise HTTPException(status_code=400, detail="Un livre liké ne peut pas être marqué comme lu")
+            
+        # Check if book is in wishlist
         wishlist_query = text("""
             SELECT 1 FROM wishlist WHERE user_id = :user_id AND book_id = :book_id
         """)
-        engine, session, schema = conexion_db()
         is_wishlisted = session.execute(wishlist_query, {"user_id": UserBook.user_id, "book_id": UserBook.book_id}).fetchone()
         
-        # Si le livre est déjà dans la wishlist, renvoyer une erreur
+        if is_wishlisted:
+            # Remove from wishlist
+            remove_query = text("""
+                DELETE FROM wishlist WHERE user_id = :user_id AND book_id = :book_id
+            """)
+            session.execute(remove_query, {"user_id": UserBook.user_id, "book_id": UserBook.book_id})
+            
+        # Add to read books
+        df = pd.DataFrame([UserBook.model_dump()])
+        if(insert(df, "read_books")):
+            session.commit()
+            message = "Livre marqué comme lu"
+            if is_wishlisted:
+                message += " et retiré de la wishlist"
+            return {"message": message}
+        else:
+            raise HTTPException(status_code=500, detail="Erreur lors de l'insertion")
+            
+    except SQLAlchemyError as e:
+        session.rollback()
+        raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
+    finally:
+        session.close()
+
+@app.post("/api/likedbook/")
+async def LikedBook(UserBook: UserBook):
+    try:
+        engine, session, schema = conexion_db()
+        
+        # Check if book is read
+        read_query = text("""
+            SELECT 1 FROM read_books WHERE user_id = :user_id AND book_id = :book_id
+        """)
+        is_read = session.execute(read_query, {"user_id": UserBook.user_id, "book_id": UserBook.book_id}).fetchone()
+        
+        if is_read:
+            raise HTTPException(status_code=400, detail="Un livre lu ne peut pas être liké")
+            
+        # Check if book is in wishlist
+        wishlist_query = text("""
+            SELECT 1 FROM wishlist WHERE user_id = :user_id AND book_id = :book_id
+        """)
+        is_wishlisted = session.execute(wishlist_query, {"user_id": UserBook.user_id, "book_id": UserBook.book_id}).fetchone()
+        
         if is_wishlisted:
             raise HTTPException(status_code=400, detail="Vous ne pouvez pas liker un livre déjà dans votre wishlist")
             
         df = pd.DataFrame([UserBook.model_dump()])
         if(insert(df, "liked_books")):
-            # si réussite de l'insertion, message
-            return {"message": "Liked ajouté"}
+            return {"message": "Like ajouté"}
         else:
-            # si échec de l'insertion, erreur
-            raise HTTPException(status_code=500, detail=f"Erreur lors de l'insertion")
+            raise HTTPException(status_code=500, detail="Erreur lors de l'insertion")
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
     finally:
@@ -535,3 +586,74 @@ async def get_user_wishlist(user_id: int):
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     finally:
         session.close()
+
+@app.post("/api/readbook/")
+async def ReadBook(UserBook: UserBook):
+    try:
+        engine, session, schema = conexion_db()
+        
+        # Check if book is liked
+        liked_query = text("""
+            SELECT 1 FROM liked_books WHERE user_id = :user_id AND book_id = :book_id
+        """)
+        is_liked = session.execute(liked_query, {"user_id": UserBook.user_id, "book_id": UserBook.book_id}).fetchone()
+        
+        if is_liked:
+            raise HTTPException(status_code=400, detail="Un livre liké ne peut pas être marqué comme lu")
+            
+        # Check if book is in wishlist
+        wishlist_query = text("""
+            SELECT 1 FROM wishlist WHERE user_id = :user_id AND book_id = :book_id
+        """)
+        is_wishlisted = session.execute(wishlist_query, {"user_id": UserBook.user_id, "book_id": UserBook.book_id}).fetchone()
+        
+        if is_wishlisted:
+            # Remove from wishlist
+            remove_query = text("""
+                DELETE FROM wishlist WHERE user_id = :user_id AND book_id = :book_id
+            """)
+            session.execute(remove_query, {"user_id": UserBook.user_id, "book_id": UserBook.book_id})
+            
+        # Add to read books
+        df = pd.DataFrame([UserBook.model_dump()])
+        if(insert(df, "read_books")):
+            session.commit()
+            message = "Livre marqué comme lu"
+            if is_wishlisted:
+                message += " et retiré de la wishlist"
+            return {"message": message}
+        else:
+            raise HTTPException(status_code=500, detail="Erreur lors de l'insertion")
+            
+    except SQLAlchemyError as e:
+        session.rollback()
+        raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
+    finally:
+        session.close()
+
+@app.get("/api/readbook/{user_id}/{book_id}")
+async def check_if_read(user_id: int, book_id: int):
+    try:
+        query = text("""
+            SELECT 1 FROM read_books WHERE user_id = :user_id AND book_id = :book_id
+        """)
+        engine, session, schema = conexion_db()
+        result = session.execute(query, {"user_id": user_id, "book_id": book_id}).fetchone()
+        return {"read": bool(result)}
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
+
+@app.delete("/api/user/{user_id}/read/{book_id}")
+async def remove_read(user_id: int, book_id: int):
+    try:
+        engine, session, schema = conexion_db()
+        query = text("""
+            DELETE FROM read_books WHERE user_id = :user_id AND book_id = :book_id
+        """)
+        result = session.execute(query, {"user_id": user_id, "book_id": book_id})
+        session.commit()
+        if result.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Livre non trouvé dans les livres lus")
+        return {"message": "Livre retiré des livres lus"}
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")

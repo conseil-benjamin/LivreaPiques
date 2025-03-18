@@ -124,6 +124,14 @@
   "no_wishlisted_books": "No books in wishlist",
   "error_liking": "Error occurred while processing like",
   "error_wishlist": "Error occurred while processing wishlist",
+  "added_to_read": "Book marked as read",
+  "removed_from_read": "Book removed from read list",
+  "cannot_read_liked_book": "Cannot mark a liked book as read",
+  "cannot_like_read_book": "Cannot like a book that is already read",
+  "books_i_have_read": "Books I have read",
+  "no_read_books": "No books read yet",
+  "removed_from_wishlist_added_to_read": "Removed from wishlist and marked as read",
+  "error_updating_read_status": "Error updating read status",
   "documentation": {
     "title": "Project Documentation",
     "prerequisites": {

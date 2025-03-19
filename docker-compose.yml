@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: db_livreapiques
     ports:
-      - "5433:5433"
+      - "5432:5432"
     volumes:
       - ./data_docker/db_pgsql:/var/lib/postgresql/data
       - ./sprint2_create_database/database.sql:/docker-entrypoint-initdb.d/create_tables.sql

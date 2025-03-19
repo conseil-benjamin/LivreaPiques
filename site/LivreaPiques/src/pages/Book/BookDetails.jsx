@@ -322,6 +322,7 @@ function BookDetails() {
                     <ImageUnvailable width={"auto"} height={"auto"}/>
                 )}
                     <div className="book-info">
+                        {console.log(book)}
                         <h1>{translatedTitle ? translatedTitle : t("unknown")}</h1>
                         <p className="author">
                             {t("book_author")}: {book.authors || t("unknown")}

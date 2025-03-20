@@ -333,11 +333,19 @@ function BookDetails() {
             });
         } catch (error) {
             console.error("Error saving rating:", error);
+            const errorMessage = error.response?.status === 400 
+                ? (error.response.data.message === "Un livre dans wishlist ne peut être noté" 
+                    ? t("cannot_rate_wishlisted_book")
+                    : error.response.data.message === "Un livre ni lu, ni liké ne peut être noté"
+                        ? t("cannot_rate_unread_book")
+                        : t("error_rating"))
+                : t("error_rating");
+                
             await Swal.fire({
                 icon: "error",
-                title: t("error_rating"),
+                title: errorMessage,
                 showConfirmButton: false,
-                timer: 3000,
+                timer: 5000,
                 timerProgressBar: true,
                 toast: true,
                 position: "top-end",

@@ -553,14 +553,12 @@ async def rate_book(book_id: int, rating: Rating):
         
         # Vérifier si le livre est dans la wishlist
         wishlist_query = text("""
-            SELECT 1 FROM wishlist 
-            WHERE user_id = :user_id AND book_id = :book_id
+            SELECT 1 FROM wishlist WHERE user_id = :user_id AND book_id = :book_id
         """)
         is_wishlisted = session.execute(wishlist_query, {
             "user_id": rating.user_id,
             "book_id": book_id
         }).fetchone()
-
         if is_wishlisted:
             raise HTTPException(status_code=400, detail="Un livre dans wishlist ne peut être noté")
 

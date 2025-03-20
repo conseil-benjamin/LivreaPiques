@@ -404,11 +404,23 @@ function BookDetails() {
                                 {isDescriptionExpanded ? t("book_see_less") : t("book_see_more")}
                             </span>
                         )}
-                        <p style={{display: "flex"}}>
+                        <div style={{display: "flex", marginBottom: "10px"}}>
                             <strong>{t("book_avg_rating")}</strong>:
-                            <img src="/star-filled.svg" className="star" alt="star" style={{width: "20px", height: "20px", filter: "brightness(0) saturate(100%) invert(79%) sepia(63%) saturate(549%) hue-rotate(345deg) brightness(105%) contrast(102%)", verticalAlign: "middle"}}/> {book.book_avg_rating || t("not_rated")}
-                        </p>
-                        <p style={{display: "flex", alignItems: "center"}}>
+                            <img 
+                                src="/star-filled.svg" 
+                                className="star" 
+                                alt="star" 
+                                style={{
+                                    width: "20px", 
+                                    height: "20px", 
+                                    filter: "brightness(0) saturate(100%) invert(79%) sepia(63%) saturate(549%) hue-rotate(345deg) brightness(105%) contrast(102%)", 
+                                    verticalAlign: "middle"
+                                }}
+                            /> 
+                            {book.book_avg_rating || t("not_rated")}
+                        </div>
+
+                        <div style={{display: "flex", alignItems: "center", marginBottom: "10px"}}>
                             <strong>{t("book_user_rating")}</strong>: 
                             <div 
                                 style={{display: "flex", position: "relative"}}
@@ -444,7 +456,7 @@ function BookDetails() {
                                     </div>
                                 ))}
                             </div>
-                        </p>
+                        </div>
                         {userId && (
                             <div className="action-buttons">
                                 <div

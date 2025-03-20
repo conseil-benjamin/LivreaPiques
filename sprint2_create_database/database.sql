@@ -272,7 +272,7 @@ CREATE TABLE wishlist (
     PRIMARY KEY (user_id, book_id)
 );
 
-CREATE TABLE rating (
+CREATE TABLE books_rating (
     user_id INTEGER,
     book_id INTEGER,
     rating FLOAT,

@@ -22,16 +22,11 @@ function Banner() {
     return (
         <header className={"banner"}>
             <div className={"banner-row"}>
-                <div style={{display: "flex", flexDirection: "row", alignItems: "center"}}>
+                <div style={{display: "flex", flexDirection: "row", alignItems: "center", cursor: "pointer"}} onClick={() => {navigate("/")}}>
                     <img
-                        style={{cursor: "pointer"}}
                         width={50}
                         height={50}
-                        src={"/public/bigboss.png"} alt="logo"
-                        onClick={() => {
-                            navigate("/")
-                        }
-                        }/>
+                        src={"/public/bigboss.png"} alt="logo"/>
                     <h2 style={{color: "#fff", fontSize: "1.5rem", fontWeight: "bold"}}>Big Book Society</h2>
                 </div>
 

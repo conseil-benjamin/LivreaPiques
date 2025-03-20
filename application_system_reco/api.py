@@ -535,3 +535,112 @@ async def get_user_wishlist(user_id: int):
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     finally:
         session.close()
+
+# Modèle pour la notation
+class Rating(BaseModel):
+    user_id: int
+    rating: float
+
+# Endpoint pour noter un livre
+@app.post("/api/books/{book_id}/rate")
+async def rate_book(book_id: int, rating: Rating):
+    try:
+        # Vérifier que la note est entre 0 et 5
+        if not 0 <= rating.rating <= 5:
+            raise HTTPException(status_code=400, detail="La note doit être comprise entre 0 et 5")
+
+        engine, session, schema = conexion_db()
+        
+        # Vérifier si le livre est dans la wishlist
+        wishlist_query = text("""
+            SELECT 1 FROM wishlist WHERE user_id = :user_id AND book_id = :book_id
+        """)
+        is_wishlisted = session.execute(wishlist_query, {
+            "user_id": rating.user_id,
+            "book_id": book_id
+        }).fetchone()
+        if is_wishlisted:
+            raise HTTPException(status_code=400, detail="Un livre dans wishlist ne peut être noté")
+
+        # Vérifier si le livre est lu
+        read_query = text("""
+            SELECT 1 FROM read_books 
+            WHERE user_id = :user_id AND book_id = :book_id
+        """)
+        is_read = session.execute(read_query, {
+            "user_id": rating.user_id,
+            "book_id": book_id
+        }).fetchone()
+
+        # Vérifier si le livre est liké
+        liked_query = text("""
+            SELECT 1 FROM liked_books 
+            WHERE user_id = :user_id AND book_id = :book_id
+        """)
+        is_liked = session.execute(liked_query, {
+            "user_id": rating.user_id,
+            "book_id": book_id
+        }).fetchone()
+
+        if (not is_read) and (not is_liked):
+            raise HTTPException(status_code=400, detail="Un livre ni lu, ni liké ne peut être noté")
+
+        # Vérifier si une note existe déjà
+        check_query = text("""
+            SELECT 1 FROM books_rating 
+            WHERE user_id = :user_id AND book_id = :book_id
+        """)
+        exists = session.execute(check_query, {
+            "user_id": rating.user_id,
+            "book_id": book_id
+        }).fetchone()
+
+        if exists:
+            # Mettre à jour la note existante
+            update_query = text("""
+                UPDATE books_rating 
+                SET rating = :rating 
+                WHERE user_id = :user_id AND book_id = :book_id
+            """)
+        else:
+            # Insérer une nouvelle note
+            update_query = text("""
+                INSERT INTO books_rating (user_id, book_id, rating)
+                VALUES (:user_id, :book_id, :rating)
+            """)
+
+        session.execute(update_query, {
+            "user_id": rating.user_id,
+            "book_id": book_id,
+            "rating": rating.rating
+        })
+        session.commit()
+
+        return {"message": "Note enregistrée avec succès"}
+    except SQLAlchemyError as e:
+        session.rollback()
+        raise HTTPException(status_code=500, detail=f"Erreur de base de données: {str(e)}")
+    finally:
+        session.close()
+
+# Endpoint pour récupérer la note d'un utilisateur pour un livre
+@app.get("/api/books/{book_id}/rating/{user_id}")
+async def get_user_rating(book_id: int, user_id: int):
+    try:
+        engine, session, schema = conexion_db()
+        query = text("""
+            SELECT rating FROM books_rating 
+            WHERE user_id = :user_id AND book_id = :book_id
+        """)
+        result = session.execute(query, {
+            "user_id": user_id,
+            "book_id": book_id
+        }).fetchone()
+
+        if result:
+            return {"rating": float(result[0])}
+        return {"rating": 0}
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de base de données: {str(e)}")
+    finally:
+        session.close()

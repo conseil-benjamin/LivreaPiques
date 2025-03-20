@@ -124,6 +124,12 @@
   "no_wishlisted_books": "No books in wishlist",
   "error_liking": "Error occurred while processing like",
   "error_wishlist": "Error occurred while processing wishlist",
+  "error_rating": "Error occurred while saving rating",
+  "must_be_logged_in": "You must be logged in to rate books",
+  "rating_saved": "Rating saved successfully",
+  "cannot_rate_wishlisted_book": "You cannot rate a book in your wishlist",
+  "cannot_rate_unread_book": "You can only rate books you have read or liked",
+  "book_user_rating": "Your Rating",
   "documentation": {
     "title": "Project Documentation",
     "prerequisites": {

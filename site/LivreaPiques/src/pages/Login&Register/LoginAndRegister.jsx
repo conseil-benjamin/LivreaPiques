@@ -25,6 +25,7 @@ function LoginAndRegister() {
     const [readingTime, setReadingTime] = useState("");
     const [choiceMotivation, setChoiceMotivation] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [isManagerAccount, setIsManagerAccount] = useState(false);
 
     return (
         <div className={"connexion-main"}>
@@ -37,6 +38,21 @@ function LoginAndRegister() {
             <div className="login-register-container">
         <div className="card">
             <div className="card-header">
+                {!isLoginPage && (
+                    <div className="account-type-switch">
+                        <label className="switch">
+                            <input
+                                type="checkbox"
+                                checked={isManagerAccount}
+                                onChange={() => setIsManagerAccount(!isManagerAccount)}
+                            />
+                            <span className="slider round"></span>
+                        </label>
+                        <span className="account-type-label">
+                            {isManagerAccount ? t("manager_account") : t("user_account")}
+                        </span>
+                    </div>
+                )}
                 <h2>{isLoginPage ? t("connexion_title_login") : t("connexion_title_register")}</h2>
                 <h3>
                     {isLoginPage
@@ -63,7 +79,7 @@ function LoginAndRegister() {
                     {isLoginPage ? (
                         <LoginForm username={username} setUsername={setUsername} password={password} setPassword={setPassword} navigate={navigate}/>
                     ) : (
-                        <RegisterForm username={username} setUsername={setUsername} password={password} setPassword={setPassword} age={age} setAge={setAge} gender={gender} setGender={setGender} firstStepInscriptionAccomplished={firstStepInscriptionAccomplished} setFirstStepInscriptionAccomplished={setFirstStepInscriptionAccomplished} choiceMotivation={choiceMotivation} setChoiceMotivation={setChoiceMotivation} initatedBy={initatedBy} setInitiatedBy={setInitiatedBy} nbBooksForPleasure={nbBooksForPleasure} nbBooksForWork={nbBooksForWork} setNbBooksForPleasure={setNbBooksForPleasure} setNbBooksForWork={setNbBooksForWork} nbBooksReadByYear={nbBooksReadByYear} setNbBooksReadByYear={setNbBooksReadByYear} readingTime={readingTime} setReadingTime={setReadingTime} secondStepInscriptionAccomplished={secondStepInscriptionAccomplished} setSecondStepInscriptionAccomplished={setSecondStepInscriptionAccomplished} navigate={navigate} setIsLoading={setIsLoading} isLoading={isLoading}/>
+                        <RegisterForm username={username} setUsername={setUsername} password={password} setPassword={setPassword} age={age} setAge={setAge} gender={gender} setGender={setGender} firstStepInscriptionAccomplished={firstStepInscriptionAccomplished} setFirstStepInscriptionAccomplished={setFirstStepInscriptionAccomplished} choiceMotivation={choiceMotivation} setChoiceMotivation={setChoiceMotivation} initatedBy={initatedBy} setInitiatedBy={setInitiatedBy} nbBooksForPleasure={nbBooksForPleasure} nbBooksForWork={nbBooksForWork} setNbBooksForPleasure={setNbBooksForPleasure} setNbBooksForWork={setNbBooksForWork} nbBooksReadByYear={nbBooksReadByYear} setNbBooksReadByYear={setNbBooksReadByYear} readingTime={readingTime} setReadingTime={setReadingTime} secondStepInscriptionAccomplished={secondStepInscriptionAccomplished} setSecondStepInscriptionAccomplished={setSecondStepInscriptionAccomplished} navigate={navigate} setIsLoading={setIsLoading} isLoading={isLoading} isManagerAccount={isManagerAccount}/>
                     )}
                 </div>
 
@@ -114,7 +130,38 @@ function LoginForm({ username, setUsername, password, setPassword, navigate}) {
     );
 }
 
-function RegisterForm({ username, setUsername, password, setPassword, age, setAge, gender, setGender, firstStepInscriptionAccomplished, setFirstStepInscriptionAccomplished,  nbBooksReadByYear, setNbBooksReadByYear, nbBooksForPleasure, setNbBooksForPleasure, nbBooksForWork, setNbBooksForWork, initatedBy, setInitiatedBy, readingTime, setReadingTime, choiceMotivation, setChoiceMotivation, secondStepInscriptionAccomplished, setSecondStepInscriptionAccomplished, navigate, setIsLoading, isLoading}) {
+function RegisterForm({ 
+    username, 
+    setUsername, 
+    password, 
+    setPassword, 
+    age, 
+    setAge, 
+    gender, 
+    setGender, 
+    firstStepInscriptionAccomplished, 
+    setFirstStepInscriptionAccomplished,
+    nbBooksReadByYear,
+    setNbBooksReadByYear,
+    nbBooksForPleasure,
+    setNbBooksForPleasure,
+    nbBooksForWork,
+    setNbBooksForWork,
+    initatedBy,
+    setInitiatedBy,
+    readingTime,
+    setReadingTime,
+    choiceMotivation,
+    setChoiceMotivation,
+    secondStepInscriptionAccomplished,
+    setSecondStepInscriptionAccomplished,
+    navigate,
+    setIsLoading,
+    isLoading,
+    isManagerAccount
+}) {
+    const [token, setToken] = useState("");
+
     const initiationOptions = ["Choisir", "Famille", "Ami(e)", "École", "Autodidacte"];
     const readingTimeOptions = ["Choisir", "Matin", "Après-midi", "Soir", "Nuit"];
     const motivationOptions = ["Choisir", "Couverture", "Résumé", "Recommandation", "Auteur"];
@@ -132,9 +179,87 @@ function RegisterForm({ username, setUsername, password, setPassword, age, setAg
         setIsOpen(false);
     };
 
+    const handleManagerRegistration = async () => {
+        if (!username || !password || !token) {
+            Swal.fire({
+                text: t("connexion_fill_all_fields"),
+                icon: "error",
+                confirmButtonText: "Ok",
+            });
+            return;
+        }
+
+        // Ajout de la vérification du format du mot de passe
+        if (!validator.isStrongPassword(password)) {
+            Swal.fire({
+                text: t("connexion_password_contrainsts"),
+                icon: "error",
+                confirmButtonText: "Ok",
+            });
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const response = await fetch("http://localhost:8000/api/create_manager/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name: username,
+                    password: password,
+                    token: token,
+                }),
+            });
+
+            if (response.status === 200) {
+                const data = await response.json();
+                await Swal.fire({
+                    timer: 2500,
+                    text: t("connexion_swal_register_success"),
+                    icon: "success",
+                    position: "top-end",
+                    toast: true,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+                Cookies.set("user_id", data.user_id);
+                navigate("/");
+            } else if (response.status === 409) {
+                Swal.fire({
+                    text: t("connexion_swal_username_error_already_taken"),
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                });
+            } else if (response.status === 401) {
+                Swal.fire({
+                    text: t("connexion_invalid_token"),
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                });
+            } else {
+                const errorData = await response.json();
+                Swal.fire({
+                    text: errorData.detail || t("connexion_swal_register_error"),
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                text: t("connexion_swal_register_error"),
+                icon: "error",
+                confirmButtonText: "Ok",
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <>
-        {firstStepInscriptionAccomplished === true ? (
+        {!isManagerAccount && firstStepInscriptionAccomplished ? (
             <div className="form">
                 <div className="form-group">
                     <label>{t("connexion_number_books_read_by_year")}</label>
@@ -242,12 +367,13 @@ function RegisterForm({ username, setUsername, password, setPassword, age, setAg
                         choiceMotivation,
                         setSecondStepInscriptionAccomplished,
                         secondStepInscriptionAccomplished,
-                        navigate
+                        navigate,
+                        setIsLoading
                     );
                 }
                 }
                 >
-                    {isLoading ? "Chargement..." : "Finaliser l'inscription"}
+                    {isLoading ? t("loading") : t("connexion_finalise_inscription")}
                 </button>
             </div>
         ) : (
@@ -258,7 +384,7 @@ function RegisterForm({ username, setUsername, password, setPassword, age, setAg
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Votre nom d'utilisateur"
+                        placeholder={t("connexion_placeholder_username")}
                         required
                     />
                 </div>
@@ -268,60 +394,76 @@ function RegisterForm({ username, setUsername, password, setPassword, age, setAg
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Mot de passe"
+                        placeholder={t("connexion_placeholder_password")}
                         required
                     />
                 </div>
-                <div className="form-group">
-                    <label>{t("connexion_label_age")}</label>
-                    <input
-                        type="number"
-                        value={age}
-                        onChange={(e) => setAge(e.target.value)}
-                        placeholder="Votre âge"
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label>Genre</label>
-                    <div className="gender-buttons">
-                        <button
-                            style={{backgroundColor: gender === "M" ? "#000000" : "#FFFFFF", color: gender !== "M" ? "#000000" : "#FFFFFF"}}
-                            type="button"
-                            className={gender === "M" ? "active" : ""}
-                            onClick={() => setGender("M")}
-                        >
-                            {t("connexion_gender_male")}
-                        </button>
-                        <button
-                            style={{backgroundColor: gender === "F" ? "#000000" : "#FFFFFF", color: gender !== "F" ? "#000000" : "#FFFFFF"}}
-                            type="button"
-                            className={gender === "F" ? "active" : ""}
-                            onClick={() => setGender("F")}
-                        >
-                            {t("connexion_gender_female")}
-                        </button>
-                        <button
-                            style={{backgroundColor: gender === "A" ? "#000000" : "#FFFFFF", color: gender !== "A" ? "#000000" : "#FFFFFF"}}
-                            type="button"
-                            className={gender === "A" ? "active" : ""}
-                            onClick={() => setGender("A")}
-                        >
-                            {t("connexion_gender_other")}
-                        </button>
+                {isManagerAccount ? (
+                    <div className="form-group">
+                        <label>{t("connexion_label_token")}</label>
+                        <input
+                            type="text"
+                            value={token}
+                            onChange={(e) => setToken(e.target.value)}
+                            placeholder={t("connexion_placeholder_token")}
+                            required
+                        />
                     </div>
-                </div>
-                {/* todo : ajouter isLoading au click */}
-                <button onClick={() =>
-                    verifyValidityFormRegister(
-                        username,
-                        password,
-                        age,
-                        gender,
-                        setFirstStepInscriptionAccomplished
-                    )
-                }
-                >{isLoading ? t("loading") : t("connexion_step2_button")}
+                ) : (
+                    <>
+                        <div className="form-group">
+                            <label>{t("connexion_label_age")}</label>
+                            <input
+                                type="number"
+                                value={age}
+                                onChange={(e) => setAge(e.target.value)}
+                                placeholder={t("connexion_placeholder_age")}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Genre</label>
+                            <div className="gender-buttons">
+                                <button
+                                    style={{backgroundColor: gender === "M" ? "#000000" : "#FFFFFF", color: gender !== "M" ? "#000000" : "#FFFFFF"}}
+                                    type="button"
+                                    className={gender === "M" ? "active" : ""}
+                                    onClick={() => setGender("M")}
+                                >
+                                    {t("connexion_gender_male")}
+                                </button>
+                                <button
+                                    style={{backgroundColor: gender === "F" ? "#000000" : "#FFFFFF", color: gender !== "F" ? "#000000" : "#FFFFFF"}}
+                                    type="button"
+                                    className={gender === "F" ? "active" : ""}
+                                    onClick={() => setGender("F")}
+                                >
+                                    {t("connexion_gender_female")}
+                                </button>
+                                <button
+                                    style={{backgroundColor: gender === "A" ? "#000000" : "#FFFFFF", color: gender !== "A" ? "#000000" : "#FFFFFF"}}
+                                    type="button"
+                                    className={gender === "A" ? "active" : ""}
+                                    onClick={() => setGender("A")}
+                                >
+                                    {t("connexion_gender_other")}
+                                </button>
+                            </div>
+                        </div>
+                    </>
+                )}
+                <button 
+                    onClick={isManagerAccount ? handleManagerRegistration : () =>
+                        verifyValidityFormRegister(
+                            username,
+                            password,
+                            age,
+                            gender,
+                            setFirstStepInscriptionAccomplished
+                        )
+                    }
+                >
+                    {isLoading ? t("loading") : (isManagerAccount ? t("connexion_finalise_inscription") : t("connexion_step2_button"))}
                 </button>
             </div>
         )}
@@ -381,8 +523,9 @@ async function verifyValidityFormRegister(username, password, age, gender, setFi
         }).then(r =>
             console.log(r)
         );
+        return;
     }
-    if (age > 115 || age < 13) {
+    if (age < 13 || age > 115) {  // Correction de la condition
         Swal.fire({
             text: t("connexion_age_contraints"),
             icon: "error",
@@ -390,6 +533,7 @@ async function verifyValidityFormRegister(username, password, age, gender, setFi
         }).then(r =>
             setFirstStepInscriptionAccomplished(false)
         );
+        return;
     }
 
     const response = await fetch(`http://localhost:8000/api/check_username_availabitily/${username}`, {
@@ -400,17 +544,17 @@ async function verifyValidityFormRegister(username, password, age, gender, setFi
     });
 
     if (response.status === 409) {
-      await Swal.fire({
+        await Swal.fire({
             text: t("connexion_swal_username_error_already_taken"),
             icon: "error",
             confirmButtonText: "Ok",
         }).then(r =>
             hasSameUsername = true
         );
+        return;
     }
 
-    if ((age < 110 || age > 13) && validator.isStrongPassword(password) && gender !== "" && !hasSameUsername) {
-        console.log(hasSameUsername)
+    if (validator.isStrongPassword(password) && gender !== "" && !hasSameUsername) {  // Simplifié la condition
         setFirstStepInscriptionAccomplished(true);
     }
 }
@@ -492,34 +636,42 @@ function createInscription(
         choiceMotivation,
         setSecondStepInscriptionAccomplished,
         secondStepInscriptionAccomplished,
-        navigate
+        navigate,
+        setIsLoading
     ) {
-        // todo : vérifier si l'étape 2 de l'inscription est correcte
-        if (nbBooksReadByYear === 0 || nbBooksForPleasure === 0 || nbBooksForWork === 0 || initatedBy === "" || readingTime === "" || choiceMotivation === "") {
+        setIsLoading(true);
+        if (nbBooksReadByYear === "Choisir" || 
+            nbBooksForPleasure === "Choisir" || 
+            nbBooksForWork === "Choisir" || 
+            initatedBy === "Choisir" || 
+            readingTime === "Choisir" || 
+            choiceMotivation === "Choisir") {
             Swal.fire({
-                text: "Veuillez remplir tous les champs",
+                text: t("connexion_fill_all_fields"),
                 icon: "error",
                 confirmButtonText: "Ok",
-            }).then(r =>
-                console.log(r)
-            );
-        } else {
-            createInscription(
-                username,
-                password,
-                age,
-                gender,
-                nbBooksReadByYear,
-                nbBooksForPleasure,
-                nbBooksForWork,
-                initatedBy,
-                readingTime,
-                choiceMotivation,
-                setSecondStepInscriptionAccomplished,
-                secondStepInscriptionAccomplished,
-                navigate
-            )
+            });
+            setIsLoading(false);
+            return;
         }
-}
+
+        createInscription(
+            username,
+            password,
+            age,
+            gender,
+            nbBooksReadByYear,
+            nbBooksForPleasure,
+            nbBooksForWork,
+            initatedBy,
+            readingTime,
+            choiceMotivation,
+            setSecondStepInscriptionAccomplished,
+            secondStepInscriptionAccomplished,
+            navigate
+        ).finally(() => {
+            setIsLoading(false);
+        });
+    }
 
 export default LoginAndRegister;

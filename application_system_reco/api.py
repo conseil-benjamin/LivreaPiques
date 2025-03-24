@@ -174,6 +174,123 @@ async def create_user(user: UserCreate):
     user.password = hash_password(user.password)
     
     query = text("""
+    INSERT INTO "user" (
+        username, 
+        password, 
+        user_type,
+        age, 
+        gender, 
+        nb_book_per_year, 
+        nb_book_pleasure, 
+        nb_book_work, 
+        initiated_by, 
+        reading_time, 
+        choice_motivation
+    ) 
+    VALUES (
+        :username, 
+        :password, 
+        'user',
+        :age, 
+        :gender, 
+        :nb_book_per_year, 
+        :nb_book_pleasure, 
+        :nb_book_work, 
+        :initiated_by, 
+        :reading_time, 
+        :choice_motivation
+    )
+    RETURNING user_id """)
+    
+    try:
+        engine, session, schema = conexion_db()
+        result = session.execute(query, {"username": user.name, "password": user.password, "age": user.age, "gender": user.gender, "nb_book_per_year" : user.nb_book_per_year, "nb_book_pleasure" : user.nb_book_pleasure, "nb_book_work" : user.nb_book_work, "initiated_by" : user.initiated_by, "reading_time" : user.reading_time, "choice_motivation" : user.choice_motivation})
+        session.commit()
+        user_id = result.fetchone()[0]
+
+        return {"message": "Utilisateur créé avec succès", "user_id": user_id}
+    except Exception as e:
+        print(f"Erreur lors de la création de l'utilisateur: {str(e)}")
+        session.rollback()
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la création de l'utilisateur: {str(e)}")
+    
+
+# Modèle pour la création d'un manager
+class ManagerCreate(BaseModel):
+    name: str
+    password: str
+    token: str
+
+@app.post("/api/create_manager/")
+async def create_manager(manager: ManagerCreate):
+    manager.password = hash_password(manager.password)
+    
+    try:
+        # Vérifier si le nom d'utilisateur existe déjà
+        engine, session, schema = conexion_db()
+        check_username_query = text("""SELECT user_id FROM "user" WHERE username = :username""")
+        existing_user = session.execute(check_username_query, {"username": manager.name}).fetchone()
+        
+        if existing_user:
+            raise HTTPException(status_code=409, detail="Nom d'utilisateur déjà pris")
+            
+        # Vérifier le token
+        if manager.token != "votre_token_secret":
+            raise HTTPException(status_code=401, detail="Token invalide")
+        
+        # Création du manager
+        query = text("""
+        INSERT INTO "user" (
+            username, 
+            password, 
+            user_type,
+            age,
+            gender,
+            nb_book_per_year,
+            nb_book_pleasure,
+            nb_book_work,
+            initiated_by,
+            reading_time,
+            choice_motivation
+        ) 
+        VALUES (
+            :username, 
+            :password, 
+            'manager',
+            NULL,
+            'A',
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL
+        )
+        RETURNING user_id
+        """)
+        
+        result = session.execute(query, {
+            "username": manager.name,
+            "password": manager.password
+        })
+        session.commit()
+        user_id = result.fetchone()[0]
+
+        return {"message": "Manager créé avec succès", "user_id": user_id}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        print(f"Erreur lors de la création du manager: {str(e)}")
+        session.rollback()
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la création du manager: {str(e)}")
+    finally:
+        session.close()
+
+@app.post("/api/create_manager/")
+async def create_user(user: UserCreate):
+    user.password = hash_password(user.password)
+    
+    query = text("""
     INSERT INTO "user" (username, password, age, gender, nb_book_per_year, nb_book_pleasure, nb_book_work, initiated_by, reading_time, choice_motivation) 
     VALUES (:username, :password, :age, :gender, :nb_book_per_year, :nb_book_pleasure, :nb_book_work, :initiated_by, :reading_time, :choice_motivation)
     RETURNING user_id """)

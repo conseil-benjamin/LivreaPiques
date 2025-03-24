@@ -17,6 +17,9 @@ import ImageUnvailable from "../../components/ImageUnvailable.jsx";
 //Partie wishlist, les signets
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
+import StarOutlineIcon from '@mui/icons-material/StarOutline'; // Etoile vide
+import StarIcon from '@mui/icons-material/Star'; // Etoile pleine
+import StarHalfIcon from '@mui/icons-material/StarHalf'; // Etoile à moitié pleine
 //Partie Livres Lus
 import AutoStoriesIcon from '@mui/icons-material/AutoStories'; // Filled version
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined'; // Hollow version
@@ -451,26 +454,19 @@ function BookDetails() {
                                 {isDescriptionExpanded ? t("book_see_less") : t("book_see_more")}
                             </span>
                         )}
-                        <div style={{display: "flex", marginBottom: "10px"}}>
+                        <div style={{display: "flex", marginBottom: "10px", alignItems: "center"}}>
                             <strong>{t("book_avg_rating")}</strong>:
-                            <img 
-                                src="/star-filled.svg" 
-                                className="star" 
-                                alt="star" 
-                                style={{
-                                    width: "20px", 
-                                    height: "20px", 
-                                    filter: "brightness(0) saturate(100%) invert(79%) sepia(63%) saturate(549%) hue-rotate(345deg) brightness(105%) contrast(102%)", 
-                                    verticalAlign: "middle"
-                                }}
-                            /> 
+                            <StarIcon sx={{ 
+                                color: "#FFD700",
+                                marginLeft: "5px"
+                            }}/> 
                             {book.book_avg_rating || t("not_rated")}
                         </div>
 
                         <div style={{display: "flex", alignItems: "center", marginBottom: "10px"}}>
                             <strong>{t("book_user_rating")}</strong>: 
                             <div 
-                                style={{display: "flex", position: "relative"}}
+                                style={{display: "flex", position: "relative", marginLeft: "5px"}}
                                 onMouseLeave={() => setHoveredRating(0)}
                             >
                                 {[...Array(5)].map((_, i) => (
@@ -484,22 +480,15 @@ function BookDetails() {
                                             setHoveredRating(halfPoint ? i + 0.5 : i + 1);
                                         }}
                                     >
-                                        <img 
-                                            src={(() => {
-                                                const rating = hoveredRating || userRating;
-                                                if (i + 0.5 === rating) return "/star-half-filled.svg";
-                                                if (i + 1 <= rating) return "/star-filled.svg";
-                                                return "/star-empty.svg";
-                                            })()}
-                                            className="rating-star" 
-                                            alt="star" 
-                                            style={{
-                                                width: "20px", 
-                                                height: "20px", 
-                                                filter: "brightness(0) saturate(100%) invert(79%) sepia(63%) saturate(549%) hue-rotate(345deg) brightness(105%) contrast(102%)",
-                                                verticalAlign: "middle"
-                                            }}
-                                        />
+                                        {(() => {
+                                            const rating = hoveredRating || userRating;
+                                            if (i + 0.5 === rating) {
+                                                return <StarHalfIcon sx={{ color: "#FFD700" }}/>;
+                                            } else if (i + 1 <= rating) {
+                                                return <StarIcon sx={{ color: "#FFD700" }}/>;
+                                            }
+                                            return <StarOutlineIcon sx={{ color: "#FFD700" }}/>;
+                                        })()}
                                     </div>
                                 ))}
                             </div>

@@ -168,7 +168,8 @@ CREATE TABLE "user" (
   nb_book_work      INTEGER,
   initiated_by      VARCHAR(100) NOT NULL,
   reading_time      VARCHAR(20),
-  choice_motivation VARCHAR(30)  NOT NULL
+  choice_motivation VARCHAR(30)  NOT NULL,
+  user_type         VARCHAR(20)  DEFAULT 'user'
 );
 
 CREATE TABLE Book_Source ( 

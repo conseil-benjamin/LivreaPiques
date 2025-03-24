@@ -42,6 +42,72 @@ $border-radius: 12px;
 
       .card-header {
         margin-bottom: 2rem;
+        display: flex;
+        flex-direction: column;
+
+        .account-type-switch {
+          align-self: flex-end;
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+
+          .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+
+            input {
+              opacity: 0;
+              width: 0;
+              height: 0;
+
+              &:checked + .slider {
+                background-color: $primary-color;
+              }
+
+              &:checked + .slider:before {
+                transform: translateX(26px);
+              }
+            }
+
+            .slider {
+              position: absolute;
+              cursor: pointer;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background-color: #ccc;
+              transition: .4s;
+
+              &:before {
+                position: absolute;
+                content: "";
+                height: 26px;
+                width: 26px;
+                left: 4px;
+                bottom: 4px;
+                background-color: white;
+                transition: .4s;
+              }
+
+              &.round {
+                border-radius: 34px;
+
+                &:before {
+                  border-radius: 50%;
+                }
+              }
+            }
+          }
+
+          .account-type-label {
+            font-size: 0.9rem;
+            color: $text-color;
+          }
+        }
 
         h2 {
           font-size: 2rem;
@@ -53,6 +119,75 @@ $border-radius: 12px;
           font-size: 1.2rem;
           color: darken($text-color, 20%);
           margin-top: 0.5rem;
+        }
+
+        .register-header {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 1rem;
+
+          .account-type-switch {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+
+            .switch {
+              position: relative;
+              display: inline-block;
+              width: 60px;
+              height: 34px;
+
+              input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+
+                &:checked + .slider {
+                  background-color: $primary-color;
+                }
+
+                &:checked + .slider:before {
+                  transform: translateX(26px);
+                }
+              }
+
+              .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                transition: .4s;
+
+                &:before {
+                  position: absolute;
+                  content: "";
+                  height: 26px;
+                  width: 26px;
+                  left: 4px;
+                  bottom: 4px;
+                  background-color: white;
+                  transition: .4s;
+                }
+
+                &.round {
+                  border-radius: 34px;
+
+                  &:before {
+                    border-radius: 50%;
+                  }
+                }
+              }
+            }
+
+            .account-type-label {
+              font-size: 0.9rem;
+              color: $text-color;
+            }
+          }
         }
       }
 

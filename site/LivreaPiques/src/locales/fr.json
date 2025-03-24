@@ -105,6 +105,8 @@
   "connexion_label_password": "Mot de passe",
   "connexion_swal_success": "Vous êtes maintenant connecté !",
   "connexion_swal_error": "Nom d'utilisateur ou mot de passe incorrect.",
+  "connexion_invalid_token": "Token invalide",
+  "connexion_fill_all_fields": "Veuillez remplir tous les champs",
   "connexion_password_contrainst": "Le mot de passe doit contenir au moins 8 caractères, une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.",
   "connexion_age_contraints": "L'âge doit être compris entre 13 et 115.",
   "connexion_swal_username_error_already_taken": "Ce nom d'utilisateur est déjà pris.",
@@ -132,6 +134,10 @@
   "cannot_rate_wishlisted_book": "Vous ne pouvez pas noter un livre dans votre liste de souhaits",
   "cannot_rate_unread_book": "Vous ne pouvez noter que les livres que vous avez lus ou aimés",
   "book_user_rating": "Votre note",
+  "connexion_finalise_inscription": "Finaliser l'inscription",
+  "connexion_placeholder_username": "Votre nom d'utilisateur",
+  "connexion_placeholder_password": "Mot de passe",
+  "connexion_placeholder_age": "Votre âge",
   "documentation": {
     "title": "Documentation du Projet",
     "prerequisites": {

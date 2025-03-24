@@ -4,6 +4,7 @@
   "book_not_found": "Livre non trouvé.",
   "book_author": "Auteur(s)",
   "book_genres": "Genres",
+  "no_genres": "Pas de genres",
   "book_description": "Description",
   "book_see_less": "Voir moins",
   "book_see_more": "Voir plus",

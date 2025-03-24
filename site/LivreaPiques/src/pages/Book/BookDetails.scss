@@ -70,15 +70,6 @@
   color: #555;
 }
 
-.rating-star {
-  filter: brightness(0) saturate(100%) invert(79%) sepia(63%) saturate(549%) hue-rotate(345deg) brightness(105%) contrast(102%); // Pour avoir la couleur rgb(253, 216, 53)
-  width: 20px;
-  height: 20px;
-  display: inline-block;
-  vertical-align: middle;
-  margin: 0 5px;
-}
-
 .book-info .author {
   font-weight: bold;
   color: #007bff;

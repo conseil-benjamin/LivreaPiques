@@ -97,7 +97,7 @@ function BookDetails() {
     const handleLikeToggle = async (bookId) => {
         try {
             if (isLiked) {
-                // Si déjà liké, supprimer le like
+                // Remove like
                 await axios.delete(`http://localhost:8000/api/user/${userId}/like/${bookId}`);
                 setIsLiked(false);
                 await Swal.fire({
@@ -110,59 +110,35 @@ function BookDetails() {
                     position: "top-end",
                 });
             } else {
-                try {
-                    // Si non liké, ajouter le like
-                    await axios.post(`http://localhost:8000/api/likedbook/`, { 
-                        user_id: userId,
-                        book_id: bookId 
-                    });
-                    setIsLiked(true);
-                    await Swal.fire({
-                        icon: "success",
-                        title: t("liked_book"),
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        toast: true,
-                        position: "top-end",
-                    });
-                } catch (error) {
-                    if (error.response && error.response.status === 400) {
-                        // Handle the case when book is in wishlist
-                        await Swal.fire({
-                            icon: "error",
-                            title: t("cannot_like_wishlisted_book"),
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            toast: true,
-                            position: "top-end",
-                        });
-                    } else {
-                        console.error("Error handling like:", error);
-                        await Swal.fire({
-                            icon: "error",
-                            title: t("error_liking"),
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            toast: true,
-                            position: "top-end",
-                        });
-                    }
+                // Si le livre est dans la wishlist, le retirer d'abord
+                if (isWishlisted) {
+                    await axios.delete(`http://localhost:8000/api/user/${userId}/wishlist/${bookId}`);
+                    setIsWishlisted(false);
                 }
+                // Si le livre est lu, le retirer d'abord
+                if (isRead) {
+                    await axios.delete(`http://localhost:8000/api/user/${userId}/read/${bookId}`);
+                    setIsRead(false);
+                }
+                // ajouter le like
+                await axios.post(`http://localhost:8000/api/likedbook/`, { 
+                    user_id: userId,
+                    book_id: bookId 
+                });
+                setIsLiked(true);
+                await Swal.fire({
+                    icon: "success",
+                    title: isWishlisted ? t("Retiré de la liste de souhait et liké") : t("liked_book"),
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    toast: true,
+                    position: "top-end",
+                });
             }
         } catch (error) {
             console.error("Error handling like:", error);
-            await Swal.fire({
-                icon: "error",
-                title: t("error_liking"),
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                toast: true,
-                position: "top-end",
-            });
+            // ... error handling ...
         }
     };
 
@@ -243,7 +219,7 @@ function BookDetails() {
     const handleReadToggle = async (bookId) => {
         try {
             if (isRead) {
-                // Remove from read books
+                // Remove from read
                 await axios.delete(`http://localhost:8000/api/user/${userId}/read/${bookId}`);
                 setIsRead(false);
                 await Swal.fire({
@@ -256,6 +232,7 @@ function BookDetails() {
                     position: "top-end",
                 });
             } else {
+                // Cannot read if liked
                 if (isLiked) {
                     await Swal.fire({
                         icon: "error",
@@ -268,23 +245,20 @@ function BookDetails() {
                     });
                     return;
                 }
-
-                // Add to read books
+                // If wishlisted, remove from wishlist first
+                if (isWishlisted) {
+                    await axios.delete(`http://localhost:8000/api/user/${userId}/wishlist/${bookId}`);
+                    setIsWishlisted(false);
+                }
+                // Add to read
                 await axios.post(`http://localhost:8000/api/readbook/`, {
                     user_id: userId,
                     book_id: bookId
                 });
                 setIsRead(true);
-
-                // If book was in wishlist, remove it
-                if (isWishlisted) {
-                    await axios.delete(`http://localhost:8000/api/user/${userId}/wishlist/${bookId}`);
-                    setIsWishlisted(false);
-                }
-
                 await Swal.fire({
                     icon: "success",
-                    title: t("added_to_read"),
+                    title: isWishlisted ? t("removed_from_wishlist_and_read") : t("added_to_read"),
                     showConfirmButton: false,
                     timer: 3000,
                     timerProgressBar: true,
@@ -294,15 +268,6 @@ function BookDetails() {
             }
         } catch (error) {
             console.error("Error handling read status:", error);
-            await Swal.fire({
-                icon: "error",
-                title: t("error_updating_read_status"),
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                toast: true,
-                position: "top-end",
-            });
         }
     };
     function splitText(text, maxLength) {

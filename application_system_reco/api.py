@@ -631,17 +631,35 @@ async def ReadBook(UserBook: UserBook):
     finally:
         session.close()
 
-@app.get("/api/readbook/{user_id}/{book_id}")
-async def check_if_read(user_id: int, book_id: int):
+@app.get("/api/user/{user_id}/readbooks")
+async def get_user_readbooks(user_id: int):
     try:
-        query = text("""
-            SELECT 1 FROM read_books WHERE user_id = :user_id AND book_id = :book_id
+        read_query = text("""
+            SELECT b.book_id, b.book_title, b.book_cover, b.book_description 
+            FROM book b
+            JOIN read_books r ON b.book_id = r.book_id
+            WHERE r.user_id = :user_id
         """)
+        
         engine, session, schema = conexion_db()
-        result = session.execute(query, {"user_id": user_id, "book_id": book_id}).fetchone()
-        return {"read": bool(result)}
+        result = session.execute(read_query, {"user_id": user_id})
+        
+        # Convert the result to a list of dictionaries
+        read_books = [
+            {
+                "book_id": row[0],
+                "book_title": row[1],
+                "book_cover": row[2],
+                "book_description": row[3]
+            }
+            for row in result
+        ]
+        
+        return read_books
     except SQLAlchemyError as e:
-        raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        session.close()
 
 @app.delete("/api/user/{user_id}/read/{book_id}")
 async def remove_read(user_id: int, book_id: int):
@@ -657,3 +675,18 @@ async def remove_read(user_id: int, book_id: int):
         return {"message": "Livre retiré des livres lus"}
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
+
+@app.get("/api/readbook/{user_id}/{book_id}")
+async def check_if_read(user_id: int, book_id: int):
+    try:
+        query = text("""
+            SELECT 1 FROM read_books 
+            WHERE user_id = :user_id AND book_id = :book_id
+        """)
+        engine, session, schema = conexion_db()
+        result = session.execute(query, {"user_id": user_id, "book_id": book_id}).fetchone()
+        return {"read": bool(result)}
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    finally:
+        session.close()

@@ -85,6 +85,8 @@ function BookDetails() {
                 setIsRead(response.data.read);
             } catch (error) {
                 console.error("Error checking read status:", error);
+            }
+        };
 
         const checkUserRating = async () => {
             try {

@@ -11,7 +11,8 @@ function MonCompte() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [likedBooksDetails, setLikedBooksDetails] = useState([]); // Nouvel état
-    const [wishlistBooksDetails, setWishlistBooksDetails] = useState([]); // Nouvel état
+    const [wishlistBooksDetails, setWishlistBooksDetails] = useState([]); // Nouvel état    
+    const [readBooksDetails, setReadBooksDetails] = useState([]); // nouvel état livre lu
     const navigate = useNavigate();
     const userId = Cookies.get('user_id');
 
@@ -55,9 +56,24 @@ function MonCompte() {
                         data.wishlist_books = [];
                     }
                 } catch (error) {
-                    console.log("No wishlist books found:", error);
+                    console.log("Erreur, aucun livre trouvé", error);
                     data.wishlist_books = [];
                 }
+
+                // Récupère les livres lus s'il y en a
+                try {
+                    const readBooksResponse = await fetch(`http://localhost:8000/api/user/${userId}/readbooks`);
+                    if (readBooksResponse.ok) {
+                        const readBooksData = await readBooksResponse.json();
+                        data.read_books = readBooksData || []; //Pareil que pour la wishlist, évite l'erreur
+                    } else {
+                        data.read_books = [];
+                    }
+                } catch (error) {
+                    console.log("Erreur, aucun livre trouvé", error);
+                    data.read_books = [];
+                }
+
 
                 setUserProfile(data);
                 // Récupérer les détails des livres aimés
@@ -67,6 +83,10 @@ function MonCompte() {
                 // Récupérer les détails des livres de la wishlist
                 if (data.wishlist_books && data.wishlist_books.length > 0) {
                     await fetchBooksDetails(data.wishlist_books, setWishlistBooksDetails);
+                }
+                // Récupérer les détails des livres lus
+                if (data.read_books && data.read_books.length > 0) {
+                    await fetchBooksDetails(data.read_books, setReadBooksDetails);
                 }
             } catch (err) {
                 setError(err.message);
@@ -216,6 +236,52 @@ function MonCompte() {
                     </div>
                 ) : (
                     <p>{t("no_wishlisted_books")}</p>
+                )}
+            </div>
+            <div className="read-books">
+                <h3>{t("books_i_have_read")}</h3>
+                {readBooksDetails.length > 0 ? (
+                    <div style={{maxHeight: '300px', overflowY: 'scroll'}}>
+                        <ul style={{listStyleType: 'none', padding: 0}}>
+                            {readBooksDetails.map((book, index) => (
+                                <li key={index} style={{marginBottom: '10px', display: 'flex', alignItems: 'center'}}>
+                                    <div
+                                        onClick={() => navigate(`/book/${book.book_id}`)}
+                                        style={{display: 'flex', alignItems: 'center', cursor: 'pointer', minWidth: '30%'}}
+                                    >
+                                        {book?.book_cover && book.book_cover !== "" ? (
+                                                <img
+                                                    src={book.book_cover}
+                                                    alt={book?.book_title || t("unknown")}
+                                                    style={{width: 'auto', height: '100px', borderRadius: '8px'}}
+                                                    onError={(e) => {
+                                                        console.log("Image loading error");
+                                                        e.target.style.display = 'none';
+                                                        e.target.nextElementSibling.style.display = 'block';
+                                                    }}
+                                                />
+                                        ) : (
+                                            <ImageUnvailable width={"80px"} height={"100px"}/>
+                                        )}
+                                        <div style={{display: "flex", flexDirection: "column", alignItems: "start"}}>
+                                            <h4 style={{margin: "0 0 0 0.5em"}}>
+                                                {book.book_title || t("unknown")}
+                                            </h4>
+                                            <span style={{margin: "0 0 0 0.5em"}}>
+                                                {book.book_description ? 
+                                                    (book.book_description.length > 50 ? 
+                                                        `${book.book_description.substring(0, 50)}...` 
+                                                        : book.book_description)
+                                                    : t("no_description")}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ) : (
+                    <p>{t("no_read_books")}</p>
                 )}
             </div>
             <div style={{width: "100%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 0 2em 0"}}>

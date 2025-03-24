@@ -98,6 +98,8 @@
   "register_description": "Register to access your account and discover personalized book recommendations.",
   "connexion_button_login": "Login",
   "connexion_button_register": "Register",
+  "user_account": "User account",
+  "manager_account": "Manager account",
   "no_account": "Don't have an account?",
   "already_account": "Already have an account?",
   "connexion_login_redirection": "Log in",

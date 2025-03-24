@@ -189,6 +189,16 @@ function RegisterForm({
             return;
         }
 
+        // Ajout de la vérification du format du mot de passe
+        if (!validator.isStrongPassword(password)) {
+            Swal.fire({
+                text: t("connexion_password_contrainsts"),
+                icon: "error",
+                confirmButtonText: "Ok",
+            });
+            return;
+        }
+
         setIsLoading(true);
         try {
             const response = await fetch("http://localhost:8000/api/create_manager/", {

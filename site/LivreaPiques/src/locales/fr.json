@@ -97,6 +97,8 @@
   "register_description": "Inscrivez-vous pour accéder à votre compte et découvrir des recommandations personnalisées.",
   "connexion_button_login": "Connexion",
   "connexion_button_register": "Inscription",
+  "user_account": "Compte utilisateur",
+  "manager_account": "Compte manager",
   "no_account": "Pas encore de compte ?",
   "already_account": "Déjà un compte ?",
   "connexion_login_redirection": "Connectez-vous",

@@ -33,6 +33,8 @@ function BookDetails() {
     const [isWishlisted, setIsWishlisted] = useState(false); // Etat pour savoir si l'utilisateur a ajouté le livre à sa wishlist
     const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
     const [isRead, setIsRead] = useState(false);
+    const [userRating, setUserRating] = useState(0);
+    const [hoveredRating, setHoveredRating] = useState(0);
     const toggleDescription = () => {
         setIsDescriptionExpanded(!isDescriptionExpanded);
     };
@@ -76,12 +78,23 @@ function BookDetails() {
             }
         };
 
+
         const checkIfRead = async () => {
             try {
                 const response = await axios.get(`http://localhost:8000/api/readbook/${userId}/${book_id}`);
                 setIsRead(response.data.read);
             } catch (error) {
                 console.error("Error checking read status:", error);
+
+        const checkUserRating = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8000/api/books/${book_id}/rating/${userId}`);
+                if (response.data && response.data.rating) {
+                    setUserRating(response.data.rating);
+                }
+            } catch (error) {
+                console.error("Error fetching user rating:", error);
+
             }
         };
     
@@ -89,7 +102,10 @@ function BookDetails() {
         if (userId) {
             checkIfLiked();
             checkIfWishlisted();
+
             checkIfRead();
+            checkUserRating(); // Ajout de la vérification du rating
+
         }
     }, [book_id, userId, t]);
 
@@ -330,6 +346,58 @@ function BookDetails() {
         }
     }, [i18n.language, book]);
 
+    const handleRating = async (rating) => {
+        try {
+            if (!userId) {
+                await Swal.fire({
+                    icon: "error",
+                    title: t("must_be_logged_in"),
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    toast: true,
+                    position: "top-end",
+                });
+                return;
+            }
+
+            await axios.post(`http://localhost:8000/api/books/${book_id}/rate`, {
+                user_id: userId,
+                rating: rating
+            });
+
+            setUserRating(rating);
+            await Swal.fire({
+                icon: "success",
+                title: t("rating_saved"),
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: "top-end",
+            });
+        } catch (error) {
+            console.error("Error saving rating:", error);
+            const errorMessage = error.response?.status === 400 
+                ? (error.response.data.message === "Un livre dans wishlist ne peut être noté" 
+                    ? t("cannot_rate_wishlisted_book")
+                    : error.response.data.message === "Un livre ni lu, ni liké ne peut être noté"
+                        ? t("cannot_rate_unread_book")
+                        : t("error_rating"))
+                : t("error_rating");
+                
+            await Swal.fire({
+                icon: "error",
+                title: errorMessage,
+                showConfirmButton: false,
+                timer: 5000,
+                timerProgressBar: true,
+                toast: true,
+                position: "top-end",
+            });
+        }
+    };
+
     if (loading) {
         return (
             <div className="loading-container">
@@ -381,9 +449,59 @@ function BookDetails() {
                                 {isDescriptionExpanded ? t("book_see_less") : t("book_see_more")}
                             </span>
                         )}
-                        <p>
-                            <strong>{t("book_avg_rating")}</strong>: ⭐ {book.book_avg_rating || t("not_rated")}
-                        </p>
+                        <div style={{display: "flex", marginBottom: "10px"}}>
+                            <strong>{t("book_avg_rating")}</strong>:
+                            <img 
+                                src="/star-filled.svg" 
+                                className="star" 
+                                alt="star" 
+                                style={{
+                                    width: "20px", 
+                                    height: "20px", 
+                                    filter: "brightness(0) saturate(100%) invert(79%) sepia(63%) saturate(549%) hue-rotate(345deg) brightness(105%) contrast(102%)", 
+                                    verticalAlign: "middle"
+                                }}
+                            /> 
+                            {book.book_avg_rating || t("not_rated")}
+                        </div>
+
+                        <div style={{display: "flex", alignItems: "center", marginBottom: "10px"}}>
+                            <strong>{t("book_user_rating")}</strong>: 
+                            <div 
+                                style={{display: "flex", position: "relative"}}
+                                onMouseLeave={() => setHoveredRating(0)}
+                            >
+                                {[...Array(5)].map((_, i) => (
+                                    <div 
+                                        key={i} 
+                                        style={{position: "relative", cursor: "pointer"}}
+                                        onClick={() => handleRating(hoveredRating || i + 1)}
+                                        onMouseMove={(e) => {
+                                            const rect = e.currentTarget.getBoundingClientRect();
+                                            const halfPoint = (e.clientX - rect.left) < rect.width / 2;
+                                            setHoveredRating(halfPoint ? i + 0.5 : i + 1);
+                                        }}
+                                    >
+                                        <img 
+                                            src={(() => {
+                                                const rating = hoveredRating || userRating;
+                                                if (i + 0.5 === rating) return "/star-half-filled.svg";
+                                                if (i + 1 <= rating) return "/star-filled.svg";
+                                                return "/star-empty.svg";
+                                            })()}
+                                            className="rating-star" 
+                                            alt="star" 
+                                            style={{
+                                                width: "20px", 
+                                                height: "20px", 
+                                                filter: "brightness(0) saturate(100%) invert(79%) sepia(63%) saturate(549%) hue-rotate(345deg) brightness(105%) contrast(102%)",
+                                                verticalAlign: "middle"
+                                            }}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                         {userId && (
                             <div className="action-buttons">
                                 <div

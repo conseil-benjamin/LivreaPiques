@@ -16,7 +16,7 @@ function Footer() {
                      height={50}/>
                 <h1 style={{margin: "0 0 0 0.8em"}}>Big Book Society</h1>
             </div>
-            <h5 style={{margin: "0 0 1em 1em"}}>{t("footer_title")}</h5>
+            <h5 style={{margin: "0 0 1em 1em", cursor: "inherit"}}>{t("footer_title")}</h5>
             <h3>Navigation</h3>
             <div>
                 <h5 onClick={() => navigate("/")}>Accueil</h5>

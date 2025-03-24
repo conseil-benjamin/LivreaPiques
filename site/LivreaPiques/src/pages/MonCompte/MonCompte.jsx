@@ -153,7 +153,6 @@ function MonCompte() {
                         <ul style={{listStyleType: 'none', padding: 0}}>
                             {likedBooksDetails.map((book, index) => (
                                 <li key={index} style={{marginBottom: '10px', display: 'flex', alignItems: 'center'}}>
-                                    {console.log(book)}
                                     <div
                                         onClick={() => navigate(`/book/${book.book_id}`)}
                                         style={{display: 'flex', alignItems: 'center', cursor: 'pointer', minWidth: '30%'}}

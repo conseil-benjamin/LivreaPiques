@@ -9,6 +9,7 @@ $white-color: #fff;
   gap: 20px;
   max-width: 100%;
   margin: 0 auto;
+  min-height: 100vh;
 
   .profile-info, .liked-books, .wishlisted-books, .read-books {
     background-color: $white-color;
@@ -34,12 +35,6 @@ $white-color: #fff;
         border-radius: 4px;
       }
     }
-  }
-
-  h2, h3 {
-    font-size: 1.3rem;
-    margin-top: 0;
-    color: $primary-color;
   }
 
   h4 {
@@ -127,6 +122,17 @@ $white-color: #fff;
 
     li div img {
       height: 80px;
+    }
+  }
+
+  .profile-content {
+    flex: 1;
+    padding: 20px;
+
+    h2, h3 {
+      font-size: 1.3rem;
+      margin-top: 0;
+      color: $primary-color;
     }
   }
 }

@@ -11,6 +11,8 @@ function Banner() {
     const [loginClicked, setLoginClicked] = useState(false);
     const [registerClicked, setRegisterClicked] = useState(false);
     const { t } = useTranslation();
+    const [isManager, setIsManager] = useState(false);
+
     useEffect(() => {
         if (loginClicked) {
             navigate("/login");
@@ -18,6 +20,22 @@ function Banner() {
             navigate("/register");
         }
     }, [loginClicked, registerClicked]);
+
+    useEffect(() => {
+        const checkManagerStatus = async () => {
+            const userId = Cookies.get("user_id");
+            if (userId) {
+                try {
+                    const response = await fetch(`http://localhost:8000/api/user/${userId}/is_manager`);
+                    const data = await response.json();
+                    setIsManager(data.is_manager);
+                } catch (error) {
+                    console.error("Erreur lors de la vérification du statut manager:", error);
+                }
+            }
+        };
+        checkManagerStatus();
+    }, []);
 
     return (
         <header className={"banner"}>
@@ -37,6 +55,10 @@ function Banner() {
                         onClick={() => navigate("/contact")}>{t("footer_navigation_contact")}</h3>
                     <h3 style={{margin: "0 1em 0 0", fontSize: "1.3rem", color: "#fff", cursor: "pointer"}}
                         onClick={() => navigate("/documentation")}>{t("footer_navigation_documentation")}</h3>
+                    {isManager && (
+                        <h3 style={{margin: "0 1em 0 0", fontSize: "1.3rem", color: "#fff", cursor: "pointer"}}
+                            onClick={() => navigate("/manage")}>{t("footer_navigation_manage")}</h3>
+                    )}
                     {jwt && <Compte/>}
                 </div>
 

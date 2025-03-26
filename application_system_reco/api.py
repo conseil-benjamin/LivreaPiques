@@ -914,3 +914,24 @@ async def get_user_rating(book_id: int, user_id: int):
         raise HTTPException(status_code=500, detail=f"Erreur de base de données: {str(e)}")
     finally:
         session.close()
+
+@app.get("/api/user/{user_id}/is_manager")
+async def check_if_manager(user_id: int):
+    try:
+        engine, session, schema = conexion_db()
+        query = text("""
+            SELECT user_type FROM "user" 
+            WHERE user_id = :user_id
+        """)
+        result = session.execute(query, {"user_id": user_id}).fetchone()
+        
+        if not result:
+            raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+            
+        is_manager = result[0] in ['manager', 'admin']
+        return {"is_manager": is_manager}
+        
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de base de données: {str(e)}")
+    finally:
+        session.close()

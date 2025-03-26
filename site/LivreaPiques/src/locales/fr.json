@@ -90,6 +90,7 @@
   "footer_navigation_profile": "Mon compte",
   "footer_navigation_contact": "Contact",
   "footer_naviation_documentation": "Documentation",
+  "footer_navigation_manage": "Administration",
   "footer_rights": "© 2025 Big Book Society. Tous droits réservés.",
   "connexion_title_login": "Connectez-vous",
   "connexion_title_register": "Inscrivez-vous",
@@ -205,6 +206,24 @@
         "Assurez-vous que les ports nécessaires (5173, 8000) ne sont pas déjà utilisés",
         "Consultez les logs : docker-compose logs -f"
       ]
+    }
+  },
+  "manage": {
+    "title": "Administration",
+    "users": {
+      "title": "Utilisateurs",
+      "view_all": "Voir tous les utilisateurs",
+      "add_new": "Ajouter un utilisateur"
+    },
+    "books": {
+      "title": "Livres",
+      "view_all": "Voir tous les livres",
+      "add_new": "Ajouter un livre"
+    },
+    "stats": {
+      "title": "Statistiques",
+      "view": "Voir les statistiques",
+      "export": "Exporter les données"
     }
   }
 }

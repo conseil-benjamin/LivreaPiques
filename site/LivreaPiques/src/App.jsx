@@ -8,6 +8,7 @@ import ConditionsUtilisations from "./pages/ConditionsUtilisations/ConditionsUti
 import Error404 from "./pages/Error404/Error404.jsx";
 import MonCompte from "./pages/MonCompte/MonCompte.jsx";
 import Documentation from "./pages/Documentation/Documentation.jsx";
+import Manage from "./pages/Manage/Manage.jsx";
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
                 <Route path="/conditions-utilisations" element={<ConditionsUtilisations />} />
                 <Route path="/profile" element={<MonCompte />} />
                 <Route path={"/documentation"} element={<Documentation/>}/>
+                <Route path={"/manage"} element={<Manage/>}/>
                 <Route path="*" element={<Error404 />} />
             </Routes>
         </Router>

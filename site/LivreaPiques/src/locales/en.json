@@ -89,6 +89,7 @@
   "footer_navigation_profile": "My account",
   "footer_navigation_contact": "Contact",
   "footer_navigation_documentation": "Documentation",
+  "footer_navigation_manage": "Manage",
   "footer_rights": "© 2025 LivreaPiques. All rights reserved",
   "connexion_title_login": "Login",
   "connexion_title_register": "Register",
@@ -206,6 +207,24 @@
         "Make sure the necessary ports (5173, 8000) are not already in use",
         "Check the logs: docker-compose logs -f"
       ]
+    }
+  },
+  "manage": {
+    "title": "Administration",
+    "users": {
+      "title": "Users",
+      "view_all": "View all users",
+      "add_new": "Add new user"
+    },
+    "books": {
+      "title": "Books",
+      "view_all": "View all books",
+      "add_new": "Add new book"
+    },
+    "stats": {
+      "title": "Statistics",
+      "view": "View statistics",
+      "export": "Export data"
     }
   }
 }

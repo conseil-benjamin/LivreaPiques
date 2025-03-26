@@ -146,6 +146,7 @@
   "rating_saved": "Note enregistrée avec succès",
   "cannot_rate_wishlisted_book": "Vous ne pouvez pas noter un livre dans votre liste de souhaits",
   "cannot_rate_unread_book": "Vous ne pouvez noter que les livres que vous avez lus ou aimés",
+  "cannot_wishlist_read_book": "Impossible d'ajouter à la liste de souhaits un livre déjà lu",
   "book_user_rating": "Votre note",
   "connexion_finalise_inscription": "Finaliser l'inscription",
   "connexion_placeholder_username": "Votre nom d'utilisateur",

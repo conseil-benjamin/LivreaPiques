@@ -147,6 +147,7 @@
   "rating_saved": "Rating saved successfully",
   "cannot_rate_wishlisted_book": "You cannot rate a book in your wishlist",
   "cannot_rate_unread_book": "You can only rate books you have read or liked",
+  "cannot_wishlist_read_book": "Cannot add a read book to wishlist",
   "book_user_rating": "Your Rating",
   "connexion_finalise_inscription": "Complete Registration",
   "connexion_placeholder_username": "Your username",

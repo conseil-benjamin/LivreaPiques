@@ -208,6 +208,19 @@ function BookDetails() {
                     });
                     return;
                 }
+                // Si le livre est dans la liste des lus, rendre impossible l'ajout à la liste de souhaits
+                if (isRead) {
+                    await Swal.fire({
+                        icon: "error",
+                        title: t("cannot_wishlist_read_book"),
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        toast: true,
+                        position: "top-end",
+                    });
+                    return;
+                }
                 // Si non dans la wishlist, ajouter
                 await axios.post(`http://localhost:8000/api/wishlist/`, {
                     user_id: userId,

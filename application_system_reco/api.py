@@ -351,26 +351,65 @@ def Ltitle_to_Lid(Ltitle):
 @app.post("/api/reco1/")
 async def recommendation1(user: UserID):
     """
-    Génère des recommandations de livres basées sur un système de recommandation avancé.
-
-    Entrée :
-    - user (UserID) : Un objet contenant l'identifiant de l'utilisateur (non utilisé ici).
-
-    Sortie :
-    - Un dictionnaire contenant une liste de titres de livres recommandés.
-
-    Cette fonction utilise `FinalRecommender` pour obtenir les recommandations, mais l'ID utilisateur n'est
-    pas pris en compte dans cette version (valeur fixe de 1).
+    Génère des recommandations de livres en excluant ceux déjà dans les listes de l'utilisateur.
     """
     try:
+        engine, session, schema = conexion_db()
+        
+        # Get all excluded books in one query
+        excluded_query = text("""
+            SELECT book_id FROM (
+                SELECT book_id FROM liked_books WHERE user_id = :user_id
+                UNION
+                SELECT book_id FROM wishlist WHERE user_id = :user_id
+                UNION
+                SELECT book_id FROM read_books WHERE user_id = :user_id
+            ) as excluded
+        """)
+        
+        excluded_books = {
+            book[0] for book in 
+            session.execute(excluded_query, {"user_id": user.id}).fetchall()
+        }
+        
+        # Pass excluded books to recommender
         reco_benj = FinalRecommender()
-        Lreco = reco_benj.get_recommendations(user.id, 5) 
-        Ltitles = [book["title"] for book in Lreco]
+        initial_reco = reco_benj.get_recommendations(
+            user_id=user.id,
+            n_recommendations=15,
+            excluded_books=excluded_books
+        )
+        
+        # No need to filter again, just take first 5
+        final_reco = initial_reco[:5]
+        
+        # If we need more recommendations
+        if len(final_reco) < 5:
+            additional_reco = reco_benj.get_recommendations(
+                user_id=user.id,
+                n_recommendations=10,
+                excluded_books=excluded_books
+            )
+            # Only add books not already recommended
+            additional_filtered = [
+                book for book in additional_reco 
+                if book["book_id"] not in [b["book_id"] for b in final_reco]
+            ]
+            final_reco.extend(additional_filtered[:5 - len(final_reco)])
+
+        Ltitles = [book["title"] for book in final_reco]
         LrecoID = Ltitle_to_Lid(Ltitles)
+        
         return {"recommendations": LrecoID}
+        
     except Exception as e:
-        print(f"Erreur lors de la recommandation: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Erreur lors de la recommandation: {str(e)}")
+        print(f"Error in recommendation1: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error generating recommendations: {str(e)}"
+        )
+    finally:
+        session.close()
 
 @app.post("/api/reco2/")
 async def recommendation2(user: UserID):

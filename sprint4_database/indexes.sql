@@ -35,5 +35,21 @@ ON genre(genre_id);
 create index idx_series_series_id
 ON series(series_id);
 
-create index if not exists idx_liked_book_user_id
-ON liked_books(user_id, book_id);
+-- pour les recommendations sans les livres listés
+create index idx_liked_books_user_id
+ON liked_books(user_id);
+
+create index idx_liked_books_book_id
+ON liked_books(book_id);
+
+create index idx_wishlist_user_id
+ON wishlist(user_id);
+
+create index idx_wishlist_book_is
+ON wishlist(book_id);
+
+create index idx_read_books_user_id
+ON read_books(user_id);
+
+create index idx_read_books_book_id
+ON read_books(book_id);

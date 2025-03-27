@@ -177,10 +177,12 @@ class FinalRecommender:
 
         try:
             # Similarité d'âge avec fonction gaussienne
-            age_diff = abs(user1_profile['demographic']['raw_age'] - user2_profile['demographic']['raw_age'])
+            age1 = user1_profile['demographic']['age']
+            age2 = user2_profile['demographic']['age']
+            age_diff = abs(age1 - age2)
             age_sim = np.exp(-age_diff**2 / 100)
             
-            # Similarité de genre moins binaire
+            # Similarité de genre
             gender_sim = 1 if user1_profile['demographic']['gender'] == user2_profile['demographic']['gender'] else 0.5
             
             # Similarité des livres avec bonus de diversité
@@ -195,29 +197,24 @@ class FinalRecommender:
                 books_sim = ((intersection / union) * (1 + np.log1p(intersection))) * (1 + diversity_bonus)
                 
             # Similarité des habitudes de lecture
-            books_per_year_diff = abs(user1_profile['demographic']['raw_books_per_year'] - 
-                                    user2_profile['demographic']['raw_books_per_year'])
+            books_per_year1 = user1_profile['demographic']['books_per_year']
+            books_per_year2 = user2_profile['demographic']['books_per_year']
+            books_per_year_diff = abs(books_per_year1 - books_per_year2)
             books_per_year_sim = np.exp(-books_per_year_diff**2 / 100)
-            
-            # Similarité du moment de lecture moins binaire
-            reading_time_sim = 1 if (user1_profile['demographic']['reading_time'] == 
-                                user2_profile['demographic']['reading_time']) else 0.7
             
             # Pondération dynamique
             weights = {
                 'age': 0.15,
                 'gender': 0.1,
-                'books': 0.5,
-                'books_per_year': 0.15,
-                'reading_time': 0.1
+                'books': 0.6,
+                'books_per_year': 0.15
             }
             
             similarity = (
                 weights['age'] * age_sim +
                 weights['gender'] * gender_sim +
                 weights['books'] * books_sim +
-                weights['books_per_year'] * books_per_year_sim +
-                weights['reading_time'] * reading_time_sim
+                weights['books_per_year'] * books_per_year_sim
             )
             
             # Bruit aléatoire pour la diversité

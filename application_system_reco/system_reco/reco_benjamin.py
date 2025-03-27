@@ -8,36 +8,55 @@ from application_system_reco.SQL_controleur.SQL_controleur import *
 class FinalRecommender:
     def __init__(self):
         """
-        Initialise le système de recommandation avec les données de Supabase.
-        - Charge les tables liked_books, books et users
-        - Calcule les scores de popularité des livres 
-        - Prépare la structure pour la diversité des genres
-        - Maintient un historique des recommandations
+            Initialise le système de recommandation avec les données de Supabase.
         """
-        url = "https://pczyoeavtwijgtkzgcaz.supabase.co"
-        key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjenlvZWF2dHdpamd0a3pnY2F6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzEzOTc1NTUsImV4cCI6MjA0Njk3MzU1NX0._KJBbSHWivEF6VrPdyO3TUI729c0eXnj-zoVeQmFYQc"
-        self.supabase = create_client(url, key)
+        try:
+            # Initialize MinMaxScaler first
+            self.scaler = MinMaxScaler(feature_range=(0, 1))
+            
+            # Load data
+            self.liked_books = requete("SELECT * FROM liked_books ORDER BY book_id")
+            self.books = requete("SELECT * FROM book ORDER BY book_id")
+            self.users = requete('''SELECT * FROM "user"''')
 
-        # Chargement des données 
-        #self.liked_books = pd.DataFrame(self.supabase.table("liked_books").select("*").order("book_id", desc=False).execute().data)
-        self.liked_books = requete("SELECT * FROM liked_books ORDER BY book_id")
-        #self.books = pd.DataFrame(self.supabase.table("book").select("*").order("book_id", desc=False).execute().data)
-        self.books = requete("SELECT * FROM book ORDER BY book_id")
-        #self.users = pd.DataFrame(self.supabase.table("user").select("*").execute().data)
-        self.users = requete('''SELECT * FROM "user"''')
-        
-        # Historique des recommandations par utilisateur
-        self.recommendation_history = {}
-        
-        # Affichage des statistiques du dataset
-        print(f"Nombre total de livres : {len(self.books)}")
-        print(f"Nombre total d'utilisateurs : {len(self.users)}")
-        print(f"Nombre total de likes : {len(self.liked_books)}")
-        
-        # Calcul des métriques dérivées
-        self.book_popularity = self._calculate_book_popularity()
-        self.user_reading_patterns = self._calculate_user_reading_patterns()
-        self.book_diversity_score = self._calculate_book_diversity_scores()
+            # Convert nb_of_pages to numeric first
+            self.books['nb_of_pages'] = pd.to_numeric(self.books['nb_of_pages'], errors='coerce')
+            
+            # Calculate default values
+            default_pages = self.books['nb_of_pages'].median()  # Use median instead of mean for robustness
+            
+            # Handle missing values
+            self.books = self.books.fillna({
+                'book_rating': 0,
+                'nb_of_pages': default_pages,
+                'genre': 'unknown',
+                'authors': 'unknown',
+                'book_description': '',
+                'book_cover': ''
+            })
+            
+            # Initialize numeric features
+            numeric_features = ['book_rating', 'nb_of_pages']
+            for feature in numeric_features:
+                if feature in self.books.columns:
+                    self.books[feature] = pd.to_numeric(self.books[feature], errors='coerce').fillna(0)
+            
+            # Initialize recommendation history
+            self.recommendation_history = {}
+            
+            # Calculate derived metrics
+            self.book_popularity = self._calculate_book_popularity()
+            self.user_reading_patterns = self._calculate_user_reading_patterns()
+            self.book_diversity_score = self._calculate_book_diversity_scores()
+            
+            # Print dataset statistics
+            print(f"Nombre total de livres : {len(self.books)}")
+            print(f"Nombre total d'utilisateurs : {len(self.users)}")
+            print(f"Nombre total de likes : {len(self.liked_books)}")
+            
+        except Exception as e:
+            print(f"Error initializing FinalRecommender: {str(e)}")
+            raise
 
     def _calculate_book_popularity(self):
         """
@@ -100,6 +119,21 @@ class FinalRecommender:
         }
         return float(range_mapping.get(range_str, 0))
 
+        # Add NaN handling for numeric features
+        self.scaler = MinMaxScaler(feature_range=(0, 1))
+        
+        # Replace NaN values with defaults
+        self.books = self.books.fillna({
+            'book_rating': 0,
+            'nb_of_pages': self.books['nb_of_pages'].mean(),
+            'genres': 'unknown',
+            'authors': 'unknown'
+        })
+        
+        # Initialize numeric features properly
+        numeric_features = self.books.select_dtypes(include=['float64', 'int64']).columns
+        self.books[numeric_features] = self.books[numeric_features].fillna(0)
+
     def _create_user_profile_vector(self, user_id):
         """
         Crée un profil utilisateur enrichi avec patterns de lecture
@@ -110,30 +144,28 @@ class FinalRecommender:
                 return None
                 
             user_info = user_matches.iloc[0]
-            books_per_year = self._convert_book_range(user_info['nb_book_per_year'])
-            scaler = MinMaxScaler()
-            age_normalized = scaler.fit_transform([[float(user_info['age'])]])[0][0]
-            books_per_year_normalized = scaler.fit_transform([[books_per_year]])[0][0]
             
-            liked_books = self.liked_books[self.liked_books['user_id'] == user_id]
-            reading_patterns = self.user_reading_patterns.get(user_id, {})
+            # Handle missing values in user data
+            age = float(user_info['age']) if pd.notna(user_info['age']) else 30.0
+            books_per_year = self._convert_book_range(user_info['nb_book_per_year']) if pd.notna(user_info['nb_book_per_year']) else 5
+            
+            # Scale features individually to avoid NaN propagation
+            age_scaled = self.scaler.fit_transform([[age]])[0][0] if age > 0 else 0.5
+            books_scaled = self.scaler.fit_transform([[books_per_year]])[0][0] if books_per_year > 0 else 0.5
             
             return {
                 'demographic': {
-                    'age': age_normalized,
+                    'age': age_scaled,
                     'gender': 1 if user_info['gender'] == 'M' else 0,
-                    'books_per_year': books_per_year_normalized,
-                    'raw_age': float(user_info['age']),
-                    'reading_time': user_info['reading_time'],
-                    'raw_books_per_year': books_per_year
+                    'books_per_year': books_scaled
                 },
                 'preferences': {
-                    'liked_books': set(liked_books['book_id']),
-                    'reading_patterns': reading_patterns
+                    'liked_books': set(self.liked_books[self.liked_books['user_id'] == user_id]['book_id']),
+                    'reading_patterns': self.user_reading_patterns.get(user_id, {})
                 }
             }
         except Exception as e:
-            print(f"Erreur lors de la création du profil utilisateur {user_id}: {str(e)}")
+            print(f"Error creating user profile: {str(e)}")
             return None
 
     def _calculate_user_similarity(self, user1_profile, user2_profile):
@@ -145,10 +177,12 @@ class FinalRecommender:
 
         try:
             # Similarité d'âge avec fonction gaussienne
-            age_diff = abs(user1_profile['demographic']['raw_age'] - user2_profile['demographic']['raw_age'])
+            age1 = user1_profile['demographic']['age']
+            age2 = user2_profile['demographic']['age']
+            age_diff = abs(age1 - age2)
             age_sim = np.exp(-age_diff**2 / 100)
             
-            # Similarité de genre moins binaire
+            # Similarité de genre
             gender_sim = 1 if user1_profile['demographic']['gender'] == user2_profile['demographic']['gender'] else 0.5
             
             # Similarité des livres avec bonus de diversité
@@ -163,29 +197,24 @@ class FinalRecommender:
                 books_sim = ((intersection / union) * (1 + np.log1p(intersection))) * (1 + diversity_bonus)
                 
             # Similarité des habitudes de lecture
-            books_per_year_diff = abs(user1_profile['demographic']['raw_books_per_year'] - 
-                                    user2_profile['demographic']['raw_books_per_year'])
+            books_per_year1 = user1_profile['demographic']['books_per_year']
+            books_per_year2 = user2_profile['demographic']['books_per_year']
+            books_per_year_diff = abs(books_per_year1 - books_per_year2)
             books_per_year_sim = np.exp(-books_per_year_diff**2 / 100)
-            
-            # Similarité du moment de lecture moins binaire
-            reading_time_sim = 1 if (user1_profile['demographic']['reading_time'] == 
-                                user2_profile['demographic']['reading_time']) else 0.7
             
             # Pondération dynamique
             weights = {
                 'age': 0.15,
                 'gender': 0.1,
-                'books': 0.5,
-                'books_per_year': 0.15,
-                'reading_time': 0.1
+                'books': 0.6,
+                'books_per_year': 0.15
             }
             
             similarity = (
                 weights['age'] * age_sim +
                 weights['gender'] * gender_sim +
                 weights['books'] * books_sim +
-                weights['books_per_year'] * books_per_year_sim +
-                weights['reading_time'] * reading_time_sim
+                weights['books_per_year'] * books_per_year_sim
             )
             
             # Bruit aléatoire pour la diversité
@@ -246,132 +275,111 @@ class FinalRecommender:
         
         return max(0, final_score)
 
-    def get_recommendations(self, user_id, n_recommendations=5):
+    def get_recommendations(self, user_id, n_recommendations=5, excluded_books=None):
         """
-        Génère des recommandations uniques avec une approche plus flexible
+        Génère des recommandations uniques en excluant les livres déjà lus, likés ou wishlistés
         """
-        if user_id not in self.recommendation_history:
-            self.recommendation_history[user_id] = set()
+        try:
+            # Initialize recommendation history
+            if user_id not in self.recommendation_history:
+                self.recommendation_history[user_id] = set()
+            
+            # Get user profile
+            target_profile = self._create_user_profile_vector(user_id)
+            if target_profile is None:
+                print(f"No profile found for user {user_id}")
+                return []
+            
+            # Use provided excluded_books or create empty set
+            excluded_books = excluded_books or set()
+            
+            # Add previously recommended books to exclusions
+            excluded_books.update(self.recommendation_history[user_id])
+            
+            print(f"Total excluded books for user {user_id}: {len(excluded_books)}")
+            
+            # Get available books (not in excluded list)
+            available_books = self.books[~self.books['book_id'].isin(excluded_books)]
+            print(f"Available books after filtering: {len(available_books)}")
         
-        target_profile = self._create_user_profile_vector(user_id)
-        if target_profile is None:
-            return []
-        
-        user_history = self.recommendation_history[user_id]
-        
-        # Si l'utilisateur n'a pas de livres likés, utiliser une approche de découverte
-        if not target_profile['preferences']['liked_books']:
-            # Utiliser tous les livres disponibles, triés par un score combiné
-            all_book_candidates = []
-            for book_id in self.books['book_id']:
-                if book_id not in user_history:
-                    pop_score = self.book_popularity.get(book_id, 0)
-                    diversity_score = self.book_diversity_score.get(book_id, 0.5)
+            if available_books.empty:
+                print("No available books after filtering")
+                return []
+            
+            # Discovery approach for new users
+            if not target_profile['preferences']['liked_books']:
+                all_book_candidates = []
+                available_books = self.books[~self.books['book_id'].isin(excluded_books)]
+                
+                for _, book in available_books.iterrows():
+                    pop_score = self.book_popularity.get(book['book_id'], 0)
+                    diversity_score = self.book_diversity_score.get(book['book_id'], 0.5)
                     combined_score = 0.6 * pop_score + 0.4 * diversity_score
                     
-                    book_info = self.books[self.books['book_id'] == book_id]
-                    if not book_info.empty:
-                        all_book_candidates.append({
-                            'book_id': book_id,
-                            'title': book_info.iloc[0]['book_title'],
-                            'score': combined_score,
-                            'type': 'découverte',
-                            'genre': book_info.iloc[0].get('genre', 'unknown')
-                        })
-            
-            # Trier et sélectionner les meilleures recommandations
-            all_book_candidates.sort(key=lambda x: x['score'], reverse=True)
-            
-            # Sélectionner des livres uniques avec diversité de genres
-            final_recommendations = []
-            genres_seen = set()
-            
-            for candidate in all_book_candidates:
-                if len(final_recommendations) >= n_recommendations:
-                    break
-                
-                if candidate['genre'] not in genres_seen:
-                    final_recommendations.append(candidate)
-                    genres_seen.add(candidate['genre'])
-            
-            # Si pas assez de recommandations, compléter avec les meilleures restantes
-            while len(final_recommendations) < n_recommendations and all_book_candidates:
-                next_best = all_book_candidates.pop(0)
-                if next_best['book_id'] not in {rec['book_id'] for rec in final_recommendations}:
-                    final_recommendations.append(next_best)
-            
-            return final_recommendations[:n_recommendations]
-        
-        # Pour les utilisateurs avec des livres likés, approche collaborative
-        user_similarities = []
-        for other_user_id in self.users['user_id'].unique():
-            if other_user_id != user_id:
-                other_profile = self._create_user_profile_vector(other_user_id)
-                if other_profile and other_profile['preferences']['liked_books']:
-                    similarity = self._calculate_user_similarity(target_profile, other_profile)
-                    if similarity > 0:
-                        user_similarities.append((other_user_id, similarity))
-        
-        user_similarities.sort(key=lambda x: x[1], reverse=True)
-        
-        # Collecte de recommandations candidates
-        all_recommendations = []
-        seen_book_ids = set(user_history)
-        
-        for similar_user_id, similarity in user_similarities:
-            similar_user_books = set(self.liked_books[self.liked_books['user_id'] == similar_user_id]['book_id'])
-            new_books = similar_user_books - target_profile['preferences']['liked_books'] - seen_book_ids
-            
-            for book_id in new_books:
-                book_info = self.books[self.books['book_id'] == book_id]
-                if not book_info.empty:
-                    score = self._calculate_recommendation_score(
-                        similarity, 
-                        book_id, 
-                        all_recommendations,
-                        target_profile
-                    )
-                    
-                    all_recommendations.append({
-                        'book_id': book_id,
-                        'title': book_info.iloc[0]['book_title'],
-                        'score': score,
-                        'from_user': similar_user_id,
-                        'type': 'personnalisée',
-                        'genre': book_info.iloc[0].get('genre', 'unknown')
+                    all_book_candidates.append({
+                        'book_id': book['book_id'],
+                        'title': book['book_title'],
+                        'score': combined_score,
+                        'type': 'découverte',
+                        'genre': book.get('genre', 'unknown')
                     })
-                    seen_book_ids.add(book_id)
-        
-        # Trier et sélectionner les recommandations
-        all_recommendations.sort(key=lambda x: x['score'], reverse=True)
-        
-        # Sélection avec diversité de genres
-        final_recommendations = []
-        genres_seen = set()
-        
-        for rec in all_recommendations:
-            if len(final_recommendations) >= n_recommendations:
-                break
+                
+                # Sort and ensure diversity
+                all_book_candidates.sort(key=lambda x: x['score'], reverse=True)
+                recommendations = self.ensure_diversity(all_book_candidates, n_recommendations)
+                
+                # Update history
+                for rec in recommendations:
+                    self.recommendation_history[user_id].add(rec['book_id'])
+                    
+                return recommendations
+
+            # Collaborative approach for existing users
+            user_similarities = []
+            for other_user_id in self.users['user_id'].unique():
+                if other_user_id != user_id:
+                    other_profile = self._create_user_profile_vector(other_user_id)
+                    if other_profile and other_profile['preferences']['liked_books']:
+                        similarity = self._calculate_user_similarity(target_profile, other_profile)
+                        if similarity > 0:
+                            user_similarities.append((other_user_id, similarity))
             
-            if rec['genre'] not in genres_seen:
-                final_recommendations.append(rec)
-                genres_seen.add(rec['genre'])
-        
-        # Compléter si nécessaire
-        while len(final_recommendations) < n_recommendations and all_recommendations:
-            next_best = all_recommendations.pop(0)
-            if next_best['book_id'] not in {rec['book_id'] for rec in final_recommendations}:
-                final_recommendations.append(next_best)
-        
-        # Mettre à jour l'historique
-        for rec in final_recommendations:
-            user_history.add(rec['book_id'])
-        
-        # Limiter l'historique
-        if len(user_history) > 50:
-            user_history = set(list(user_history)[-50:])
-        
-        return final_recommendations[:n_recommendations]
+            user_similarities.sort(key=lambda x: x[1], reverse=True)
+            
+            # Get recommendations from similar users
+            all_recommendations = []
+            available_books = self.books[~self.books['book_id'].isin(excluded_books)]
+            
+            for _, book in available_books.iterrows():
+                max_similarity = max([sim for _, sim in user_similarities], default=0)
+                score = self._calculate_recommendation_score(
+                    max_similarity,
+                    book['book_id'],
+                    all_recommendations,
+                    target_profile
+                )
+                
+                all_recommendations.append({
+                    'book_id': book['book_id'],
+                    'title': book['book_title'],
+                    'score': score,
+                    'type': 'personnalisée',
+                    'genre': book.get('genre', 'unknown')
+                })
+            
+            # Sort and ensure diversity
+            all_recommendations.sort(key=lambda x: x['score'], reverse=True)
+            recommendations = self.ensure_diversity(all_recommendations, n_recommendations)
+            
+            # Update history
+            for rec in recommendations:
+                self.recommendation_history[user_id].add(rec['book_id'])
+            
+            return recommendations
+
+        except Exception as e:
+            print(f"Error getting recommendations for user {user_id}: {str(e)}")
+            return []
 
     def ensure_diversity(self, recommendations, n_recommendations=5):
         if len(recommendations) == 0:

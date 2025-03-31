@@ -416,7 +416,7 @@ function Manage() {
                                     </ul>
                                 )}
                             </label>
-                            <label>
+                            <label className="series-field">
                                 {t("Fait partie d'une série")}
                                 <input type="checkbox" onChange={handleToggleSeries} />
                             </label>

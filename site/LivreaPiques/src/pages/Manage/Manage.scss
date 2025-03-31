@@ -94,6 +94,16 @@
             }
         }
 
+        label.series-field {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+
+            input[type="checkbox"] {
+                width: auto;
+            }
+        }
+
         button {
             align-self: flex-start;
             padding: 0.8rem 1.5rem;
@@ -133,6 +143,22 @@
             input[type="checkbox"] {
                 margin: 0;
             }
+        }
+    }
+}
+
+.publisher-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .publisher-input-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        input[type="text"] {
+            flex: 1;
         }
     }
 }

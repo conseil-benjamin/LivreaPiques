@@ -5,6 +5,7 @@ import Banner from "../../components/Banner/Banner.jsx";
 import Footer from "../../components/Footer/Footer.jsx";
 import { useTranslation } from 'react-i18next';
 import Cookies from 'js-cookie';
+import UploadFileIcon from '@mui/icons-material/UploadFile'; // Import Material-UI upload icon
 
 function Manage() {
     const navigate = useNavigate();
@@ -17,12 +18,92 @@ function Manage() {
     const [authorSuggestions, setAuthorSuggestions] = useState([]);
     const [awardSuggestions, setAwardSuggestions] = useState([]);
     const [seriesSuggestions, setSeriesSuggestions] = useState([]);
+    const [genreSuggestions, setGenreSuggestions] = useState([]);
+    const [publisherSuggestions, setPublisherSuggestions] = useState([]); // State for publisher suggestions
+    const [selectedGenres, setSelectedGenres] = useState([]);
+    const [selectedAwards, setSelectedAwards] = useState([]);
     const [formInputs, setFormInputs] = useState({
         author: "",
         awards: "",
         series_name: "",
+        publisher: "",
         // ...other fields...
     });
+    const [isAuthorUnknown, setIsAuthorUnknown] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+    const [previewImage, setPreviewImage] = useState(null); // State to store the preview image
+
+    const handleAuthorUnknownToggle = () => {
+        setIsAuthorUnknown(!isAuthorUnknown);
+        if (!isAuthorUnknown) {
+            setFormInputs((prevState) => ({ ...prevState, author: "Inconnu" }));
+        } else {
+            setFormInputs((prevState) => ({ ...prevState, author: "" }));
+        }
+    };
+
+    const handleGenreInputChange = (e) => {
+        fetchSuggestions(e.target.value, "genres", setGenreSuggestions);
+    };
+
+    const handleGenreSelect = (genre) => {
+        if (!selectedGenres.includes(genre)) {
+            setSelectedGenres([...selectedGenres, genre]);
+        }
+        setGenreSuggestions([]);
+    };
+
+    const handleGenreRemove = (genre) => {
+        setSelectedGenres(selectedGenres.filter((g) => g !== genre));
+    };
+
+    const handleAwardInputChange = (e) => {
+        fetchSuggestions(e.target.value, "awards", setAwardSuggestions);
+    };
+
+    const handleAwardSelect = (award) => {
+        if (!selectedAwards.includes(award)) {
+            setSelectedAwards([...selectedAwards, award]);
+        }
+        setAwardSuggestions([]);
+    };
+
+    const handleAwardRemove = (award) => {
+        setSelectedAwards(selectedAwards.filter((a) => a !== award));
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = () => {
+        setIsDragging(false);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setIsDragging(false);
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith("image/")) {
+            setPreviewImage(URL.createObjectURL(file)); // Set the preview image
+        } else {
+            alert("Veuillez déposer uniquement des fichiers image.");
+        }
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith("image/")) {
+            setPreviewImage(URL.createObjectURL(file)); // Set the preview image
+        } else {
+            alert("Veuillez sélectionner uniquement des fichiers image.");
+        }
+    };
+
+    const handleRemoveImage = () => {
+        setPreviewImage(null); // Remove the preview image
+    };
 
     useEffect(() => {
         // Vérifie si l'utilisateur est un manager
@@ -59,7 +140,20 @@ function Manage() {
             try {
                 const response = await fetch(`http://localhost:8000/api/${endpoint}?q=${query}`);
                 const data = await response.json();
-                setSuggestions(data);
+                if (endpoint === "genres" && Array.isArray(data)) {
+                    setSuggestions(data.map((item) => item.genre_name)); // Map to genre_name
+                } else if (endpoint === "awards" && Array.isArray(data)) {
+                    setSuggestions(data); // Awards are already a flat list
+                } else if (endpoint === "authors" && Array.isArray(data)) {
+                    setSuggestions(data); // Authors are already a flat list
+                } else if (endpoint === "publishers" && Array.isArray(data)) {
+                    setSuggestions(data); // Publishers are already a flat list
+                } else if (endpoint === "series" && Array.isArray(data)) {
+                    setSuggestions(data.map((item) => item.series_name)); // Map to series_name
+                } else {
+                    setSuggestions([]);
+                    console.error(`Unexpected response format for ${endpoint}:`, data);
+                }
             } catch (error) {
                 console.error(`Erreur lors de la récupération des suggestions pour ${endpoint}:`, error);
             }
@@ -69,11 +163,15 @@ function Manage() {
     };
 
     const handleAuthorInputChange = (e) => {
-        fetchSuggestions(e.target.value, "authors", setAuthorSuggestions);
+        const value = e.target.value || ""; // Ensure the value is always a string
+        setFormInputs((prevState) => ({ ...prevState, author: value }));
+        fetchSuggestions(value, "authors", setAuthorSuggestions);
     };
 
-    const handleAwardInputChange = (e) => {
-        fetchSuggestions(e.target.value, "awards", setAwardSuggestions);
+    const handlePublisherInputChange = (e) => {
+        const value = e.target.value || ""; // Ensure the value is always a string
+        setFormInputs((prevState) => ({ ...prevState, publisher: value }));
+        fetchSuggestions(value, "publishers", setPublisherSuggestions); // Fetch publisher suggestions
     };
 
     const handleSeriesInputChange = (e) => {
@@ -88,6 +186,7 @@ function Manage() {
         setAuthorSuggestions([]);
         setAwardSuggestions([]);
         setSeriesSuggestions([]);
+        setPublisherSuggestions([]);
     };
 
     if (loading) {
@@ -145,31 +244,35 @@ function Manage() {
                                 {t("ISBN13")}
                                 <input type="text" name="isbn13" />
                             </label>
-                            <label>
+                            <label className="author-field">
                                 {t("Auteur")}
-                                <input
-                                    type="text"
-                                    name="author"
-                                    value={formInputs.author}
-                                    onChange={(e) =>
-                                        setFormInputs({ ...formInputs, author: e.target.value })
-                                    }
-                                    onInput={handleAuthorInputChange}
-                                />
-                                {authorSuggestions.length > 0 && (
+                                <div className="author-input-container">
+                                    <input
+                                        type="text"
+                                        name="author"
+                                        value={formInputs.author || ""} // Ensure the value is always controlled
+                                        onChange={handleAuthorInputChange}
+                                        disabled={isAuthorUnknown}
+                                    />
+                                    <div className="author-unknown-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={isAuthorUnknown}
+                                            onChange={handleAuthorUnknownToggle}
+                                        />
+                                        <span>{t("Inconnu")}</span>
+                                    </div>
+                                </div>
+                                {authorSuggestions.length > 0 && !isAuthorUnknown && (
                                     <ul className="autocomplete-list">
                                         {authorSuggestions.map((author, index) => (
                                             <li
                                                 key={index}
                                                 onClick={() =>
-                                                    handleSuggestionClick(
-                                                        author.author_name,
-                                                        setFormInputs,
-                                                        "author"
-                                                    )
+                                                    handleSuggestionClick(author, setFormInputs, "author")
                                                 }
                                             >
-                                                {author.author_name}
+                                                {author}
                                             </li>
                                         ))}
                                     </ul>
@@ -180,10 +283,6 @@ function Manage() {
                                 <input
                                     type="text"
                                     name="awards"
-                                    value={formInputs.awards}
-                                    onChange={(e) =>
-                                        setFormInputs({ ...formInputs, awards: e.target.value })
-                                    }
                                     onInput={handleAwardInputChange}
                                 />
                                 {awardSuggestions.length > 0 && (
@@ -191,35 +290,131 @@ function Manage() {
                                         {awardSuggestions.map((award, index) => (
                                             <li
                                                 key={index}
-                                                onClick={() =>
-                                                    handleSuggestionClick(
-                                                        award.award_name,
-                                                        setFormInputs,
-                                                        "awards"
-                                                    )
-                                                }
+                                                onClick={() => handleAwardSelect(award)}
                                             >
-                                                {award.award_name}
+                                                {award}
                                             </li>
                                         ))}
                                     </ul>
                                 )}
                             </label>
+                            <div className="selected-awards">
+                                {selectedAwards.map((award, index) => (
+                                    <span key={index} className="award-tag">
+                                        {award}
+                                        <button
+                                            type="button"
+                                            onClick={() => handleAwardRemove(award)}
+                                        >
+                                            &times;
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
                             <label>
                                 {t("Couverture")}
-                                <input type="file" name="cover" />
+                                <div
+                                    className={`file-drop-zone ${isDragging ? "dragging" : ""}`}
+                                    onDragOver={handleDragOver}
+                                    onDragLeave={handleDragLeave}
+                                    onDrop={handleDrop}
+                                >
+                                    {previewImage ? (
+                                        <div className="image-preview">
+                                            <img src={previewImage} alt="Preview" />
+                                            <button type="button" onClick={handleRemoveImage}>
+                                                {t("Supprimer l'image")}
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <UploadFileIcon className="upload-icon" />
+                                            <span>{t("Glissez et déposez un fichier ou cliquez pour télécharger")}</span>
+                                            <input
+                                                type="file"
+                                                name="cover"
+                                                accept="image/*" // Restrict file input to image formats
+                                                onChange={handleFileChange}
+                                            />
+                                        </>
+                                    )}
+                                </div>
                             </label>
                             <label>
                                 {t("Genres")}
-                                <input type="text" name="genres" />
+                                <input
+                                    type="text"
+                                    name="genres"
+                                    onInput={handleGenreInputChange}
+                                />
+                                {genreSuggestions.length > 0 && (
+                                    <ul className="autocomplete-list">
+                                        {genreSuggestions.map((genre, index) => (
+                                            <li
+                                                key={index}
+                                                onClick={() => handleGenreSelect(genre)}
+                                            >
+                                                {genre}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
                             </label>
+                            <div className="selected-genres">
+                                {selectedGenres.map((genre, index) => (
+                                    <span key={index} className="genre-tag">
+                                        {genre}
+                                        <button
+                                            type="button"
+                                            onClick={() => handleGenreRemove(genre)}
+                                        >
+                                            &times;
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
                             <label>
                                 {t("Note moyenne")}
-                                <input type="number" name="rating" min="0" max="5" step="0.1" />
+                                <input
+                                    type="number"
+                                    name="rating"
+                                    min="0"
+                                    max="5"
+                                    step="0.01"
+                                    onInput={(e) => {
+                                        const value = parseFloat(e.target.value);
+                                        if (value < 0) e.target.value = "0";
+                                        if (value > 5) e.target.value = "5";
+                                        if (!/^\d*(\.\d{0,2})?$/.test(e.target.value)) {
+                                            e.target.value = value.toFixed(2);
+                                        }
+                                    }}
+                                />
                             </label>
-                            <label>
+                            <label className="publisher-field">
                                 {t("Editeur")}
-                                <input type="text" name="publisher" />
+                                <div className="publisher-input-container">
+                                    <input
+                                        type="text"
+                                        name="publisher"
+                                        value={formInputs.publisher || ""} // Ensure the value is always controlled
+                                        onChange={handlePublisherInputChange}
+                                    />
+                                </div>
+                                {publisherSuggestions.length > 0 && (
+                                    <ul className="autocomplete-list">
+                                        {publisherSuggestions.map((publisher, index) => (
+                                            <li
+                                                key={index}
+                                                onClick={() =>
+                                                    handleSuggestionClick(publisher, setFormInputs, "publisher")
+                                                }
+                                            >
+                                                {publisher}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
                             </label>
                             <label>
                                 {t("Fait partie d'une série")}
@@ -260,7 +455,7 @@ function Manage() {
                                     )}
                                 </label>
                             )}
-                            <button type="submit">{t("manage.books.fields.submit")}</button>
+                            <button type="submit">{t("Ajouter")}</button>
                         </form>
                     </div>
                 )}

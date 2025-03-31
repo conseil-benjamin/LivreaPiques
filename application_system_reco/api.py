@@ -988,7 +988,7 @@ async def get_authors(q: str):
             LIMIT 10
         """)
         result = session.execute(query, {"query": f"{q.lower()}%"}).fetchall()
-        return [{"author_name": row[0]} for row in result]
+        return [row[0] for row in result]  # Return a flat list of author names
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
     finally:
@@ -1007,7 +1007,7 @@ async def get_awards(q: str):
             LIMIT 10
         """)
         result = session.execute(query, {"query": f"{q.lower()}%"}).fetchall()
-        return [{"award_name": row[0]} for row in result]
+        return [row[0] for row in result]  # Return a flat list of award names
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
     finally:
@@ -1027,6 +1027,44 @@ async def get_series(q: str):
         """)
         result = session.execute(query, {"query": f"{q.lower()}%"}).fetchall()
         return [{"series_name": row[0]} for row in result]
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
+    finally:
+        session.close()
+
+@app.get("/api/genres")
+async def get_genres(q: str = ""):
+    """
+    Fetch distinct genres whose names start with the query string.
+    """
+    try:
+        engine, session, schema = conexion_db()
+        query = text("""
+            SELECT DISTINCT genre_name FROM genre
+            WHERE LOWER(genre_name) LIKE :query
+            LIMIT 10
+        """)
+        result = session.execute(query, {"query": f"{q.lower()}%"}).fetchall()
+        return [{"genre_name": row[0]} for row in result]
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
+    finally:
+        session.close()
+
+@app.get("/api/publishers")
+async def get_publishers(q: str):
+    """
+    Fetch distinct publishers whose names start with the query string.
+    """
+    try:
+        engine, session, schema = conexion_db()
+        query = text("""
+            SELECT DISTINCT name_publisher FROM publisher
+            WHERE LOWER(name_publisher) LIKE :query
+            LIMIT 10
+        """)
+        result = session.execute(query, {"query": f"{q.lower()}%"}).fetchall()
+        return [row[0] for row in result]  # Return a flat list of publisher names
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
     finally:

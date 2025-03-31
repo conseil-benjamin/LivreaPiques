@@ -27,7 +27,12 @@ function Manage() {
         awards: "",
         series_name: "",
         publisher: "",
-        // ...other fields...
+        title: "",
+        isbn: "",
+        isbn13: "",
+        rating: "0",
+        genres: "",
+        cover: null, // Ensure this is null for file inputs
     });
     const [isAuthorUnknown, setIsAuthorUnknown] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
@@ -151,14 +156,14 @@ function Manage() {
                 } else if (endpoint === "series" && Array.isArray(data)) {
                     setSuggestions(data.map((item) => item.series_name)); // Map to series_name
                 } else {
-                    setSuggestions([]);
+                    setSuggestions([]); // Ensure suggestions are cleared if data is invalid
                     console.error(`Unexpected response format for ${endpoint}:`, data);
                 }
             } catch (error) {
                 console.error(`Erreur lors de la récupération des suggestions pour ${endpoint}:`, error);
             }
         } else {
-            setSuggestions([]);
+            setSuggestions([]); // Clear suggestions if query is empty
         }
     };
 
@@ -175,7 +180,9 @@ function Manage() {
     };
 
     const handleSeriesInputChange = (e) => {
-        fetchSuggestions(e.target.value, "series", setSeriesSuggestions);
+        const value = e.target.value || ""; // Ensure the value is always a string
+        setFormInputs((prevState) => ({ ...prevState, series_name: value }));
+        fetchSuggestions(value, "series", setSeriesSuggestions); // Fetch series suggestions
     };
 
     const handleSuggestionClick = (value, setInputValue, fieldName) => {
@@ -234,15 +241,45 @@ function Manage() {
                         <form>
                             <label>
                                 {t("Titre")}
-                                <input type="text" name="title" />
+                                <input
+                                    type="text"
+                                    name="title"
+                                    value={formInputs.title || ""} // Ensure controlled input
+                                    onChange={(e) =>
+                                        setFormInputs((prevState) => ({
+                                            ...prevState,
+                                            title: e.target.value,
+                                        }))
+                                    }
+                                />
                             </label>
                             <label>
                                 {t("ISBN")}
-                                <input type="text" name="isbn" />
+                                <input
+                                    type="text"
+                                    name="isbn"
+                                    value={formInputs.isbn || ""} // Ensure controlled input
+                                    onChange={(e) =>
+                                        setFormInputs((prevState) => ({
+                                            ...prevState,
+                                            isbn: e.target.value,
+                                        }))
+                                    }
+                                />
                             </label>
                             <label>
                                 {t("ISBN13")}
-                                <input type="text" name="isbn13" />
+                                <input
+                                    type="text"
+                                    name="isbn13"
+                                    value={formInputs.isbn13 || ""} // Ensure controlled input
+                                    onChange={(e) =>
+                                        setFormInputs((prevState) => ({
+                                            ...prevState,
+                                            isbn13: e.target.value,
+                                        }))
+                                    }
+                                />
                             </label>
                             <label className="author-field">
                                 {t("Auteur")}
@@ -250,7 +287,7 @@ function Manage() {
                                     <input
                                         type="text"
                                         name="author"
-                                        value={formInputs.author || ""} // Ensure the value is always controlled
+                                        value={formInputs.author || ""} // Ensure controlled input
                                         onChange={handleAuthorInputChange}
                                         disabled={isAuthorUnknown}
                                     />
@@ -333,8 +370,17 @@ function Manage() {
                                             <input
                                                 type="file"
                                                 name="cover"
-                                                accept="image/*" // Restrict file input to image formats
-                                                onChange={handleFileChange}
+                                                accept="image/*"
+                                                onChange={(e) => {
+                                                    const file = e.target.files[0];
+                                                    setFormInputs((prevState) => ({
+                                                        ...prevState,
+                                                        cover: file || null, // Ensure controlled input
+                                                    }));
+                                                    if (file && file.type.startsWith("image/")) {
+                                                        setPreviewImage(URL.createObjectURL(file));
+                                                    }
+                                                }}
                                             />
                                         </>
                                     )}
@@ -345,6 +391,13 @@ function Manage() {
                                 <input
                                     type="text"
                                     name="genres"
+                                    value={formInputs.genres || ""} // Ensure controlled input
+                                    onChange={(e) =>
+                                        setFormInputs((prevState) => ({
+                                            ...prevState,
+                                            genres: e.target.value,
+                                        }))
+                                    }
                                     onInput={handleGenreInputChange}
                                 />
                                 {genreSuggestions.length > 0 && (
@@ -378,9 +431,16 @@ function Manage() {
                                 <input
                                     type="number"
                                     name="rating"
+                                    value={formInputs.rating || "0"} // Ensure controlled input
                                     min="0"
                                     max="5"
                                     step="0.01"
+                                    onChange={(e) =>
+                                        setFormInputs((prevState) => ({
+                                            ...prevState,
+                                            rating: e.target.value,
+                                        }))
+                                    }
                                     onInput={(e) => {
                                         const value = parseFloat(e.target.value);
                                         if (value < 0) e.target.value = "0";
@@ -397,7 +457,7 @@ function Manage() {
                                     <input
                                         type="text"
                                         name="publisher"
-                                        value={formInputs.publisher || ""} // Ensure the value is always controlled
+                                        value={formInputs.publisher || ""} // Ensure controlled input
                                         onChange={handlePublisherInputChange}
                                     />
                                 </div>
@@ -426,12 +486,12 @@ function Manage() {
                                     <input
                                         type="text"
                                         name="series_name"
-                                        value={formInputs.series_name}
+                                        value={formInputs.series_name ?? ""} // Ensure controlled input
                                         onChange={(e) =>
-                                            setFormInputs({
-                                                ...formInputs,
+                                            setFormInputs((prevState) => ({
+                                                ...prevState,
                                                 series_name: e.target.value,
-                                            })
+                                            }))
                                         }
                                         onInput={handleSeriesInputChange}
                                     />

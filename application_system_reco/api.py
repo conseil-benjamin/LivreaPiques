@@ -974,3 +974,60 @@ async def check_if_manager(user_id: int):
         raise HTTPException(status_code=500, detail=f"Erreur de base de données: {str(e)}")
     finally:
         session.close()
+
+@app.get("/api/authors")
+async def get_authors(q: str):
+    """
+    Fetch distinct authors whose names start with the query string.
+    """
+    try:
+        engine, session, schema = conexion_db()
+        query = text("""
+            SELECT DISTINCT author_name FROM author
+            WHERE LOWER(author_name) LIKE :query
+            LIMIT 10
+        """)
+        result = session.execute(query, {"query": f"{q.lower()}%"}).fetchall()
+        return [{"author_name": row[0]} for row in result]
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
+    finally:
+        session.close()
+
+@app.get("/api/awards")
+async def get_awards(q: str):
+    """
+    Fetch distinct awards whose names start with the query string.
+    """
+    try:
+        engine, session, schema = conexion_db()
+        query = text("""
+            SELECT DISTINCT award_name FROM awards
+            WHERE LOWER(award_name) LIKE :query
+            LIMIT 10
+        """)
+        result = session.execute(query, {"query": f"{q.lower()}%"}).fetchall()
+        return [{"award_name": row[0]} for row in result]
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
+    finally:
+        session.close()
+
+@app.get("/api/series")
+async def get_series(q: str):
+    """
+    Fetch distinct series whose names start with the query string.
+    """
+    try:
+        engine, session, schema = conexion_db()
+        query = text("""
+            SELECT DISTINCT series_name FROM series
+            WHERE LOWER(series_name) LIKE :query
+            LIMIT 10
+        """)
+        result = session.execute(query, {"query": f"{q.lower()}%"}).fetchall()
+        return [{"series_name": row[0]} for row in result]
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
+    finally:
+        session.close()

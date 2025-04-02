@@ -196,6 +196,52 @@ function Manage() {
         setPublisherSuggestions([]);
     };
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        Object.keys(formInputs).forEach((key) => {
+            if (formInputs[key]) {
+                formData.append(key, formInputs[key]);
+            }
+        });
+        formData.append("genres", JSON.stringify(selectedGenres));
+        if (selectedAwards.length > 0) {
+            formData.append("awards", JSON.stringify(selectedAwards));
+        }
+
+        try {
+            const response = await fetch("http://localhost:8000/api/books/", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (response.ok) {
+                alert(t("Livre ajouté avec succès"));
+                setFormInputs({
+                    author: "",
+                    awards: "",
+                    series_name: "",
+                    publisher: "",
+                    title: "",
+                    isbn: "",
+                    isbn13: "",
+                    rating: "0",
+                    genres: "",
+                    cover: null,
+                });
+                setSelectedGenres([]);
+                setSelectedAwards([]);
+                setPreviewImage(null);
+            } else {
+                const errorData = await response.json();
+                alert(t("Erreur lors de l'ajout du livre: ") + errorData.message);
+            }
+        } catch (error) {
+            console.error("Erreur lors de l'ajout du livre:", error);
+            alert(t("Erreur lors de l'ajout du livre"));
+        }
+    };
+
     if (loading) {
         return <div>{t("loading")}</div>;
     }
@@ -238,7 +284,7 @@ function Manage() {
                 {showAddBookForm && (
                     <div className="add-book-form">
                         <h2>{t("manage.books.add_new")}</h2>
-                        <form>
+                        <form onSubmit={handleSubmit}>
                             <label>
                                 {t("Titre")}
                                 <input

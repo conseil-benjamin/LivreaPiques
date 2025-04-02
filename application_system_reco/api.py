@@ -1,5 +1,5 @@
 import fastapi as fa
-from fastapi import HTTPException
+from fastapi import HTTPException, File, UploadFile, Form
 from pydantic import BaseModel
 import hashlib
 from application_system_reco.SQL_controleur.SQL_controleur import *
@@ -13,6 +13,7 @@ import uvicorn
 from  application_system_reco.system_reco.reco_esteban import *
 from  application_system_reco.system_reco.reco_benjamin import *
 from  application_system_reco.system_reco.reco_description import *
+import shutil
 
 
 # Pour lancer le serveur : uvicorn api:app --reload (dans le dossier de l'api)
@@ -1034,5 +1035,141 @@ async def get_publishers(q: str):
         return [row[0] for row in result]  # Return a flat list of publisher names
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
+    finally:
+        session.close()
+
+@app.post("/api/books/")
+async def create_book(
+    title: str = Form(...),
+    isbn: str = Form(...),
+    isbn13: str = Form(...),
+    author: str = Form(...),
+    publisher: str = Form(...),
+    series_name: str = Form(None),
+    genres: str = Form(...),
+    awards: str = Form(None),
+    rating: float = Form(...),
+    cover: UploadFile = File(None)
+):
+    try:
+        engine, session, schema = conexion_db()
+
+        # Ensure the 'covers/' directory exists
+        covers_dir = "covers"
+        if not os.path.exists(covers_dir):
+            os.makedirs(covers_dir)
+
+        # Insert book
+        book_query = text("""
+            INSERT INTO book (book_title, isbn, isbn13, book_cover)
+            VALUES (:title, :isbn, :isbn13, :cover)
+            RETURNING book_id
+        """)
+        cover_path = None
+        if cover:
+            cover_path = f"{covers_dir}/{cover.filename}"
+            with open(cover_path, "wb") as buffer:
+                shutil.copyfileobj(cover.file, buffer)
+
+        book_result = session.execute(book_query, {
+            "title": title,
+            "isbn": isbn,
+            "isbn13": isbn13,
+            "cover": cover_path
+        })
+        book_id = book_result.fetchone()[0]
+
+        # Insert author
+        author_query = text("""
+            INSERT INTO author (author_name)
+            VALUES (:author)
+            RETURNING author_id
+        """)
+        author_result = session.execute(author_query, {"author": author})
+        author_id = author_result.fetchone()[0] if author_result.rowcount > 0 else None
+
+        if author_id:
+            session.execute(text("""
+                INSERT INTO book_author (book_id, author_id)
+                VALUES (:book_id, :author_id)
+            """), {"book_id": book_id, "author_id": author_id})
+
+        # Insert publisher
+        publisher_query = text("""
+            INSERT INTO publisher (name_publisher)
+            VALUES (:publisher)
+            ON CONFLICT (name_publisher) DO NOTHING
+            RETURNING publisher_id
+        """)
+        publisher_result = session.execute(publisher_query, {"publisher": publisher})
+        publisher_id = publisher_result.fetchone()[0] if publisher_result.rowcount > 0 else None
+
+        if publisher_id:
+            session.execute(text("""
+                INSERT INTO book_publisher (book_id, publisher_id)
+                VALUES (:book_id, :publisher_id)
+            """), {"book_id": book_id, "publisher_id": publisher_id})
+
+        # Insert series (if provided)
+        if series_name:
+            series_query = text("""
+                INSERT INTO series (series_name)
+                VALUES (:series_name)
+                ON CONFLICT (series_name) DO NOTHING
+                RETURNING series_id
+            """)
+            series_result = session.execute(series_query, {"series_name": series_name})
+            series_id = series_result.fetchone()[0] if series_result.rowcount > 0 else None
+
+            if series_id:
+                session.execute(text("""
+                    INSERT INTO book_series (book_id, series_id)
+                    VALUES (:book_id, :series_id)
+                """), {"book_id": book_id, "series_id": series_id})
+
+        # Insert genres
+        genre_list = eval(genres)
+        for genre in genre_list:
+            genre_query = text("""
+                INSERT INTO genre (genre_name)
+                VALUES (:genre)
+                ON CONFLICT (genre_name) DO NOTHING
+                RETURNING genre_id
+            """)
+            genre_result = session.execute(genre_query, {"genre": genre})
+            genre_id = genre_result.fetchone()[0] if genre_result.rowcount > 0 else None
+
+            if genre_id:
+                session.execute(text("""
+                    INSERT INTO book_genre (book_id, genre_id)
+                    VALUES (:book_id, :genre_id)
+                """), {"book_id": book_id, "genre_id": genre_id})
+
+        # Insert awards (if provided)
+        if awards:
+            award_list = eval(awards)
+            for award in award_list:
+                award_query = text("""
+                    INSERT INTO awards (award_name)
+                    VALUES (:award)
+                    ON CONFLICT (award_name) DO NOTHING
+                    RETURNING award_id
+                """)
+                award_result = session.execute(award_query, {"award": award})
+                award_id = award_result.fetchone()[0] if award_result.rowcount > 0 else None
+
+                if award_id:
+                    session.execute(text("""
+                        INSERT INTO book_awards (book_id, award_id)
+                        VALUES (:book_id, :award_id)
+                    """), {"book_id": book_id, "award_id": award_id})
+
+        # Commit transaction
+        session.commit()
+        return {"message": "Livre ajouté avec succès", "book_id": book_id}
+
+    except Exception as e:
+        session.rollback()
+        raise HTTPException(status_code=500, detail=f"Erreur lors de l'ajout du livre: {str(e)}")
     finally:
         session.close()

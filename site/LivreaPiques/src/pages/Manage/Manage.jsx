@@ -163,26 +163,26 @@ function Manage() {
                 console.error(`Erreur lors de la récupération des suggestions pour ${endpoint}:`, error);
             }
         } else {
-            setSuggestions([]); // Clear suggestions if query is empty
+            setSuggestions([]); 
         }
     };
 
     const handleAuthorInputChange = (e) => {
-        const value = e.target.value || ""; // Ensure the value is always a string
+        const value = e.target.value || ""; 
         setFormInputs((prevState) => ({ ...prevState, author: value }));
         fetchSuggestions(value, "authors", setAuthorSuggestions);
     };
 
     const handlePublisherInputChange = (e) => {
-        const value = e.target.value || ""; // Ensure the value is always a string
+        const value = e.target.value || ""; 
         setFormInputs((prevState) => ({ ...prevState, publisher: value }));
-        fetchSuggestions(value, "publishers", setPublisherSuggestions); // Fetch publisher suggestions
+        fetchSuggestions(value, "publishers", setPublisherSuggestions); 
     };
 
     const handleSeriesInputChange = (e) => {
-        const value = e.target.value || ""; // Ensure the value is always a string
+        const value = e.target.value || ""; // chaine de caractères
         setFormInputs((prevState) => ({ ...prevState, series_name: value }));
-        fetchSuggestions(value, "series", setSeriesSuggestions); // Fetch series suggestions
+        fetchSuggestions(value, "series", setSeriesSuggestions); // chercher les suggestions
     };
 
     const handleSuggestionClick = (value, setInputValue, fieldName) => {
@@ -486,7 +486,7 @@ function Manage() {
                                     <input
                                         type="text"
                                         name="series_name"
-                                        value={formInputs.series_name ?? ""} // Ensure controlled input
+                                        value={formInputs.series_name ?? ""} 
                                         onChange={(e) =>
                                             setFormInputs((prevState) => ({
                                                 ...prevState,

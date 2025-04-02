@@ -743,50 +743,6 @@ async def get_user_wishlist(user_id: int):
     finally:
         session.close()
 
-@app.post("/api/readbook/")
-async def ReadBook(UserBook: UserBook):
-    try:
-        engine, session, schema = conexion_db()
-        
-        # Check if book is liked
-        liked_query = text("""
-            SELECT 1 FROM liked_books WHERE user_id = :user_id AND book_id = :book_id
-        """)
-        is_liked = session.execute(liked_query, {"user_id": UserBook.user_id, "book_id": UserBook.book_id}).fetchone()
-        
-        if is_liked:
-            raise HTTPException(status_code=400, detail="Un livre liké ne peut pas être marqué comme lu")
-            
-        # Check if book is in wishlist
-        wishlist_query = text("""
-            SELECT 1 FROM wishlist WHERE user_id = :user_id AND book_id = :book_id
-        """)
-        is_wishlisted = session.execute(wishlist_query, {"user_id": UserBook.user_id, "book_id": UserBook.book_id}).fetchone()
-        
-        if is_wishlisted:
-            # Remove from wishlist
-            remove_query = text("""
-                DELETE FROM wishlist WHERE user_id = :user_id AND book_id = :book_id
-            """)
-            session.execute(remove_query, {"user_id": UserBook.user_id, "book_id": UserBook.book_id})
-            
-        # Add to read books
-        df = pd.DataFrame([UserBook.model_dump()])
-        if(insert(df, "read_books")):
-            session.commit()
-            message = "Livre marqué comme lu"
-            if is_wishlisted:
-                message += " et retiré de la wishlist"
-            return {"message": message}
-        else:
-            raise HTTPException(status_code=500, detail="Erreur lors de l'insertion")
-            
-    except SQLAlchemyError as e:
-        session.rollback()
-        raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
-    finally:
-        session.close()
-
 @app.get("/api/user/{user_id}/readbooks")
 async def get_user_readbooks(user_id: int):
     try:
@@ -1020,12 +976,23 @@ async def get_series(q: str):
     """
     try:
         engine, session, schema = conexion_db()
+        
+        # Debugging: Log the query string
+        print(f"Query string for series: {q}")
+        
         query = text("""
             SELECT DISTINCT series_name FROM series
             WHERE LOWER(series_name) LIKE :query
             LIMIT 10
         """)
+        
+        # Execute the query
         result = session.execute(query, {"query": f"{q.lower()}%"}).fetchall()
+        
+        # Debugging: Log the raw results
+        print(f"Raw results for series: {result}")
+        
+        # Return the results as a list of dictionaries
         return [{"series_name": row[0]} for row in result]
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")

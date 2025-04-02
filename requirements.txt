@@ -19,3 +19,4 @@ fastapi
 spacy
 gensim
 supabase
+python-multipart

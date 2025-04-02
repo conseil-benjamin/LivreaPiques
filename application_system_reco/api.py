@@ -1,5 +1,5 @@
 import fastapi as fa
-from fastapi import HTTPException
+from fastapi import HTTPException, File, UploadFile, Form
 from pydantic import BaseModel
 import hashlib
 from application_system_reco.SQL_controleur.SQL_controleur import *
@@ -13,6 +13,7 @@ import uvicorn
 from  application_system_reco.system_reco.reco_esteban import *
 from  application_system_reco.system_reco.reco_benjamin import *
 from  application_system_reco.system_reco.reco_description import *
+import shutil
 
 
 # Pour lancer le serveur : uvicorn api:app --reload (dans le dossier de l'api)
@@ -743,50 +744,6 @@ async def get_user_wishlist(user_id: int):
     finally:
         session.close()
 
-@app.post("/api/readbook/")
-async def ReadBook(UserBook: UserBook):
-    try:
-        engine, session, schema = conexion_db()
-        
-        # Check if book is liked
-        liked_query = text("""
-            SELECT 1 FROM liked_books WHERE user_id = :user_id AND book_id = :book_id
-        """)
-        is_liked = session.execute(liked_query, {"user_id": UserBook.user_id, "book_id": UserBook.book_id}).fetchone()
-        
-        if is_liked:
-            raise HTTPException(status_code=400, detail="Un livre liké ne peut pas être marqué comme lu")
-            
-        # Check if book is in wishlist
-        wishlist_query = text("""
-            SELECT 1 FROM wishlist WHERE user_id = :user_id AND book_id = :book_id
-        """)
-        is_wishlisted = session.execute(wishlist_query, {"user_id": UserBook.user_id, "book_id": UserBook.book_id}).fetchone()
-        
-        if is_wishlisted:
-            # Remove from wishlist
-            remove_query = text("""
-                DELETE FROM wishlist WHERE user_id = :user_id AND book_id = :book_id
-            """)
-            session.execute(remove_query, {"user_id": UserBook.user_id, "book_id": UserBook.book_id})
-            
-        # Add to read books
-        df = pd.DataFrame([UserBook.model_dump()])
-        if(insert(df, "read_books")):
-            session.commit()
-            message = "Livre marqué comme lu"
-            if is_wishlisted:
-                message += " et retiré de la wishlist"
-            return {"message": message}
-        else:
-            raise HTTPException(status_code=500, detail="Erreur lors de l'insertion")
-            
-    except SQLAlchemyError as e:
-        session.rollback()
-        raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
-    finally:
-        session.close()
-
 @app.get("/api/user/{user_id}/readbooks")
 async def get_user_readbooks(user_id: int):
     try:
@@ -972,5 +929,273 @@ async def check_if_manager(user_id: int):
         
     except SQLAlchemyError as e:
         raise HTTPException(status_code=500, detail=f"Erreur de base de données: {str(e)}")
+    finally:
+        session.close()
+
+@app.get("/api/authors")
+async def get_authors(q: str):
+    """
+    Fetch distinct authors whose names start with the query string.
+    """
+    try:
+        engine, session, schema = conexion_db()
+        query = text("""
+            SELECT DISTINCT author_name FROM author
+            WHERE LOWER(author_name) LIKE :query
+            LIMIT 10
+        """)
+        result = session.execute(query, {"query": f"{q.lower()}%"}).fetchall()
+        return [row[0] for row in result]  # Return a flat list of author names
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
+    finally:
+        session.close()
+
+@app.get("/api/awards")
+async def get_awards(q: str):
+    """
+    Fetch distinct awards whose names start with the query string.
+    """
+    try:
+        engine, session, schema = conexion_db()
+        query = text("""
+            SELECT DISTINCT award_name FROM awards
+            WHERE LOWER(award_name) LIKE :query
+            LIMIT 10
+        """)
+        result = session.execute(query, {"query": f"{q.lower()}%"}).fetchall()
+        return [row[0] for row in result]  # Return a flat list of award names
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
+    finally:
+        session.close()
+
+@app.get("/api/series")
+async def get_series(q: str):
+    """
+    Fetch distinct series whose names start with the query string.
+    """
+    try:
+        engine, session, schema = conexion_db()
+        
+        # Debugging: Log the query string
+        print(f"Query string for series: {q}")
+        
+        query = text("""
+            SELECT DISTINCT series_name FROM series
+            WHERE LOWER(series_name) LIKE :query
+            LIMIT 10
+        """)
+        
+        # Execute the query
+        result = session.execute(query, {"query": f"{q.lower()}%"}).fetchall()
+        
+        # Debugging: Log the raw results
+        print(f"Raw results for series: {result}")
+        
+        # Return the results as a list of dictionaries
+        return [{"series_name": row[0]} for row in result]
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
+    finally:
+        session.close()
+
+@app.get("/api/genres")
+async def get_genres(q: str = ""):
+    """
+    Fetch distinct genres whose names start with the query string.
+    """
+    try:
+        engine, session, schema = conexion_db()
+        query = text("""
+            SELECT DISTINCT genre_name FROM genre
+            WHERE LOWER(genre_name) LIKE :query
+            LIMIT 10
+        """)
+        result = session.execute(query, {"query": f"{q.lower()}%"}).fetchall()
+        return [{"genre_name": row[0]} for row in result]
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
+    finally:
+        session.close()
+
+@app.get("/api/publishers")
+async def get_publishers(q: str):
+    """
+    Fetch distinct publishers whose names start with the query string.
+    """
+    try:
+        engine, session, schema = conexion_db()
+        query = text("""
+            SELECT DISTINCT name_publisher FROM publisher
+            WHERE LOWER(name_publisher) LIKE :query
+            LIMIT 10
+        """)
+        result = session.execute(query, {"query": f"{q.lower()}%"}).fetchall()
+        return [row[0] for row in result]  # Return a flat list of publisher names
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de BDD: {str(e)}")
+    finally:
+        session.close()
+
+@app.post("/api/books/")
+async def create_book(
+    title: str = Form(...),
+    isbn: str = Form(...),
+    isbn13: str = Form(...),
+    author: str = Form(...),
+    publisher: str = Form(...),
+    series_name: str = Form(None),
+    genres: str = Form(...),
+    awards: str = Form(None),
+    rating: float = Form(...),
+    cover: UploadFile = File(None)
+):
+    try:
+        engine, session, schema = conexion_db()
+
+        # Get the first digit of the rating to determine which star rating column to increment
+        rating_digit = int(float(rating))
+        star_ratings = {
+            1: "one_star_rating",
+            2: "two_star_rating",
+            3: "three_star_rating",
+            4: "four_star_rating",
+            5: "five_star_rating"
+        }
+
+        # Ensure rating is between 1 and 5
+        rating_digit = max(1, min(5, rating_digit))
+        rating_column = star_ratings[rating_digit]
+
+        # Ensure the 'covers/' directory exists
+        covers_dir = "covers"
+        if not os.path.exists(covers_dir):
+            os.makedirs(covers_dir)
+
+        # Insert book with star rating
+        book_query = text(f"""
+            INSERT INTO book (
+                book_title, 
+                isbn, 
+                isbn13, 
+                book_cover,
+                {rating_column}
+            )
+            VALUES (
+                :title, 
+                :isbn, 
+                :isbn13, 
+                :cover,
+                1
+            )
+            RETURNING book_id
+        """)
+        cover_path = None
+        if cover:
+            cover_path = f"{covers_dir}/{cover.filename}"
+            with open(cover_path, "wb") as buffer:
+                shutil.copyfileobj(cover.file, buffer)
+
+        book_result = session.execute(book_query, {
+            "title": title,
+            "isbn": isbn,
+            "isbn13": isbn13,
+            "cover": cover_path
+        })
+        book_id = book_result.fetchone()[0]
+
+        # Insert author
+        author_query = text("""
+            INSERT INTO author (author_name)
+            VALUES (:author)
+            RETURNING author_id
+        """)
+        author_result = session.execute(author_query, {"author": author})
+        author_id = author_result.fetchone()[0] if author_result.rowcount > 0 else None
+
+        if author_id:
+            session.execute(text("""
+                INSERT INTO book_author (book_id, author_id)
+                VALUES (:book_id, :author_id)
+            """), {"book_id": book_id, "author_id": author_id})
+
+        # Insert publisher
+        publisher_query = text("""
+            INSERT INTO publisher (name_publisher)
+            VALUES (:publisher)
+            ON CONFLICT (name_publisher) DO NOTHING
+            RETURNING publisher_id
+        """)
+        publisher_result = session.execute(publisher_query, {"publisher": publisher})
+        publisher_id = publisher_result.fetchone()[0] if publisher_result.rowcount > 0 else None
+
+        if publisher_id:
+            session.execute(text("""
+                INSERT INTO book_publisher (book_id, publisher_id)
+                VALUES (:book_id, :publisher_id)
+            """), {"book_id": book_id, "publisher_id": publisher_id})
+
+        # Insert series (if provided)
+        if series_name:
+            series_query = text("""
+                INSERT INTO series (series_name)
+                VALUES (:series_name)
+                ON CONFLICT (series_name) DO NOTHING
+                RETURNING series_id
+            """)
+            series_result = session.execute(series_query, {"series_name": series_name})
+            series_id = series_result.fetchone()[0] if series_result.rowcount > 0 else None
+
+            if series_id:
+                session.execute(text("""
+                    INSERT INTO book_series (book_id, series_id)
+                    VALUES (:book_id, :series_id)
+                """), {"book_id": book_id, "series_id": series_id})
+
+        # Insert genres
+        genre_list = eval(genres)
+        for genre in genre_list:
+            genre_query = text("""
+                INSERT INTO genre (genre_name)
+                VALUES (:genre)
+                ON CONFLICT (genre_name) DO NOTHING
+                RETURNING genre_id
+            """)
+            genre_result = session.execute(genre_query, {"genre": genre})
+            genre_id = genre_result.fetchone()[0] if genre_result.rowcount > 0 else None
+
+            if genre_id:
+                session.execute(text("""
+                    INSERT INTO book_genre (book_id, genre_id)
+                    VALUES (:book_id, :genre_id)
+                """), {"book_id": book_id, "genre_id": genre_id})
+
+        # Insert awards (if provided)
+        if awards:
+            award_list = eval(awards)
+            for award in award_list:
+                award_query = text("""
+                    INSERT INTO awards (award_name)
+                    VALUES (:award)
+                    ON CONFLICT (award_name) DO NOTHING
+                    RETURNING award_id
+                """)
+                award_result = session.execute(award_query, {"award": award})
+                award_id = award_result.fetchone()[0] if award_result.rowcount > 0 else None
+
+                if award_id:
+                    session.execute(text("""
+                        INSERT INTO book_awards (book_id, award_id)
+                        VALUES (:book_id, :award_id)
+                    """), {"book_id": book_id, "award_id": award_id})
+
+        # Commit transaction
+        session.commit()
+        return {"message": "Livre ajouté avec succès", "book_id": book_id}
+
+    except Exception as e:
+        session.rollback()
+        raise HTTPException(status_code=500, detail=f"Erreur lors de l'ajout du livre: {str(e)}")
     finally:
         session.close()

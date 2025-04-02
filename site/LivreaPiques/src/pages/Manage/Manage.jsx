@@ -477,24 +477,16 @@ function Manage() {
                                 <input
                                     type="number"
                                     name="rating"
-                                    value={formInputs.rating || "0"} // Ensure controlled input
-                                    min="0"
+                                    value={formInputs.rating || "0"}
+                                    min="1"
                                     max="5"
-                                    step="0.01"
+                                    step="1"
                                     onChange={(e) =>
                                         setFormInputs((prevState) => ({
                                             ...prevState,
-                                            rating: e.target.value,
+                                            rating: Math.min(5, Math.max(1, Math.round(e.target.value))),
                                         }))
                                     }
-                                    onInput={(e) => {
-                                        const value = parseFloat(e.target.value);
-                                        if (value < 0) e.target.value = "0";
-                                        if (value > 5) e.target.value = "5";
-                                        if (!/^\d*(\.\d{0,2})?$/.test(e.target.value)) {
-                                            e.target.value = value.toFixed(2);
-                                        }
-                                    }}
                                 />
                             </label>
                             <label className="publisher-field">

@@ -1054,15 +1054,41 @@ async def create_book(
     try:
         engine, session, schema = conexion_db()
 
+        # Get the first digit of the rating to determine which star rating column to increment
+        rating_digit = int(float(rating))
+        star_ratings = {
+            1: "one_star_rating",
+            2: "two_star_rating",
+            3: "three_star_rating",
+            4: "four_star_rating",
+            5: "five_star_rating"
+        }
+
+        # Ensure rating is between 1 and 5
+        rating_digit = max(1, min(5, rating_digit))
+        rating_column = star_ratings[rating_digit]
+
         # Ensure the 'covers/' directory exists
         covers_dir = "covers"
         if not os.path.exists(covers_dir):
             os.makedirs(covers_dir)
 
-        # Insert book
-        book_query = text("""
-            INSERT INTO book (book_title, isbn, isbn13, book_cover)
-            VALUES (:title, :isbn, :isbn13, :cover)
+        # Insert book with star rating
+        book_query = text(f"""
+            INSERT INTO book (
+                book_title, 
+                isbn, 
+                isbn13, 
+                book_cover,
+                {rating_column}
+            )
+            VALUES (
+                :title, 
+                :isbn, 
+                :isbn13, 
+                :cover,
+                1
+            )
             RETURNING book_id
         """)
         cover_path = None

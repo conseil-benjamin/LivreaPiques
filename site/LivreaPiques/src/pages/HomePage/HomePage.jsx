@@ -91,10 +91,9 @@ function Recommandations() {
                     setReco1Books(books);
                 } else if (recommandation === 'reco2') {
                     setReco2Books(books);
-                } else if (recommandation === 'reco3') {
-                    setReco3Books(books);
                 }
             } else {
+                console.error("Aucune recommandation trouvée.");
                 setError("Aucune recommandation trouvée.");
             }
         } catch (err) {

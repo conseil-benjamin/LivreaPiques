@@ -497,18 +497,18 @@ function Manage() {
                                     />
                                     {seriesSuggestions.length > 0 && (
                                         <ul className="autocomplete-list">
-                                            {seriesSuggestions.map((series, index) => (
+                                            {seriesSuggestions.map((series_name, index) => (
                                                 <li
                                                     key={index}
                                                     onClick={() =>
                                                         handleSuggestionClick(
-                                                            series.series_name,
+                                                            series_name,
                                                             setFormInputs,
                                                             "series_name"
                                                         )
                                                     }
                                                 >
-                                                    {series.series_name}
+                                                    {series_name}
                                                 </li>
                                             ))}
                                         </ul>

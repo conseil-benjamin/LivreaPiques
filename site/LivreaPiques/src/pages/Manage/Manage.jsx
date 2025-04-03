@@ -32,6 +32,7 @@ function Manage() {
         isbn13: "",
         rating: "0",
         genres: "",
+        description: "",  // Add description field
         cover: null, // Ensure this is null for file inputs
     });
     const [isAuthorUnknown, setIsAuthorUnknown] = useState(false);
@@ -227,6 +228,7 @@ function Manage() {
                     isbn13: "",
                     rating: "0",
                     genres: "",
+                    description: "",
                     cover: null,
                 });
                 setSelectedGenres([]);
@@ -553,6 +555,20 @@ function Manage() {
                                     )}
                                 </label>
                             )}
+                            <label>
+                                {t("Description")}
+                                <textarea
+                                    name="description"
+                                    value={formInputs.description || ""}
+                                    onChange={(e) =>
+                                        setFormInputs((prevState) => ({
+                                            ...prevState,
+                                            description: e.target.value,
+                                        }))
+                                    }
+                                    rows={4}
+                                />
+                            </label>
                             <button type="submit">{t("Ajouter")}</button>
                         </form>
                     </div>

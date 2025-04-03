@@ -5,6 +5,7 @@ import Banner from "../../components/Banner/Banner.jsx";
 import Footer from "../../components/Footer/Footer.jsx";
 import { useTranslation } from 'react-i18next';
 import Cookies from 'js-cookie';
+import ImageUnvailable from "../../components/ImageUnvailable.jsx";
 import UploadFileIcon from '@mui/icons-material/UploadFile'; // Import Material-UI upload icon
 
 function Manage() {
@@ -13,6 +14,8 @@ function Manage() {
     const userId = Cookies.get('user_id');
     const [isManager, setIsManager] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [predictionsMessage, setPredictionsMessage] = useState('');
+    const [predictions, setPredictions] = useState([]);
     const [showAddBookForm, setShowAddBookForm] = useState(false);
     const [isPartOfSeries, setIsPartOfSeries] = useState(false);
     const [authorSuggestions, setAuthorSuggestions] = useState([]);
@@ -133,7 +136,76 @@ function Manage() {
         }
     }, [userId, navigate]);
 
+    const runSalesPredictions = async () => {
+        try {
+            // Fermer le formulaire d'ajout de livre si ouvert
+            setShowAddBookForm(false);
+            setPredictionsMessage(t('manage.predictions.calculating'));
+            const response = await fetch('http://localhost:8000/api/predictions/post_sales', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                setPredictionsMessage(t('manage.predictions.success'));
+                fetchPredictions(); // Fetch predictions after running them
+            } else {
+                setPredictionsMessage(t('manage.predictions.error'));
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+            setPredictionsMessage(t('manage.predictions.server_error'));
+        }
+    };
+
+    const fetchPredictions = async () => {
+        try {
+            // Fermer le formulaire d'ajout de livre si ouvert
+            setShowAddBookForm(false);
+            const response = await fetch('http://localhost:8000/api/predictions/get_sales');
+            if (response.ok) {
+                const data = await response.json();
+                setPredictions(data.predictions); // Les prédictions sont déjà triées côté serveur
+            } else {
+                console.error('Erreur lors de la récupération des prédictions.');
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+        }
+    };
+
+    const downloadPredictions = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/api/predictions/export');
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sales_predictions.json';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } catch (error) {
+            console.error('Erreur lors du téléchargement:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchPredictions(); // Fetch predictions on component mount
+    }, []);
+
     const handleAddBookClick = () => {
+        if (showAddBookForm) {
+            // Si on ferme le formulaire, on recharge les prédictions
+            fetchPredictions();
+        } else {
+            // Si on ouvre le formulaire, on cache les prédictions
+            setPredictions([]);
+        }
         setShowAddBookForm(!showAddBookForm);
     };
 
@@ -260,17 +332,9 @@ function Manage() {
                 <h1>{t("manage.title")}</h1>
                 <div className="manage-sections">
                     <section className="manage-section">
-                        <h2>{t("manage.users.title")}</h2>
-                        <div className="section-content">
-                            <button>{t("manage.users.view_all")}</button>
-                            <button>{t("manage.users.add_new")}</button>
-                        </div>
-                    </section>
-
-                    <section className="manage-section">
                         <h2>{t("manage.books.title")}</h2>
                         <div className="section-content">
-                            <button>{t("manage.books.view_all")}</button>
+                            <button onClick={() => navigate('/')}>{t("manage.books.view_all")}</button>
                             <button onClick={handleAddBookClick}>{t("manage.books.add_new")}</button>
                         </div>
                     </section>
@@ -278,301 +342,339 @@ function Manage() {
                     <section className="manage-section">
                         <h2>{t("manage.stats.title")}</h2>
                         <div className="section-content">
-                            <button>{t("manage.stats.view")}</button>
-                            <button>{t("manage.stats.export")}</button>
+                            <button onClick={runSalesPredictions}>
+                                {t("manage.stats.view")}
+                            </button>
+                            {predictionsMessage && (
+                                <p className="predictions-message">{predictionsMessage}</p>
+                            )}
+                            <button onClick={downloadPredictions}>{t("manage.stats.export")}</button>
                         </div>
                     </section>
                 </div>
-                {showAddBookForm && (
-                    <div className="add-book-form">
-                        <h2>{t("manage.books.add_new")}</h2>
-                        <form onSubmit={handleSubmit}>
-                            <label>
-                                {t("Titre")}
-                                <input
-                                    type="text"
-                                    name="title"
-                                    value={formInputs.title || ""} // Ensure controlled input
-                                    onChange={(e) =>
-                                        setFormInputs((prevState) => ({
-                                            ...prevState,
-                                            title: e.target.value,
-                                        }))
-                                    }
-                                />
-                            </label>
-                            <label>
-                                {t("ISBN")}
-                                <input
-                                    type="text"
-                                    name="isbn"
-                                    value={formInputs.isbn || ""} // Ensure controlled input
-                                    onChange={(e) =>
-                                        setFormInputs((prevState) => ({
-                                            ...prevState,
-                                            isbn: e.target.value,
-                                        }))
-                                    }
-                                />
-                            </label>
-                            <label>
-                                {t("ISBN13")}
-                                <input
-                                    type="text"
-                                    name="isbn13"
-                                    value={formInputs.isbn13 || ""} // Ensure controlled input
-                                    onChange={(e) =>
-                                        setFormInputs((prevState) => ({
-                                            ...prevState,
-                                            isbn13: e.target.value,
-                                        }))
-                                    }
-                                />
-                            </label>
-                            <label className="author-field">
-                                {t("Auteur")}
-                                <div className="author-input-container">
-                                    <input
-                                        type="text"
-                                        name="author"
-                                        value={formInputs.author || ""} // Ensure controlled input
-                                        onChange={handleAuthorInputChange}
-                                        disabled={isAuthorUnknown}
-                                    />
-                                    <div className="author-unknown-checkbox">
-                                        <input
-                                            type="checkbox"
-                                            checked={isAuthorUnknown}
-                                            onChange={handleAuthorUnknownToggle}
-                                        />
-                                        <span>{t("Inconnu")}</span>
-                                    </div>
-                                </div>
-                                {authorSuggestions.length > 0 && !isAuthorUnknown && (
-                                    <ul className="autocomplete-list">
-                                        {authorSuggestions.map((author, index) => (
-                                            <li
-                                                key={index}
-                                                onClick={() =>
-                                                    handleSuggestionClick(author, setFormInputs, "author")
-                                                }
-                                            >
-                                                {author}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </label>
-                            <label>
-                                {t("Récompenses")}
-                                <input
-                                    type="text"
-                                    name="awards"
-                                    onInput={handleAwardInputChange}
-                                />
-                                {awardSuggestions.length > 0 && (
-                                    <ul className="autocomplete-list">
-                                        {awardSuggestions.map((award, index) => (
-                                            <li
-                                                key={index}
-                                                onClick={() => handleAwardSelect(award)}
-                                            >
-                                                {award}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </label>
-                            <div className="selected-awards">
-                                {selectedAwards.map((award, index) => (
-                                    <span key={index} className="award-tag">
-                                        {award}
-                                        <button
-                                            type="button"
-                                            onClick={() => handleAwardRemove(award)}
-                                        >
-                                            &times;
-                                        </button>
-                                    </span>
-                                ))}
+                
+                {/* Combine predictions and form in a fragment */}
+                <>
+                    {predictions.length > 0 && (
+                        <div className="predictions-section">
+                            <h2>{t("manage.predictions.title")}</h2>
+                            <div className="predictions-list">
+                                <ul>
+                                    {predictions.map((prediction, index) => (
+                                        <li key={index} className="prediction-item">
+                                            {prediction.cover ? (
+                                                <img 
+                                                    src={prediction.cover} 
+                                                    alt={prediction.title}
+                                                    className="book-cover"
+                                                />
+                                            ) : (
+                                                <ImageUnvailable height={"150px"} width={"100px"}/>
+                                            )}
+                                            <div className="book-info">
+                                                <h3>{prediction.title}</h3>
+                                                <p className="authors">{prediction.authors}</p>
+                                                <p className="genres">{prediction.genres}</p>
+                                                <p className="score">Score: {(prediction.weight * 100).toFixed(0)}%</p>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
-                            <label>
-                                {t("Couverture")}
-                                <div
-                                    className={`file-drop-zone ${isDragging ? "dragging" : ""}`}
-                                    onDragOver={handleDragOver}
-                                    onDragLeave={handleDragLeave}
-                                    onDrop={handleDrop}
-                                >
-                                    {previewImage ? (
-                                        <div className="image-preview">
-                                            <img src={previewImage} alt="Preview" />
-                                            <button type="button" onClick={handleRemoveImage}>
-                                                {t("Supprimer l'image")}
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <UploadFileIcon className="upload-icon" />
-                                            <span>{t("Glissez et déposez un fichier ou cliquez pour télécharger")}</span>
-                                            <input
-                                                type="file"
-                                                name="cover"
-                                                accept="image/*"
-                                                onChange={(e) => {
-                                                    const file = e.target.files[0];
-                                                    setFormInputs((prevState) => ({
-                                                        ...prevState,
-                                                        cover: file || null, // Ensure controlled input
-                                                    }));
-                                                    if (file && file.type.startsWith("image/")) {
-                                                        setPreviewImage(URL.createObjectURL(file));
-                                                    }
-                                                }}
-                                            />
-                                        </>
-                                    )}
-                                </div>
-                            </label>
-                            <label>
-                                {t("Genres")}
-                                <input
-                                    type="text"
-                                    name="genres"
-                                    value={formInputs.genres || ""} // Ensure controlled input
-                                    onChange={(e) =>
-                                        setFormInputs((prevState) => ({
-                                            ...prevState,
-                                            genres: e.target.value,
-                                        }))
-                                    }
-                                    onInput={handleGenreInputChange}
-                                />
-                                {genreSuggestions.length > 0 && (
-                                    <ul className="autocomplete-list">
-                                        {genreSuggestions.map((genre, index) => (
-                                            <li
-                                                key={index}
-                                                onClick={() => handleGenreSelect(genre)}
-                                            >
-                                                {genre}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </label>
-                            <div className="selected-genres">
-                                {selectedGenres.map((genre, index) => (
-                                    <span key={index} className="genre-tag">
-                                        {genre}
-                                        <button
-                                            type="button"
-                                            onClick={() => handleGenreRemove(genre)}
-                                        >
-                                            &times;
-                                        </button>
-                                    </span>
-                                ))}
-                            </div>
-                            <label>
-                                {t("Note moyenne")}
-                                <input
-                                    type="number"
-                                    name="rating"
-                                    value={formInputs.rating || "0"}
-                                    min="1"
-                                    max="5"
-                                    step="1"
-                                    onChange={(e) =>
-                                        setFormInputs((prevState) => ({
-                                            ...prevState,
-                                            rating: Math.min(5, Math.max(1, Math.round(e.target.value))),
-                                        }))
-                                    }
-                                />
-                            </label>
-                            <label className="publisher-field">
-                                {t("Editeur")}
-                                <div className="publisher-input-container">
-                                    <input
-                                        type="text"
-                                        name="publisher"
-                                        value={formInputs.publisher || ""} // Ensure controlled input
-                                        onChange={handlePublisherInputChange}
-                                    />
-                                </div>
-                                {publisherSuggestions.length > 0 && (
-                                    <ul className="autocomplete-list">
-                                        {publisherSuggestions.map((publisher, index) => (
-                                            <li
-                                                key={index}
-                                                onClick={() =>
-                                                    handleSuggestionClick(publisher, setFormInputs, "publisher")
-                                                }
-                                            >
-                                                {publisher}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </label>
-                            <label className="series-field">
-                                {t("Fait partie d'une série")}
-                                <input type="checkbox" onChange={handleToggleSeries} />
-                            </label>
-                            {isPartOfSeries && (
+                        </div>
+                    )}
+
+                    {showAddBookForm && (
+                        <div className="add-book-form">
+                            <h2>{t("manage.books.add_new")}</h2>
+                            <form onSubmit={handleSubmit}>
                                 <label>
-                                    {t("Nom de la série")}
+                                    {t("Titre")}
                                     <input
                                         type="text"
-                                        name="series_name"
-                                        value={formInputs.series_name ?? ""} 
+                                        name="title"
+                                        value={formInputs.title || ""} // Ensure controlled input
                                         onChange={(e) =>
                                             setFormInputs((prevState) => ({
                                                 ...prevState,
-                                                series_name: e.target.value,
+                                                title: e.target.value,
                                             }))
                                         }
-                                        onInput={handleSeriesInputChange}
                                     />
-                                    {seriesSuggestions.length > 0 && (
+                                </label>
+                                <label>
+                                    {t("ISBN")}
+                                    <input
+                                        type="text"
+                                        name="isbn"
+                                        value={formInputs.isbn || ""} // Ensure controlled input
+                                        onChange={(e) =>
+                                            setFormInputs((prevState) => ({
+                                                ...prevState,
+                                                isbn: e.target.value,
+                                            }))
+                                        }
+                                    />
+                                </label>
+                                <label>
+                                    {t("ISBN13")}
+                                    <input
+                                        type="text"
+                                        name="isbn13"
+                                        value={formInputs.isbn13 || ""} // Ensure controlled input
+                                        onChange={(e) =>
+                                            setFormInputs((prevState) => ({
+                                                ...prevState,
+                                                isbn13: e.target.value,
+                                            }))
+                                        }
+                                    />
+                                </label>
+                                <label className="author-field">
+                                    {t("Auteur")}
+                                    <div className="author-input-container">
+                                        <input
+                                            type="text"
+                                            name="author"
+                                            value={formInputs.author || ""} // Ensure controlled input
+                                            onChange={handleAuthorInputChange}
+                                            disabled={isAuthorUnknown}
+                                        />
+                                        <div className="author-unknown-checkbox">
+                                            <input
+                                                type="checkbox"
+                                                checked={isAuthorUnknown}
+                                                onChange={handleAuthorUnknownToggle}
+                                            />
+                                            <span>{t("Inconnu")}</span>
+                                        </div>
+                                    </div>
+                                    {authorSuggestions.length > 0 && !isAuthorUnknown && (
                                         <ul className="autocomplete-list">
-                                            {seriesSuggestions.map((series_name, index) => (
+                                            {authorSuggestions.map((author, index) => (
                                                 <li
                                                     key={index}
                                                     onClick={() =>
-                                                        handleSuggestionClick(
-                                                            series_name,
-                                                            setFormInputs,
-                                                            "series_name"
-                                                        )
+                                                        handleSuggestionClick(author, setFormInputs, "author")
                                                     }
                                                 >
-                                                    {series_name}
+                                                    {author}
                                                 </li>
                                             ))}
                                         </ul>
                                     )}
                                 </label>
-                            )}
-                            <label>
-                                {t("Description")}
-                                <textarea
-                                    name="description"
-                                    value={formInputs.description || ""}
-                                    onChange={(e) =>
-                                        setFormInputs((prevState) => ({
-                                            ...prevState,
-                                            description: e.target.value,
-                                        }))
-                                    }
-                                    rows={4}
-                                />
-                            </label>
-                            <button type="submit">{t("Ajouter")}</button>
-                        </form>
-                    </div>
-                )}
+                                <label>
+                                    {t("Récompenses")}
+                                    <input
+                                        type="text"
+                                        name="awards"
+                                        onInput={handleAwardInputChange}
+                                    />
+                                    {awardSuggestions.length > 0 && (
+                                        <ul className="autocomplete-list">
+                                            {awardSuggestions.map((award, index) => (
+                                                <li
+                                                    key={index}
+                                                    onClick={() => handleAwardSelect(award)}
+                                                >
+                                                    {award}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </label>
+                                <div className="selected-awards">
+                                    {selectedAwards.map((award, index) => (
+                                        <span key={index} className="award-tag">
+                                            {award}
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAwardRemove(award)}
+                                            >
+                                                &times;
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
+                                <label>
+                                    {t("Couverture")}
+                                    <div
+                                        className={`file-drop-zone ${isDragging ? "dragging" : ""}`}
+                                        onDragOver={handleDragOver}
+                                        onDragLeave={handleDragLeave}
+                                        onDrop={handleDrop}
+                                    >
+                                        {previewImage ? (
+                                            <div className="image-preview">
+                                                <img src={previewImage} alt="Preview" />
+                                                <button type="button" onClick={handleRemoveImage}>
+                                                    {t("Supprimer l'image")}
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <UploadFileIcon className="upload-icon" />
+                                                <span>{t("Glissez et déposez un fichier ou cliquez pour télécharger")}</span>
+                                                <input
+                                                    type="file"
+                                                    name="cover"
+                                                    accept="image/*"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files[0];
+                                                        setFormInputs((prevState) => ({
+                                                            ...prevState,
+                                                            cover: file || null, // Ensure controlled input
+                                                        }));
+                                                        if (file && file.type.startsWith("image/")) {
+                                                            setPreviewImage(URL.createObjectURL(file));
+                                                        }
+                                                    }}
+                                                />
+                                            </>
+                                        )}
+                                    </div>
+                                </label>
+                                <label>
+                                    {t("Genres")}
+                                    <input
+                                        type="text"
+                                        name="genres"
+                                        value={formInputs.genres || ""} // Ensure controlled input
+                                        onChange={(e) =>
+                                            setFormInputs((prevState) => ({
+                                                ...prevState,
+                                                genres: e.target.value,
+                                            }))
+                                        }
+                                        onInput={handleGenreInputChange}
+                                    />
+                                    {genreSuggestions.length > 0 && (
+                                        <ul className="autocomplete-list">
+                                            {genreSuggestions.map((genre, index) => (
+                                                <li
+                                                    key={index}
+                                                    onClick={() => handleGenreSelect(genre)}
+                                                >
+                                                    {genre}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </label>
+                                <div className="selected-genres">
+                                    {selectedGenres.map((genre, index) => (
+                                        <span key={index} className="genre-tag">
+                                            {genre}
+                                            <button
+                                                type="button"
+                                                onClick={() => handleGenreRemove(genre)}
+                                            >
+                                                &times;
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
+                                <label>
+                                    {t("Note moyenne")}
+                                    <input
+                                        type="number"
+                                        name="rating"
+                                        value={formInputs.rating || "0"}
+                                        min="1"
+                                        max="5"
+                                        step="1"
+                                        onChange={(e) =>
+                                            setFormInputs((prevState) => ({
+                                                ...prevState,
+                                                rating: Math.min(5, Math.max(1, Math.round(e.target.value))),
+                                            }))
+                                        }
+                                    />
+                                </label>
+                                <label className="publisher-field">
+                                    {t("Editeur")}
+                                    <div className="publisher-input-container">
+                                        <input
+                                            type="text"
+                                            name="publisher"
+                                            value={formInputs.publisher || ""} // Ensure controlled input
+                                            onChange={handlePublisherInputChange}
+                                        />
+                                    </div>
+                                    {publisherSuggestions.length > 0 && (
+                                        <ul className="autocomplete-list">
+                                            {publisherSuggestions.map((publisher, index) => (
+                                                <li
+                                                    key={index}
+                                                    onClick={() =>
+                                                        handleSuggestionClick(publisher, setFormInputs, "publisher")
+                                                    }
+                                                >
+                                                    {publisher}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </label>
+                                <label className="series-field">
+                                    {t("Fait partie d'une série")}
+                                    <input type="checkbox" onChange={handleToggleSeries} />
+                                </label>
+                                {isPartOfSeries && (
+                                    <label>
+                                        {t("Nom de la série")}
+                                        <input
+                                            type="text"
+                                            name="series_name"
+                                            value={formInputs.series_name ?? ""} 
+                                            onChange={(e) =>
+                                                setFormInputs((prevState) => ({
+                                                    ...prevState,
+                                                    series_name: e.target.value,
+                                                }))
+                                            }
+                                            onInput={handleSeriesInputChange}
+                                        />
+                                        {seriesSuggestions.length > 0 && (
+                                            <ul className="autocomplete-list">
+                                                {seriesSuggestions.map((series_name, index) => (
+                                                    <li
+                                                        key={index}
+                                                        onClick={() =>
+                                                            handleSuggestionClick(
+                                                                series_name,
+                                                                setFormInputs,
+                                                                "series_name"
+                                                            )
+                                                        }
+                                                    >
+                                                        {series_name}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </label>
+                                )}
+                                <label>
+                                    {t("Description")}
+                                    <textarea
+                                        name="description"
+                                        value={formInputs.description || ""}
+                                        onChange={(e) =>
+                                            setFormInputs((prevState) => ({
+                                                ...prevState,
+                                                description: e.target.value,
+                                            }))
+                                        }
+                                        rows={4}
+                                    />
+                                </label>
+                                <button type="submit">{t("Ajouter")}</button>
+                            </form>
+                        </div>
+                    )}
+                </>
             </div>
             <Footer />
         </div>

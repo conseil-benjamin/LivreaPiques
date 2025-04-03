@@ -226,6 +226,13 @@
       "title": "Statistics",
       "view": "View statistics",
       "export": "Export data"
+    },
+    "predictions": {
+      "title": "Sales prediction list",
+      "calculating": "Calculating predictions...",
+      "success": "Predictions calculated successfully!",
+      "error": "Error calculating predictions.",
+      "server_error": "Error communicating with server."
     }
   }
 }

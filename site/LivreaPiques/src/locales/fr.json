@@ -225,6 +225,13 @@
       "title": "Statistiques",
       "view": "Voir les statistiques",
       "export": "Exporter les données"
+    },
+    "predictions": {
+      "title": "Liste prévisionnelle de ventes",
+      "calculating": "Calcul des prédictions en cours...",
+      "success": "Prédictions calculées avec succès !",
+      "error": "Erreur lors du calcul des prédictions.",
+      "server_error": "Erreur lors de la communication avec le serveur."
     }
   }
 }

@@ -100,7 +100,6 @@
   "connexion_button_register": "Inscription",
   "user_account": "Compte utilisateur",
   "manager_account": "Compte manager",
-  "manage_predictions_title": "Liste prévisionnelle de ventes",
   "no_account": "Pas encore de compte ?",
   "already_account": "Déjà un compte ?",
   "connexion_login_redirection": "Connectez-vous",
@@ -228,6 +227,7 @@
       "export": "Exporter les données"
     },
     "predictions": {
+      "title": "Liste prévisionnelle de ventes",
       "calculating": "Calcul des prédictions en cours...",
       "success": "Prédictions calculées avec succès !",
       "error": "Erreur lors du calcul des prédictions.",

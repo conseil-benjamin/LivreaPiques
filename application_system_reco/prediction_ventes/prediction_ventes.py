@@ -30,25 +30,34 @@ class FinalPrediction:
         """Charge les prédictions depuis le cache si celui-ci existe et est valide"""
         try:
             if os.path.exists(self.cache_file):
-                # Vérifie l'âge du cache
-                file_age = time.time() - os.path.getmtime(self.cache_file)
-                if file_age < self.cache_duration:
-                    with open(self.cache_file, 'r') as f:
-                        cache_data = json.load(f)
-                        self.prediction_list = {int(k): v for k, v in cache_data.items()}
-                        return True
+                with open(self.cache_file, 'r') as f:
+                    cache_data = json.load(f)
+                    
+                    # Vérifie si le cache contient un timestamp
+                    if isinstance(cache_data, dict) and "timestamp" in cache_data:
+                        cache_age = time.time() - cache_data["timestamp"]
+                        if cache_age < self.cache_duration:
+                            self.prediction_list = cache_data["predictions"]
+                            return True
+                    else:
+                        # Si c'est l'ancien format, on le considère comme invalide
+                        return False
             return False
         except Exception as e:
             print(f"Erreur lors du chargement du cache: {str(e)}")
             return False
 
     def _save_cache(self):
-        """Sauvegarde les prédictions dans le cache"""
+        """Sauvegarde les prédictions dans le cache avec le timestamp actuel"""
         try:
-            # Assure que le dossier cache existe
             os.makedirs(os.path.dirname(self.cache_file), exist_ok=True)
+            # On sauvegarde le timestamp avec les données
+            cache_data = {
+                "timestamp": time.time(),
+                "predictions": self.prediction_list
+            }
             with open(self.cache_file, 'w') as f:
-                json.dump(self.prediction_list, f)
+                json.dump(cache_data, f)
         except Exception as e:
             print(f"Erreur lors de la sauvegarde du cache: {str(e)}")
 
@@ -88,16 +97,12 @@ class FinalPrediction:
             session.close()
 
     def _get_wishlist_data(self, users):
-        """
-        Récupère les livres dans la wishlist de chaque utilisateur et ajoute un poids de 3
-        pour chaque livre dans self.prediction_list.
-        """
+        """Récupère les livres dans la wishlist de chaque utilisateur"""
         try:
             engine, session, schema = conexion_db()
 
             for user_id in users:
                 try:
-                    # Récupérer les livres de la wishlist de l'utilisateur
                     query = text("""
                         SELECT book_id FROM wishlist 
                         WHERE user_id = :user_id
@@ -112,15 +117,10 @@ class FinalPrediction:
                         else:
                             self.prediction_list[book_id] += 3
 
-                    # trie prediction_list par poids décroissant
-                    self.prediction_list = dict(sorted(self.prediction_list.items(), key=lambda x: x[1], reverse=True))
-
                 except Exception as e:
                     print(f"Error processing wishlist for user {user_id}: {str(e)}")
                     continue
 
-            # Après avoir traité toutes les données, sauvegarde dans le cache
-            self._save_cache()
 
         except SQLAlchemyError as e:
             raise HTTPException(status_code=500, detail=f"Erreur de base de données: {str(e)}")
@@ -195,23 +195,18 @@ class FinalPrediction:
             session.close()
 
     def get_predictions(self):
-        """Retourne les prédictions, en les recalculant si nécessaire"""
-        if self.prediction_list:
-            # Si nous avons déjà des prédictions en mémoire, les retourner directement
-            self._normalize_prediction_list()
+        """Retourne les prédictions en les calculant si nécessaire"""
+        if self._load_cache():
+            # Pas de normalisation ici non plus
             return self.prediction_list
-        elif self._load_cache():
-            # Si nous avons un cache valide, retourner les prédictions chargées
-            self._normalize_prediction_list()
-            return self.prediction_list
-        else:
-            # Sinon, recalculer les prédictions
-            readers = self._calculate_most_reading_users(10)
-            self._get_recommendations_data(readers)
-            self._get_wishlist_data(readers)
-            self._normalize_prediction_list()
-            self._save_cache()
-            return self.prediction_list
+
+        readers = self._calculate_most_reading_users(10)
+        self._get_recommendations_data(readers)
+        self._get_wishlist_data(readers)
+        # Normalisation uniquement à la fin de tous les calculs
+        self._normalize_prediction_list()
+        self._save_cache()
+        return self.prediction_list
         
     def _normalize_prediction_list(self):
         """

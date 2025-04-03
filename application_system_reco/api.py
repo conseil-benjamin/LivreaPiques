@@ -960,12 +960,10 @@ async def get_sales_predictions():
         predictor = FinalPrediction()
         predictions = predictor.get_predictions()
         
-        # Si nous avons des prédictions, récupérons les détails des livres
         if predictions:
             engine, session, schema = conexion_db()
-            book_ids = list(predictions.keys())
+            book_ids = [int(book_id) for book_id in predictions.keys()]
             
-            # Récupérer les détails des livres
             query = text("""
                 SELECT book_id, book_title, book_cover, authors, genres
                 FROM allbookdata 
@@ -974,7 +972,6 @@ async def get_sales_predictions():
             
             results = session.execute(query, {"book_ids": book_ids}).fetchall()
             
-            # Créer un dictionnaire avec les détails complets
             detailed_predictions = [
                 {
                     "book_id": row[0],
@@ -982,12 +979,11 @@ async def get_sales_predictions():
                     "cover": row[2],
                     "authors": row[3],
                     "genres": row[4],
-                    "weight": predictions[row[0]]
+                    "weight": predictions[str(row[0])]
                 }
                 for row in results
             ]
             
-            # Trier par poids décroissant
             detailed_predictions.sort(key=lambda x: x["weight"], reverse=True)
             
             return {"predictions": detailed_predictions}
@@ -1010,7 +1006,7 @@ async def export_predictions():
             filename='sales_predictions.json'
         )
     raise HTTPException(status_code=404, detail="Cache file not found")
-=======
+
 @app.get("/api/authors")
 async def get_authors(q: str):
     """

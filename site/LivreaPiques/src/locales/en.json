@@ -101,7 +101,6 @@
   "connexion_button_register": "Register",
   "user_account": "User account",
   "manager_account": "Manager account",
-  "manage_predictions_title": "Sales prediction list",
   "no_account": "Don't have an account?",
   "already_account": "Already have an account?",
   "connexion_login_redirection": "Log in",
@@ -229,6 +228,7 @@
       "export": "Export data"
     },
     "predictions": {
+      "title": "Sales prediction list",
       "calculating": "Calculating predictions...",
       "success": "Predictions calculated successfully!",
       "error": "Error calculating predictions.",

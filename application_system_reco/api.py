@@ -14,11 +14,17 @@ from  application_system_reco.system_reco.reco_esteban import *
 from  application_system_reco.system_reco.reco_benjamin import *
 from  application_system_reco.system_reco.reco_description import *
 import shutil
+from fastapi.staticfiles import StaticFiles
 
+# Add this near the top of the file, after the imports
+BASE_URL = "http://localhost:8000"  # Configure your base URL here
 
 # Pour lancer le serveur : uvicorn api:app --reload (dans le dossier de l'api)
 
 app = fa.FastAPI()
+
+# Mount the covers directory to serve static files
+app.mount("/covers", StaticFiles(directory="covers"), name="covers")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))  # Récupération automatique du port
@@ -1049,6 +1055,7 @@ async def create_book(
     genres: str = Form(...),
     awards: str = Form(None),
     rating: float = Form(...),
+    description: str = Form(None),  # Add description parameter
     cover: UploadFile = File(None)
 ):
     try:
@@ -1080,6 +1087,7 @@ async def create_book(
                 isbn, 
                 isbn13, 
                 book_cover,
+                book_description, 
                 {rating_column}
             )
             VALUES (
@@ -1087,32 +1095,52 @@ async def create_book(
                 :isbn, 
                 :isbn13, 
                 :cover,
+                :description,  
                 1
             )
             RETURNING book_id
         """)
         cover_path = None
         if cover:
-            cover_path = f"{covers_dir}/{cover.filename}"
-            with open(cover_path, "wb") as buffer:
+            # Save file with URL-friendly format
+            cover_path = f"/covers/{cover.filename}"
+            # Save physical file with full system path
+            file_path = f"covers/{cover.filename}"
+            with open(file_path, "wb") as buffer:
                 shutil.copyfileobj(cover.file, buffer)
+            
+            # Print the complete URL for debugging
+            complete_url = f"{BASE_URL}{cover_path}"
+            print(f"Image will be accessible at: {complete_url}")
 
         book_result = session.execute(book_query, {
             "title": title,
             "isbn": isbn,
             "isbn13": isbn13,
-            "cover": cover_path
+            "cover": cover_path,
+            "description": description  # Add description to parameters
         })
         book_id = book_result.fetchone()[0]
 
-        # Insert author
-        author_query = text("""
-            INSERT INTO author (author_name)
-            VALUES (:author)
-            RETURNING author_id
+        # First check if author exists
+        check_author_query = text("""
+            SELECT author_id FROM author WHERE author_name = :author
         """)
-        author_result = session.execute(author_query, {"author": author})
-        author_id = author_result.fetchone()[0] if author_result.rowcount > 0 else None
+        author_result = session.execute(check_author_query, {"author": author})
+        author_row = author_result.fetchone()
+        
+        if author_row:
+            # Author exists, use existing ID
+            author_id = author_row[0]
+        else:
+            # Author doesn't exist, insert new author
+            author_query = text("""
+                INSERT INTO author (author_name)
+                VALUES (:author)
+                RETURNING author_id
+            """)
+            author_result = session.execute(author_query, {"author": author})
+            author_id = author_result.fetchone()[0]
 
         if author_id:
             session.execute(text("""

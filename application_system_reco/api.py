@@ -10,9 +10,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import SQLAlchemyError
 import os
 import uvicorn
-from  application_system_reco.system_reco.reco_esteban import *
-from  application_system_reco.system_reco.reco_benjamin import *
-from  application_system_reco.system_reco.reco_description import *
+from application_system_reco.system_reco.reco_esteban import *
+from application_system_reco.system_reco.reco_benjamin import *
+from application_system_reco.system_reco.reco_description import *
+from application_system_reco.prediction_ventes.prediction_ventes import FinalPrediction
+from fastapi.responses import FileResponse
 import shutil
 from fastapi.staticfiles import StaticFiles
 
@@ -938,6 +940,77 @@ async def check_if_manager(user_id: int):
     finally:
         session.close()
 
+@app.post("/api/predictions/post_sales")
+async def run_sales_predictions():
+    try:
+        predictor = FinalPrediction()
+        readers = predictor._calculate_most_reading_users(10)
+        predictor._get_recommendations_data(readers)
+        predictor._get_wishlist_data(readers)
+        return {"message": "Sales predictions completed successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error running sales predictions: {str(e)}")
+
+@app.get("/api/predictions/get_sales")
+async def get_sales_predictions():
+    """
+    Endpoint to retrieve the current sales predictions.
+    """
+    try:
+        predictor = FinalPrediction()
+        predictions = predictor.get_predictions()
+        
+        # Si nous avons des prédictions, récupérons les détails des livres
+        if predictions:
+            engine, session, schema = conexion_db()
+            book_ids = list(predictions.keys())
+            
+            # Récupérer les détails des livres
+            query = text("""
+                SELECT book_id, book_title, book_cover, authors, genres
+                FROM allbookdata 
+                WHERE book_id = ANY(:book_ids)
+            """)
+            
+            results = session.execute(query, {"book_ids": book_ids}).fetchall()
+            
+            # Créer un dictionnaire avec les détails complets
+            detailed_predictions = [
+                {
+                    "book_id": row[0],
+                    "title": row[1],
+                    "cover": row[2],
+                    "authors": row[3],
+                    "genres": row[4],
+                    "weight": predictions[row[0]]
+                }
+                for row in results
+            ]
+            
+            # Trier par poids décroissant
+            detailed_predictions.sort(key=lambda x: x["weight"], reverse=True)
+            
+            return {"predictions": detailed_predictions}
+        
+        return {"predictions": []}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving sales predictions: {str(e)}")
+    finally:
+        if 'session' in locals():
+            session.close()
+
+@app.get("/api/predictions/export")
+async def export_predictions():
+    cache_file = 'application_system_reco/caches/sales_predictions.json'
+    if os.path.exists(cache_file):
+        return FileResponse(
+            cache_file,
+            media_type='application/json',
+            filename='sales_predictions.json'
+        )
+    raise HTTPException(status_code=404, detail="Cache file not found")
+=======
 @app.get("/api/authors")
 async def get_authors(q: str):
     """

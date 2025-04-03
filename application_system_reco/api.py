@@ -1058,8 +1058,10 @@ async def create_book(
     description: str = Form(None),  # Add description parameter
     cover: UploadFile = File(None)
 ):
+    engine, session, schema = conexion_db()
     try:
-        engine, session, schema = conexion_db()
+        # Start a new transaction
+        session.begin()
 
         # Get the first digit of the rating to determine which star rating column to increment
         rating_digit = int(float(rating))
@@ -1113,117 +1115,154 @@ async def create_book(
             complete_url = f"{BASE_URL}{cover_path}"
             print(f"Image will be accessible at: {complete_url}")
 
-        book_result = session.execute(book_query, {
-            "title": title,
-            "isbn": isbn,
-            "isbn13": isbn13,
-            "cover": cover_path,
-            "description": description  # Add description to parameters
-        })
-        book_id = book_result.fetchone()[0]
+        try:
+            book_result = session.execute(book_query, {
+                "title": title,
+                "isbn": isbn,
+                "isbn13": isbn13,
+                "cover": cover_path,
+                "description": description  # Add description to parameters
+            })
+            book_id = book_result.fetchone()[0]
 
-        # First check if author exists
-        check_author_query = text("""
-            SELECT author_id FROM author WHERE author_name = :author
-        """)
-        author_result = session.execute(check_author_query, {"author": author})
-        author_row = author_result.fetchone()
-        
-        if author_row:
-            # Author exists, use existing ID
-            author_id = author_row[0]
-        else:
-            # Author doesn't exist, insert new author
-            author_query = text("""
-                INSERT INTO author (author_name)
-                VALUES (:author)
-                RETURNING author_id
+            # First check if author exists
+            check_author_query = text("""
+                SELECT author_id FROM author WHERE author_name = :author
             """)
-            author_result = session.execute(author_query, {"author": author})
-            author_id = author_result.fetchone()[0]
-
-        if author_id:
-            session.execute(text("""
-                INSERT INTO book_author (book_id, author_id)
-                VALUES (:book_id, :author_id)
-            """), {"book_id": book_id, "author_id": author_id})
-
-        # Insert publisher
-        publisher_query = text("""
-            INSERT INTO publisher (name_publisher)
-            VALUES (:publisher)
-            ON CONFLICT (name_publisher) DO NOTHING
-            RETURNING publisher_id
-        """)
-        publisher_result = session.execute(publisher_query, {"publisher": publisher})
-        publisher_id = publisher_result.fetchone()[0] if publisher_result.rowcount > 0 else None
-
-        if publisher_id:
-            session.execute(text("""
-                INSERT INTO book_publisher (book_id, publisher_id)
-                VALUES (:book_id, :publisher_id)
-            """), {"book_id": book_id, "publisher_id": publisher_id})
-
-        # Insert series (if provided)
-        if series_name:
-            series_query = text("""
-                INSERT INTO series (series_name)
-                VALUES (:series_name)
-                ON CONFLICT (series_name) DO NOTHING
-                RETURNING series_id
-            """)
-            series_result = session.execute(series_query, {"series_name": series_name})
-            series_id = series_result.fetchone()[0] if series_result.rowcount > 0 else None
-
-            if series_id:
-                session.execute(text("""
-                    INSERT INTO book_series (book_id, series_id)
-                    VALUES (:book_id, :series_id)
-                """), {"book_id": book_id, "series_id": series_id})
-
-        # Insert genres
-        genre_list = eval(genres)
-        for genre in genre_list:
-            genre_query = text("""
-                INSERT INTO genre (genre_name)
-                VALUES (:genre)
-                ON CONFLICT (genre_name) DO NOTHING
-                RETURNING genre_id
-            """)
-            genre_result = session.execute(genre_query, {"genre": genre})
-            genre_id = genre_result.fetchone()[0] if genre_result.rowcount > 0 else None
-
-            if genre_id:
-                session.execute(text("""
-                    INSERT INTO book_genre (book_id, genre_id)
-                    VALUES (:book_id, :genre_id)
-                """), {"book_id": book_id, "genre_id": genre_id})
-
-        # Insert awards (if provided)
-        if awards:
-            award_list = eval(awards)
-            for award in award_list:
-                award_query = text("""
-                    INSERT INTO awards (award_name)
-                    VALUES (:award)
-                    ON CONFLICT (award_name) DO NOTHING
-                    RETURNING award_id
+            author_result = session.execute(check_author_query, {"author": author})
+            author_row = author_result.fetchone()
+            
+            if author_row:
+                # Author exists, use existing ID
+                author_id = author_row[0]
+            else:
+                # Author doesn't exist, insert new author
+                author_query = text("""
+                    INSERT INTO author (author_name)
+                    VALUES (:author)
+                    RETURNING author_id
                 """)
-                award_result = session.execute(award_query, {"award": award})
-                award_id = award_result.fetchone()[0] if award_result.rowcount > 0 else None
+                author_result = session.execute(author_query, {"author": author})
+                author_id = author_result.fetchone()[0]
 
-                if award_id:
+            if author_id:
+                session.execute(text("""
+                    INSERT INTO book_author (book_id, author_id)
+                    VALUES (:book_id, :author_id)
+                """), {"book_id": book_id, "author_id": author_id})
+
+            # Insert publisher
+            publisher_query = text("""
+                INSERT INTO publisher (name_publisher)
+                VALUES (:publisher)
+                ON CONFLICT (name_publisher) DO NOTHING
+                RETURNING publisher_id
+            """)
+            publisher_result = session.execute(publisher_query, {"publisher": publisher})
+            publisher_id = publisher_result.fetchone()[0] if publisher_result.rowcount > 0 else None
+
+            if publisher_id:
+                session.execute(text("""
+                    INSERT INTO book_publisher (book_id, publisher_id)
+                    VALUES (:book_id, :publisher_id)
+                """), {"book_id": book_id, "publisher_id": publisher_id})
+
+            # Insert series (if provided)
+            if series_name:
+                try:
+                    # First check if series exists
+                    existing_series_query = text("""
+                        SELECT series_id FROM series WHERE series_name = :series_name
+                    """)
+                    existing_result = session.execute(existing_series_query, {"series_name": series_name}).fetchone()
+                    
+                    if existing_result:
+                        series_id = existing_result[0]
+                    else:
+                        # Get next available ID starting from 45000
+                        next_id_query = text("""
+                            SELECT COALESCE(MAX(series_id), 45000) + 1 
+                            FROM series
+                        """)
+                        next_id = session.execute(next_id_query).scalar()
+                        
+                        # Insert new series with custom ID
+                        series_query = text("""
+                            INSERT INTO series (series_id, series_name)
+                            VALUES (:series_id, :series_name)
+                            RETURNING series_id
+                        """)
+                        series_result = session.execute(series_query, {
+                            "series_id": next_id,
+                            "series_name": series_name
+                        })
+                        series_id = series_result.fetchone()[0]
+
+                    # Link book to series
+                    if series_id:
+                        session.execute(text("""
+                            INSERT INTO book_series (book_id, series_id)
+                            VALUES (:book_id, :series_id)
+                        """), {"book_id": book_id, "series_id": series_id})
+                        
+                except SQLAlchemyError as e:
+                    print(f"Warning: Could not handle series: {str(e)}")
+                    # Continue execution even if series handling fails
+                    pass
+
+            # Insert genres
+            genre_list = eval(genres)
+            for genre in genre_list:
+                genre_query = text("""
+                    INSERT INTO genre (genre_name)
+                    VALUES (:genre)
+                    ON CONFLICT (genre_name) DO NOTHING
+                    RETURNING genre_id
+                """)
+                genre_result = session.execute(genre_query, {"genre": genre})
+                genre_id = genre_result.fetchone()[0] if genre_result.rowcount > 0 else None
+
+                if genre_id:
                     session.execute(text("""
-                        INSERT INTO book_awards (book_id, award_id)
-                        VALUES (:book_id, :award_id)
-                    """), {"book_id": book_id, "award_id": award_id})
+                        INSERT INTO book_genre (book_id, genre_id)
+                        VALUES (:book_id, :genre_id)
+                    """), {"book_id": book_id, "genre_id": genre_id})
 
-        # Commit transaction
-        session.commit()
-        return {"message": "Livre ajouté avec succès", "book_id": book_id}
+            # Insert awards (if provided)
+            if awards:
+                award_list = eval(awards)
+                for award in award_list:
+                    award_query = text("""
+                        INSERT INTO awards (award_name)
+                        VALUES (:award)
+                        ON CONFLICT (award_name) DO NOTHING
+                        RETURNING award_id
+                    """)
+                    award_result = session.execute(award_query, {"award": award})
+                    award_id = award_result.fetchone()[0] if award_result.rowcount > 0 else None
+
+                    if award_id:
+                        session.execute(text("""
+                            INSERT INTO book_awards (book_id, award_id)
+                            VALUES (:book_id, :award_id)
+                        """), {"book_id": book_id, "award_id": award_id})
+
+            # Commit transaction
+            session.commit()
+            return {"message": "Livre ajouté avec succès", "book_id": book_id}
+
+        except SQLAlchemyError as e:
+            # Roll back on any database error
+            session.rollback()
+            print(f"Database error: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Erreur lors de l'ajout du livre: {str(e)}")
 
     except Exception as e:
+        # Roll back on any other error
         session.rollback()
+        print(f"General error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erreur lors de l'ajout du livre: {str(e)}")
+
     finally:
+        # Always close the session
         session.close()

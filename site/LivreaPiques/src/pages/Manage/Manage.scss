@@ -2,6 +2,10 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+
+    h2 {
+        font-size: 1.5em;
+    }
 }
 
 .manage-container {

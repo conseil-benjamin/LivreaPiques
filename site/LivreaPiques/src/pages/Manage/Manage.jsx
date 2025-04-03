@@ -334,7 +334,7 @@ function Manage() {
                     <section className="manage-section">
                         <h2>{t("manage.books.title")}</h2>
                         <div className="section-content">
-                            <button>{t("manage.books.view_all")}</button>
+                            <button onClick={() => navigate('/')}>{t("manage.books.view_all")}</button>
                             <button onClick={handleAddBookClick}>{t("manage.books.add_new")}</button>
                         </div>
                     </section>

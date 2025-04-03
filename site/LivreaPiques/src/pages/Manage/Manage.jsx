@@ -5,6 +5,7 @@ import Banner from "../../components/Banner/Banner.jsx";
 import Footer from "../../components/Footer/Footer.jsx";
 import { useTranslation } from 'react-i18next';
 import Cookies from 'js-cookie';
+import ImageUnvailable from "../../components/ImageUnvailable.jsx";
 
 function Manage() {
     const navigate = useNavigate();
@@ -39,7 +40,7 @@ function Manage() {
 
     const runSalesPredictions = async () => {
         try {
-            setPredictionsMessage('Calcul des prédictions en cours...');
+            setPredictionsMessage(t('manage.predictions.calculating'));
             const response = await fetch('http://localhost:8000/api/predictions/post_sales', {
                 method: 'POST',
                 headers: {
@@ -49,14 +50,14 @@ function Manage() {
             
             if (response.ok) {
                 const data = await response.json();
-                setPredictionsMessage('Prédictions calculées avec succès!');
+                setPredictionsMessage(t('manage.predictions.success'));
                 fetchPredictions(); // Fetch predictions after running them
             } else {
-                setPredictionsMessage('Erreur lors du calcul des prédictions.');
+                setPredictionsMessage(t('manage.predictions.error'));
             }
         } catch (error) {
             console.error('Erreur:', error);
-            setPredictionsMessage('Erreur lors de la communication avec le serveur.');
+            setPredictionsMessage(t('manage.predictions.server_error'));
         }
     };
 
@@ -71,6 +72,23 @@ function Manage() {
             }
         } catch (error) {
             console.error('Erreur:', error);
+        }
+    };
+
+    const downloadPredictions = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/api/predictions/export');
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sales_predictions.json';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } catch (error) {
+            console.error('Erreur lors du téléchargement:', error);
         }
     };
 
@@ -110,7 +128,7 @@ function Manage() {
                             {predictionsMessage && (
                                 <p className="predictions-message">{predictionsMessage}</p>
                             )}
-                            <button>{t("manage.stats.export")}</button>
+                            <button onClick={downloadPredictions}>{t("manage.stats.export")}</button>
                         </div>
                     </section>
                 </div>
@@ -118,21 +136,25 @@ function Manage() {
                 {/* Liste unique des prédictions */}
                 {predictions.length > 0 && (
                     <div className="predictions-section">
-                        <h2>{t("manage.predictions.title")}</h2>
+                        <h2>{t("manage_predictions_title")}</h2>
                         <div className="predictions-list">
                             <ul>
                                 {predictions.map((prediction, index) => (
                                     <li key={index} className="prediction-item">
-                                        <img 
-                                            src={prediction.cover} 
-                                            alt={prediction.title}
-                                            className="book-cover"
-                                        />
+                                        {prediction.cover ? (
+                                            <img 
+                                                src={prediction.cover} 
+                                                alt={prediction.title}
+                                                className="book-cover"
+                                            />
+                                        ) : (
+                                            <ImageUnvailable height={"150px"} width={"100px"}/>
+                                        )}
                                         <div className="book-info">
                                             <h3>{prediction.title}</h3>
                                             <p className="authors">{prediction.authors}</p>
                                             <p className="genres">{prediction.genres}</p>
-                                            <p className="score">Score: {prediction.weight}</p>
+                                            <p className="score">Score: {(prediction.weight * 100).toFixed(0)}%</p>
                                         </div>
                                     </li>
                                 ))}

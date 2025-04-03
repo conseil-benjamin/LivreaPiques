@@ -198,17 +198,34 @@ class FinalPrediction:
         """Retourne les prédictions, en les recalculant si nécessaire"""
         if self.prediction_list:
             # Si nous avons déjà des prédictions en mémoire, les retourner directement
+            self._normalize_prediction_list()
             return self.prediction_list
         elif self._load_cache():
             # Si nous avons un cache valide, retourner les prédictions chargées
+            self._normalize_prediction_list()
             return self.prediction_list
         else:
             # Sinon, recalculer les prédictions
             readers = self._calculate_most_reading_users(10)
             self._get_recommendations_data(readers)
             self._get_wishlist_data(readers)
+            self._normalize_prediction_list()
             self._save_cache()
             return self.prediction_list
+        
+    def _normalize_prediction_list(self):
+        """
+        Normalise la liste de livres prédites.
+        Les scores seront entre 0.1 et 1, avec possibilité d'avoir plusieurs livres à 1.
+        """
+        if self.prediction_list:
+            max_score = max(self.prediction_list.values())
+            # Ajuste les scores pour que le maximum soit à 1
+            if max_score > 0:  # Évite la division par zéro
+                self.prediction_list = {
+                    k: max(0.1, min(1, v / max_score))
+                    for k, v in self.prediction_list.items()
+                }
 
 # On intègre du code de api.py pour le réutiliser
 def Ltitle_to_Lid(Ltitle):

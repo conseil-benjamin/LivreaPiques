@@ -14,6 +14,7 @@ from application_system_reco.system_reco.reco_esteban import *
 from application_system_reco.system_reco.reco_benjamin import *
 from application_system_reco.system_reco.reco_description import *
 from application_system_reco.prediction_ventes.prediction_ventes import FinalPrediction
+from fastapi.responses import FileResponse
 
 
 # Pour lancer le serveur : uvicorn api:app --reload (dans le dossier de l'api)
@@ -1003,7 +1004,7 @@ async def get_sales_predictions():
             
             # Récupérer les détails des livres
             query = text("""
-                SELECT book_id, book_title, authors, genres
+                SELECT book_id, book_title, book_cover, authors, genres
                 FROM allbookdata 
                 WHERE book_id = ANY(:book_ids)
             """)
@@ -1015,8 +1016,9 @@ async def get_sales_predictions():
                 {
                     "book_id": row[0],
                     "title": row[1],
-                    "authors": row[2],
-                    "genres": row[3],
+                    "cover": row[2],
+                    "authors": row[3],
+                    "genres": row[4],
                     "weight": predictions[row[0]]
                 }
                 for row in results
@@ -1034,3 +1036,14 @@ async def get_sales_predictions():
     finally:
         if 'session' in locals():
             session.close()
+
+@app.get("/api/predictions/export")
+async def export_predictions():
+    cache_file = 'application_system_reco/caches/sales_predictions.json'
+    if os.path.exists(cache_file):
+        return FileResponse(
+            cache_file,
+            media_type='application/json',
+            filename='sales_predictions.json'
+        )
+    raise HTTPException(status_code=404, detail="Cache file not found")

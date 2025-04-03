@@ -105,4 +105,240 @@
             }
         }
     }
+
+.add-book-form {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    h2 {
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        label {
+            display: flex;
+            flex-direction: column;
+            font-size: 1rem;
+
+            input {
+                margin-top: 0.5rem;
+                padding: 0.8rem;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            input[type="file"] {
+                padding: 0.4rem;
+            }
+
+            input[type="checkbox"] {
+                width: auto;
+                margin-top: 0.2rem;
+            }
+        }
+
+        label.series-field {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+
+            input[type="checkbox"] {
+                width: auto;
+            }
+        }
+
+        button {
+            align-self: flex-start;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            background-color: #000;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+
+            &:hover {
+                background-color: #333;
+            }
+        }
+    }
+
+    textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        resize: vertical;
+        min-height: 100px;
+    }
+}
+
+.author-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .author-input-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        input[type="text"] {
+            flex: 1;
+        }
+
+        .author-unknown-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+
+            input[type="checkbox"] {
+                margin: 0;
+            }
+        }
+    }
+}
+
+.publisher-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .publisher-input-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        input[type="text"] {
+            flex: 1;
+        }
+    }
+}
+
+.selected-genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+
+    .genre-tag {
+        display: flex;
+        align-items: center;
+        background: #e0e0e0;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+
+        button {
+            background: none;
+            border: none;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #ff0000;
+
+            &:hover {
+                color: #cc0000;
+            }
+        }
+    }
+}
+
+.selected-awards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+
+    .award-tag {
+        display: flex;
+        align-items: center;
+        background: #e0e0e0;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+
+        button {
+            background: none;
+            border: none;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #ff0000;
+
+            &:hover {
+                color: #cc0000;
+            }
+        }
+    }
+}
+
+.autocomplete-list {
+    margin-top: 0.5rem;
+    padding: 0;
+    list-style: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: white;
+    max-height: 150px;
+    overflow-y: auto;
+
+    li {
+        padding: 0.5rem;
+        cursor: pointer;
+
+        &:hover {
+            background-color: #f0f0f0;
+        }
+    }
+}
+
+.file-drop-zone {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    border: 2px dashed #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+
+    &:hover {
+        background-color: #f0f0f0;
+        border-color: #999;
+    }
+
+    &.dragging {
+        background-color: #e0f7fa;
+        border-color: #00796b;
+    }
+
+    input[type="file"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .upload-icon {
+        font-size: 2rem;
+        color: #666;
+        margin-right: 0.5rem;
+    }
+
+    span {
+        font-size: 1rem;
+        color: #666;
+    }
 }

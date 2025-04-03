@@ -6,6 +6,7 @@ import Footer from "../../components/Footer/Footer.jsx";
 import { useTranslation } from 'react-i18next';
 import Cookies from 'js-cookie';
 import ImageUnvailable from "../../components/ImageUnvailable.jsx";
+import UploadFileIcon from '@mui/icons-material/UploadFile'; // Import Material-UI upload icon
 
 function Manage() {
     const navigate = useNavigate();
@@ -15,6 +16,103 @@ function Manage() {
     const [loading, setLoading] = useState(true);
     const [predictionsMessage, setPredictionsMessage] = useState('');
     const [predictions, setPredictions] = useState([]);
+    const [showAddBookForm, setShowAddBookForm] = useState(false);
+    const [isPartOfSeries, setIsPartOfSeries] = useState(false);
+    const [authorSuggestions, setAuthorSuggestions] = useState([]);
+    const [awardSuggestions, setAwardSuggestions] = useState([]);
+    const [seriesSuggestions, setSeriesSuggestions] = useState([]);
+    const [genreSuggestions, setGenreSuggestions] = useState([]);
+    const [publisherSuggestions, setPublisherSuggestions] = useState([]); // State for publisher suggestions
+    const [selectedGenres, setSelectedGenres] = useState([]);
+    const [selectedAwards, setSelectedAwards] = useState([]);
+    const [formInputs, setFormInputs] = useState({
+        author: "",
+        awards: "",
+        series_name: "",
+        publisher: "",
+        title: "",
+        isbn: "",
+        isbn13: "",
+        rating: "0",
+        genres: "",
+        description: "",  // Add description field
+        cover: null, // Ensure this is null for file inputs
+    });
+    const [isAuthorUnknown, setIsAuthorUnknown] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+    const [previewImage, setPreviewImage] = useState(null); // State to store the preview image
+
+    const handleAuthorUnknownToggle = () => {
+        setIsAuthorUnknown(!isAuthorUnknown);
+        if (!isAuthorUnknown) {
+            setFormInputs((prevState) => ({ ...prevState, author: "Inconnu" }));
+        } else {
+            setFormInputs((prevState) => ({ ...prevState, author: "" }));
+        }
+    };
+
+    const handleGenreInputChange = (e) => {
+        fetchSuggestions(e.target.value, "genres", setGenreSuggestions);
+    };
+
+    const handleGenreSelect = (genre) => {
+        if (!selectedGenres.includes(genre)) {
+            setSelectedGenres([...selectedGenres, genre]);
+        }
+        setGenreSuggestions([]);
+    };
+
+    const handleGenreRemove = (genre) => {
+        setSelectedGenres(selectedGenres.filter((g) => g !== genre));
+    };
+
+    const handleAwardInputChange = (e) => {
+        fetchSuggestions(e.target.value, "awards", setAwardSuggestions);
+    };
+
+    const handleAwardSelect = (award) => {
+        if (!selectedAwards.includes(award)) {
+            setSelectedAwards([...selectedAwards, award]);
+        }
+        setAwardSuggestions([]);
+    };
+
+    const handleAwardRemove = (award) => {
+        setSelectedAwards(selectedAwards.filter((a) => a !== award));
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = () => {
+        setIsDragging(false);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setIsDragging(false);
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith("image/")) {
+            setPreviewImage(URL.createObjectURL(file)); // Set the preview image
+        } else {
+            alert("Veuillez déposer uniquement des fichiers image.");
+        }
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith("image/")) {
+            setPreviewImage(URL.createObjectURL(file)); // Set the preview image
+        } else {
+            alert("Veuillez sélectionner uniquement des fichiers image.");
+        }
+    };
+
+    const handleRemoveImage = () => {
+        setPreviewImage(null); // Remove the preview image
+    };
 
     useEffect(() => {
         // Vérifie si l'utilisateur est un manager
@@ -96,6 +194,117 @@ function Manage() {
         fetchPredictions(); // Fetch predictions on component mount
     }, []);
 
+    const handleAddBookClick = () => {
+        setShowAddBookForm(!showAddBookForm);
+    };
+
+    const handleToggleSeries = () => {
+        setIsPartOfSeries(!isPartOfSeries);
+    };
+
+    const fetchSuggestions = async (query, endpoint, setSuggestions) => {
+        if (query.length > 0) {
+            try {
+                const response = await fetch(`http://localhost:8000/api/${endpoint}?q=${query}`);
+                const data = await response.json();
+                if (endpoint === "genres" && Array.isArray(data)) {
+                    setSuggestions(data.map((item) => item.genre_name)); // Map to genre_name
+                } else if (endpoint === "awards" && Array.isArray(data)) {
+                    setSuggestions(data); // Awards are already a flat list
+                } else if (endpoint === "authors" && Array.isArray(data)) {
+                    setSuggestions(data); // Authors are already a flat list
+                } else if (endpoint === "publishers" && Array.isArray(data)) {
+                    setSuggestions(data); // Publishers are already a flat list
+                } else if (endpoint === "series" && Array.isArray(data)) {
+                    setSuggestions(data.map((item) => item.series_name)); // Map to series_name
+                } else {
+                    setSuggestions([]); // Ensure suggestions are cleared if data is invalid
+                    console.error(`Unexpected response format for ${endpoint}:`, data);
+                }
+            } catch (error) {
+                console.error(`Erreur lors de la récupération des suggestions pour ${endpoint}:`, error);
+            }
+        } else {
+            setSuggestions([]); 
+        }
+    };
+
+    const handleAuthorInputChange = (e) => {
+        const value = e.target.value || ""; 
+        setFormInputs((prevState) => ({ ...prevState, author: value }));
+        fetchSuggestions(value, "authors", setAuthorSuggestions);
+    };
+
+    const handlePublisherInputChange = (e) => {
+        const value = e.target.value || ""; 
+        setFormInputs((prevState) => ({ ...prevState, publisher: value }));
+        fetchSuggestions(value, "publishers", setPublisherSuggestions); 
+    };
+
+    const handleSeriesInputChange = (e) => {
+        const value = e.target.value || ""; // chaine de caractères
+        setFormInputs((prevState) => ({ ...prevState, series_name: value }));
+        fetchSuggestions(value, "series", setSeriesSuggestions); // chercher les suggestions
+    };
+
+    const handleSuggestionClick = (value, setInputValue, fieldName) => {
+        setInputValue((prevState) => ({
+            ...prevState,
+            [fieldName]: value,
+        }));
+        setAuthorSuggestions([]);
+        setAwardSuggestions([]);
+        setSeriesSuggestions([]);
+        setPublisherSuggestions([]);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        Object.keys(formInputs).forEach((key) => {
+            if (formInputs[key]) {
+                formData.append(key, formInputs[key]);
+            }
+        });
+        formData.append("genres", JSON.stringify(selectedGenres));
+        if (selectedAwards.length > 0) {
+            formData.append("awards", JSON.stringify(selectedAwards));
+        }
+
+        try {
+            const response = await fetch("http://localhost:8000/api/books/", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (response.ok) {
+                alert(t("Livre ajouté avec succès"));
+                setFormInputs({
+                    author: "",
+                    awards: "",
+                    series_name: "",
+                    publisher: "",
+                    title: "",
+                    isbn: "",
+                    isbn13: "",
+                    rating: "0",
+                    genres: "",
+                    description: "",
+                    cover: null,
+                });
+                setSelectedGenres([]);
+                setSelectedAwards([]);
+                setPreviewImage(null);
+            } else {
+                const errorData = await response.json();
+                alert(t("Erreur lors de l'ajout du livre: ") + errorData.message);
+            }
+        } catch (error) {
+            console.error("Erreur lors de l'ajout du livre:", error);
+            alert(t("Erreur lors de l'ajout du livre"));
+        }
+    };
+
     if (loading) {
         return <div>{t("loading")}</div>;
     }
@@ -115,7 +324,7 @@ function Manage() {
                         <h2>{t("manage.books.title")}</h2>
                         <div className="section-content">
                             <button>{t("manage.books.view_all")}</button>
-                            <button>{t("manage.books.add_new")}</button>
+                            <button onClick={handleAddBookClick}>{t("manage.books.add_new")}</button>
                         </div>
                     </section>
 
@@ -160,6 +369,294 @@ function Manage() {
                                 ))}
                             </ul>
                         </div>
+                {showAddBookForm && (
+                    <div className="add-book-form">
+                        <h2>{t("manage.books.add_new")}</h2>
+                        <form onSubmit={handleSubmit}>
+                            <label>
+                                {t("Titre")}
+                                <input
+                                    type="text"
+                                    name="title"
+                                    value={formInputs.title || ""} // Ensure controlled input
+                                    onChange={(e) =>
+                                        setFormInputs((prevState) => ({
+                                            ...prevState,
+                                            title: e.target.value,
+                                        }))
+                                    }
+                                />
+                            </label>
+                            <label>
+                                {t("ISBN")}
+                                <input
+                                    type="text"
+                                    name="isbn"
+                                    value={formInputs.isbn || ""} // Ensure controlled input
+                                    onChange={(e) =>
+                                        setFormInputs((prevState) => ({
+                                            ...prevState,
+                                            isbn: e.target.value,
+                                        }))
+                                    }
+                                />
+                            </label>
+                            <label>
+                                {t("ISBN13")}
+                                <input
+                                    type="text"
+                                    name="isbn13"
+                                    value={formInputs.isbn13 || ""} // Ensure controlled input
+                                    onChange={(e) =>
+                                        setFormInputs((prevState) => ({
+                                            ...prevState,
+                                            isbn13: e.target.value,
+                                        }))
+                                    }
+                                />
+                            </label>
+                            <label className="author-field">
+                                {t("Auteur")}
+                                <div className="author-input-container">
+                                    <input
+                                        type="text"
+                                        name="author"
+                                        value={formInputs.author || ""} // Ensure controlled input
+                                        onChange={handleAuthorInputChange}
+                                        disabled={isAuthorUnknown}
+                                    />
+                                    <div className="author-unknown-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={isAuthorUnknown}
+                                            onChange={handleAuthorUnknownToggle}
+                                        />
+                                        <span>{t("Inconnu")}</span>
+                                    </div>
+                                </div>
+                                {authorSuggestions.length > 0 && !isAuthorUnknown && (
+                                    <ul className="autocomplete-list">
+                                        {authorSuggestions.map((author, index) => (
+                                            <li
+                                                key={index}
+                                                onClick={() =>
+                                                    handleSuggestionClick(author, setFormInputs, "author")
+                                                }
+                                            >
+                                                {author}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </label>
+                            <label>
+                                {t("Récompenses")}
+                                <input
+                                    type="text"
+                                    name="awards"
+                                    onInput={handleAwardInputChange}
+                                />
+                                {awardSuggestions.length > 0 && (
+                                    <ul className="autocomplete-list">
+                                        {awardSuggestions.map((award, index) => (
+                                            <li
+                                                key={index}
+                                                onClick={() => handleAwardSelect(award)}
+                                            >
+                                                {award}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </label>
+                            <div className="selected-awards">
+                                {selectedAwards.map((award, index) => (
+                                    <span key={index} className="award-tag">
+                                        {award}
+                                        <button
+                                            type="button"
+                                            onClick={() => handleAwardRemove(award)}
+                                        >
+                                            &times;
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
+                            <label>
+                                {t("Couverture")}
+                                <div
+                                    className={`file-drop-zone ${isDragging ? "dragging" : ""}`}
+                                    onDragOver={handleDragOver}
+                                    onDragLeave={handleDragLeave}
+                                    onDrop={handleDrop}
+                                >
+                                    {previewImage ? (
+                                        <div className="image-preview">
+                                            <img src={previewImage} alt="Preview" />
+                                            <button type="button" onClick={handleRemoveImage}>
+                                                {t("Supprimer l'image")}
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <UploadFileIcon className="upload-icon" />
+                                            <span>{t("Glissez et déposez un fichier ou cliquez pour télécharger")}</span>
+                                            <input
+                                                type="file"
+                                                name="cover"
+                                                accept="image/*"
+                                                onChange={(e) => {
+                                                    const file = e.target.files[0];
+                                                    setFormInputs((prevState) => ({
+                                                        ...prevState,
+                                                        cover: file || null, // Ensure controlled input
+                                                    }));
+                                                    if (file && file.type.startsWith("image/")) {
+                                                        setPreviewImage(URL.createObjectURL(file));
+                                                    }
+                                                }}
+                                            />
+                                        </>
+                                    )}
+                                </div>
+                            </label>
+                            <label>
+                                {t("Genres")}
+                                <input
+                                    type="text"
+                                    name="genres"
+                                    value={formInputs.genres || ""} // Ensure controlled input
+                                    onChange={(e) =>
+                                        setFormInputs((prevState) => ({
+                                            ...prevState,
+                                            genres: e.target.value,
+                                        }))
+                                    }
+                                    onInput={handleGenreInputChange}
+                                />
+                                {genreSuggestions.length > 0 && (
+                                    <ul className="autocomplete-list">
+                                        {genreSuggestions.map((genre, index) => (
+                                            <li
+                                                key={index}
+                                                onClick={() => handleGenreSelect(genre)}
+                                            >
+                                                {genre}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </label>
+                            <div className="selected-genres">
+                                {selectedGenres.map((genre, index) => (
+                                    <span key={index} className="genre-tag">
+                                        {genre}
+                                        <button
+                                            type="button"
+                                            onClick={() => handleGenreRemove(genre)}
+                                        >
+                                            &times;
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
+                            <label>
+                                {t("Note moyenne")}
+                                <input
+                                    type="number"
+                                    name="rating"
+                                    value={formInputs.rating || "0"}
+                                    min="1"
+                                    max="5"
+                                    step="1"
+                                    onChange={(e) =>
+                                        setFormInputs((prevState) => ({
+                                            ...prevState,
+                                            rating: Math.min(5, Math.max(1, Math.round(e.target.value))),
+                                        }))
+                                    }
+                                />
+                            </label>
+                            <label className="publisher-field">
+                                {t("Editeur")}
+                                <div className="publisher-input-container">
+                                    <input
+                                        type="text"
+                                        name="publisher"
+                                        value={formInputs.publisher || ""} // Ensure controlled input
+                                        onChange={handlePublisherInputChange}
+                                    />
+                                </div>
+                                {publisherSuggestions.length > 0 && (
+                                    <ul className="autocomplete-list">
+                                        {publisherSuggestions.map((publisher, index) => (
+                                            <li
+                                                key={index}
+                                                onClick={() =>
+                                                    handleSuggestionClick(publisher, setFormInputs, "publisher")
+                                                }
+                                            >
+                                                {publisher}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </label>
+                            <label className="series-field">
+                                {t("Fait partie d'une série")}
+                                <input type="checkbox" onChange={handleToggleSeries} />
+                            </label>
+                            {isPartOfSeries && (
+                                <label>
+                                    {t("Nom de la série")}
+                                    <input
+                                        type="text"
+                                        name="series_name"
+                                        value={formInputs.series_name ?? ""} 
+                                        onChange={(e) =>
+                                            setFormInputs((prevState) => ({
+                                                ...prevState,
+                                                series_name: e.target.value,
+                                            }))
+                                        }
+                                        onInput={handleSeriesInputChange}
+                                    />
+                                    {seriesSuggestions.length > 0 && (
+                                        <ul className="autocomplete-list">
+                                            {seriesSuggestions.map((series_name, index) => (
+                                                <li
+                                                    key={index}
+                                                    onClick={() =>
+                                                        handleSuggestionClick(
+                                                            series_name,
+                                                            setFormInputs,
+                                                            "series_name"
+                                                        )
+                                                    }
+                                                >
+                                                    {series_name}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </label>
+                            )}
+                            <label>
+                                {t("Description")}
+                                <textarea
+                                    name="description"
+                                    value={formInputs.description || ""}
+                                    onChange={(e) =>
+                                        setFormInputs((prevState) => ({
+                                            ...prevState,
+                                            description: e.target.value,
+                                        }))
+                                    }
+                                    rows={4}
+                                />
+                            </label>
+                            <button type="submit">{t("Ajouter")}</button>
+                        </form>
                     </div>
                 )}
             </div>

@@ -4,6 +4,7 @@
 
 ### Requis :
 - Docker 
+- Docker compose
 
 La version utilisée pour le développement est la 24.0.6 mais normalement, toutes les versions devraient fonctionner.
 
@@ -23,6 +24,9 @@ git clone
 ./start_project.sh -p
 ```
 L'option -p permet de lancer le projet en peuplant la base de données. Si vous ne voulez pas peupler la base de données, vous pouvez lancer le projet sans l'option -p. L'option -p est nécessaire pour le premier lancement du projet sinon la base sera vide.
+D'autres options sont disponibles pour lancer le projet, comme -b build le projet (utile si vous avez modifié le/les Dockerfile(s)), -d pour lancer seulement le site et l'api sans la base de donnée si vous utilisez une autre base. Il est important de noter que vous devez changer le config.yml situé à plusieurs endroits dans le projet pour que l'api puisse se connecter à votre base de données.
+
+```bash
 
 ## Sprint 2
 # Création de la base de données
